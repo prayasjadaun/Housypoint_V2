@@ -1,0 +1,21 @@
+default_platform(:android)
+
+platform :android do
+  desc "Upload the latest release build to the Play Console internal testing track"
+  lane :beta do
+    upload_to_play_store(
+      track: "internal",
+      aab: Dir[File.expand_path(File.join(__dir__, "..", "..", "build", "app", "outputs", "bundle", "release", "*.aab"))].max_by { |f| File.mtime(f) },
+      release_status: "draft",
+    )
+  end
+
+  desc "Upload the latest release build to the Play Console production track"
+  lane :release do
+    upload_to_play_store(
+      track: "production",
+      aab: Dir[File.expand_path(File.join(__dir__, "..", "..", "build", "app", "outputs", "bundle", "release", "*.aab"))].max_by { |f| File.mtime(f) },
+      release_status: "draft",
+    )
+  end
+end
