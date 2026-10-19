@@ -4,6 +4,7 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../../../controllers/home_controller.dart';
+import '../../../core/utils/app_haptics.dart';
 import '../../../models/project/project_model.dart';
 import '../../../router/app_routes.dart';
 import '../../../theme/app_colors.dart';
@@ -34,14 +35,14 @@ class NewLaunchesSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         SizedBox(
-          height: 250,
+          height: 270,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
             itemCount: projects?.length ?? 2,
             separatorBuilder: (_, _) => const SizedBox(width: 12),
             itemBuilder: (context, i) => projects == null
-                ? const SkeletonBox(width: 230, height: 250, radius: AppRadius.xl)
+                ? const SkeletonBox(width: 230, height: 270, radius: AppRadius.xl)
                 : _LaunchCard(project: projects[i]),
           ),
         ),
@@ -50,6 +51,7 @@ class NewLaunchesSection extends StatelessWidget {
   }
 }
 
+/// Full-bleed project card: photo fills the card, details on a dark fade.
 class _LaunchCard extends StatelessWidget {
   const _LaunchCard({required this.project});
 
@@ -57,105 +59,119 @@ class _LaunchCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final radius = BorderRadius.circular(AppRadius.xl);
+    final place = [project.builderName, project.city].where((s) => s.isNotEmpty).join(' · ');
 
     return SizedBox(
       width: 230,
       child: Material(
-        color: AppColors.surface,
-        borderRadius: radius,
+        color: AppColors.textPrimary,
+        borderRadius: BorderRadius.circular(AppRadius.xl + 4),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
-          onTap: () => context.push(AppRoutes.projectPath(project.id)),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: radius,
-              border: Border.all(color: AppColors.border.withValues(alpha: 0.7)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 140,
-                  width: double.infinity,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      AppNetworkImage(url: project.image),
-                      Positioned(
-                        top: 10,
-                        left: 10,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: AppColors.gold,
-                            borderRadius: BorderRadius.circular(AppRadius.pill),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Iconsax.flash_1_copy, size: 11, color: AppColors.textPrimary),
-                              const SizedBox(width: 3),
-                              Text(
-                                'New launch',
-                                style: AppTextStyles.caption.copyWith(
-                                  fontSize: 10.5,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.textPrimary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      if (project.builderLogo.isNotEmpty)
-                        Positioned(
-                          left: 10,
-                          bottom: 10,
-                          child: Container(
-                            width: 40,
-                            height: 40,
-                            padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: AppColors.surface,
-                              borderRadius: BorderRadius.circular(AppRadius.sm + 2),
-                            ),
-                            child: AppNetworkImage(url: project.builderLogo, fit: BoxFit.contain),
-                          ),
-                        ),
-                    ],
+          onTap: () {
+            AppHaptics.tap();
+            context.push(AppRoutes.projectPath(project.id));
+          },
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              AppNetworkImage(url: project.image),
+              const DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    stops: [0, 0.25, 0.5, 1],
+                    colors: [Color(0x40000000), Colors.transparent, Color(0x1A000000), Color(0xE6000000)],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+              ),
+              Positioned(
+                top: 12,
+                left: 12,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: AppColors.gold,
+                    borderRadius: BorderRadius.circular(AppRadius.pill),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
+                      const Icon(Iconsax.flash_1_copy, size: 12, color: AppColors.textPrimary),
+                      const SizedBox(width: 4),
                       Text(
-                        project.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600),
-                      ),
-                      Text(
-                        [project.builderName, project.city].where((s) => s.isNotEmpty).join(' · '),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTextStyles.caption,
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        project.priceRange.isEmpty ? 'Price on request' : '₹${project.priceRange}',
-                        style: AppTextStyles.label.copyWith(
-                          color: AppColors.primaryDark,
+                        'New launch',
+                        style: AppTextStyles.caption.copyWith(
+                          fontSize: 11,
                           fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimary,
                         ),
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
+              ),
+              if (project.builderLogo.isNotEmpty)
+                Positioned(
+                  top: 10,
+                  right: 10,
+                  child: Container(
+                    width: 42,
+                    height: 42,
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                    ),
+                    child: AppNetworkImage(url: project.builderLogo, fit: BoxFit.contain),
+                  ),
+                ),
+              Positioned(
+                left: 14,
+                right: 14,
+                bottom: 14,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      project.name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.title.copyWith(color: Colors.white, height: 1.25),
+                    ),
+                    if (place.isNotEmpty)
+                      Text(
+                        place,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyles.caption.copyWith(color: Colors.white.withValues(alpha: 0.78)),
+                      ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Text(
+                          project.priceRange.isEmpty ? 'Price on request' : '₹${project.priceRange}',
+                          style: AppTextStyles.body.copyWith(color: AppColors.gold, fontWeight: FontWeight.w700),
+                        ),
+                        const Spacer(),
+                        Container(
+                          width: 30,
+                          height: 30,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.18),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+                          ),
+                          child: const Icon(Iconsax.arrow_right_3_copy, size: 15, color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),

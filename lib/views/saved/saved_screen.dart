@@ -107,7 +107,7 @@ class _SavedScreenState extends State<SavedScreen> {
   Widget _card(BuildContext context, SavedController saved, ListingModel l) {
     return PropertyCard(
       listing: l,
-      imageHeight: 180,
+      height: 300,
       badge: _tab == 1 ? 'Contacted' : null,
       isSaved: saved.savedState(l),
       onSave: () async {

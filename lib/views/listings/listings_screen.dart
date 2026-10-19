@@ -122,7 +122,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
                     final l = c.items[i];
                     return PropertyCard(
                       listing: l,
-                      imageHeight: 190,
+                      height: 320,
                       isSaved: saved.savedState(l),
                       onSave: () async {
                         final error = await saved.toggleSave(l);
@@ -294,31 +294,6 @@ class _CardSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppRadius.xl),
-        border: Border.all(color: AppColors.border.withValues(alpha: 0.7)),
-      ),
-      child: const Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SkeletonBox(width: double.infinity, height: 190, radius: AppRadius.xl),
-          Padding(
-            padding: EdgeInsets.all(14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SkeletonBox(width: 110, height: 16),
-                SizedBox(height: 8),
-                SkeletonBox(width: 180, height: 12),
-                SizedBox(height: 8),
-                SkeletonBox(width: 140, height: 10),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+    return const SkeletonBox(width: double.infinity, height: 320, radius: AppRadius.xl + 4);
   }
 }

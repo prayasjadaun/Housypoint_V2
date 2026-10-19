@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -7,22 +8,28 @@ import '../../../controllers/listings_controller.dart';
 import '../../../controllers/shell_controller.dart';
 import '../../../core/utils/app_haptics.dart';
 import '../../../models/listing/listing_counts.dart';
+import '../../../router/app_routes.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_radius.dart';
 import '../../../theme/app_spacing.dart';
 import '../../../theme/app_text_styles.dart';
-import '../../../widgets/common/segmented_toggle.dart';
 import '../../../widgets/common/skeleton_box.dart';
 import '../../../widgets/pickers/location_pickers.dart';
 import 'size_options.dart';
 
-/// The home "USP filter": where (city, builder), what (buy / rent /
-/// commercial) and how many listings each size has — as a ranked list
-/// with proportional bars.
+/// The home "USP filter" (V1 layout, V2 styling): owner strip, city and
+/// builder pickers, four deal tabs and listing counts per size.
 class PropertyFilterCard extends StatelessWidget {
   const PropertyFilterCard({super.key});
 
-  void _openListings(BuildContext context, HomeController home, {String? sizeKey}) {
+  static const _tabs = [
+    ('Resale', DealType.sale, PropertyCategory.residential),
+    ('Rent', DealType.rent, PropertyCategory.residential),
+    ('Commercial sale', DealType.sale, PropertyCategory.commercial),
+    ('Commercial rent', DealType.rent, PropertyCategory.commercial),
+  ];
+
+  void _openListings(BuildContext context, HomeController home, String sizeKey) {
     context.read<ListingsController>().applyFilter(
       deal: home.deal,
       category: home.category,
@@ -52,128 +59,94 @@ class PropertyFilterCard extends StatelessWidget {
     if (result.picked) home.selectBuilder(result.value);
   }
 
-  /// Buy / Rent / Commercial → (category, deal).
-  int _tabOf(HomeController h) => h.category == PropertyCategory.commercial
-      ? 2
-      : (h.deal == DealType.rent ? 1 : 0);
-
-  void _onTab(HomeController h, int i) {
-    if (i == 2) {
-      h.setCategory(PropertyCategory.commercial);
-    } else {
-      h.setCategory(PropertyCategory.residential);
-      h.setDeal(i == 1 ? DealType.rent : DealType.sale);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final home = context.watch<HomeController>();
-    final counts = home.counts;
-    final total = counts == null ? null : counts.totalSale + counts.totalRent;
+    final radius = BorderRadius.circular(AppRadius.xl + 4);
 
     return Container(
-      padding: const EdgeInsets.fromLTRB(AppSpacing.md, 18, AppSpacing.md, 6),
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppRadius.xl + 4),
+        borderRadius: radius,
         boxShadow: [
           BoxShadow(
-            color: AppColors.primaryDark.withValues(alpha: 0.10),
-            blurRadius: 32,
-            offset: const Offset(0, 14),
+            color: AppColors.primaryDark.withValues(alpha: 0.12),
+            blurRadius: 30,
+            offset: const Offset(0, 12),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('Explore properties', style: AppTextStyles.title),
-          const SizedBox(height: 2),
-          total == null
-              ? const Align(alignment: Alignment.centerLeft, child: SkeletonBox(width: 120, height: 12))
-              : Text(
-                  '$total verified listings',
-                  style: AppTextStyles.caption,
-                ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Flexible(
-                child: _FilterPill(
-                  icon: Iconsax.location_copy,
-                  label: home.cityLabel,
-                  active: home.selectedCity != null,
-                  onTap: () => _pickCity(context, home),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Flexible(
-                child: _FilterPill(
-                  icon: Iconsax.buildings_2_copy,
-                  label: home.builderLabel,
-                  active: home.selectedBuilder != null,
-                  onTap: () => _pickBuilder(context, home),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          SegmentedToggle(
-            labels: const ['Buy', 'Rent', 'Commercial'],
-            selectedIndex: _tabOf(home),
-            onChanged: (i) => _onTab(home, i),
-          ),
-          AnimatedSize(
-            duration: const Duration(milliseconds: 220),
-            curve: Curves.easeOutCubic,
-            child: home.category == PropertyCategory.commercial
-                ? Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Row(
-                      children: [
-                        Text('Looking to', style: AppTextStyles.caption),
-                        const SizedBox(width: 10),
-                        SizedBox(
-                          width: 150,
-                          child: SegmentedToggle(
-                            labels: const ['Buy', 'Rent'],
-                            height: 34,
-                            selectedIndex: home.deal.index,
-                            onChanged: (i) => home.setDeal(DealType.values[i]),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : const SizedBox(width: double.infinity),
-          ),
-          const SizedBox(height: 8),
-          AnimatedSize(
-            duration: const Duration(milliseconds: 280),
-            curve: Curves.easeOutCubic,
-            alignment: Alignment.topCenter,
-            child: _SizeList(
-              key: ValueKey('${home.category}-${home.deal}'),
-              home: home,
-              onTap: (key) => _openListings(context, home, sizeKey: key),
-            ),
-          ),
-          const Divider(height: 1, color: AppColors.border),
-          TextButton(
-            onPressed: home.currentTotal > 0 ? () => _openListings(context, home) : null,
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: const RoundedRectangleBorder(),
-            ),
+          const _OwnerStrip(),
+          // Pickers sit on a soft band, like V1
+          Container(
+            color: AppColors.background,
+            padding: const EdgeInsets.all(12),
             child: Row(
               children: [
-                Text(
-                  home.counts == null ? 'View all properties' : 'View all ${home.currentTotal} properties',
-                  style: AppTextStyles.body.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600),
+                Expanded(
+                  child: _PickerCard(
+                    icon: Iconsax.location_copy,
+                    caption: 'City',
+                    value: home.cityLabel,
+                    onTap: () => _pickCity(context, home),
+                  ),
                 ),
-                const Spacer(),
-                const Icon(Iconsax.arrow_right_3_copy, size: 18, color: AppColors.primary),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _PickerCard(
+                    icon: Iconsax.buildings_2_copy,
+                    caption: 'Builder',
+                    value: home.builderLabel,
+                    onTap: () => _pickBuilder(context, home),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 62,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.fromLTRB(AppSpacing.md, 14, AppSpacing.md, 10),
+              itemCount: _tabs.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 8),
+              itemBuilder: (_, i) {
+                final (label, deal, category) = _tabs[i];
+                return _TabPill(
+                  label: label,
+                  count: home.counts?.total(deal, category),
+                  selected: home.deal == deal && home.category == category,
+                  onTap: () {
+                    home.setCategory(category);
+                    home.setDeal(deal);
+                  },
+                );
+              },
+            ),
+          ),
+          const Divider(height: 1, indent: AppSpacing.md, endIndent: AppSpacing.md, color: AppColors.border),
+          AnimatedSize(
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeOutCubic,
+            alignment: Alignment.topCenter,
+            child: _Counts(
+              key: ValueKey(home.category),
+              home: home,
+              onTap: (key) => _openListings(context, home, key),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 14),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Iconsax.finger_cricle_copy, size: 16, color: AppColors.primary),
+                const SizedBox(width: 6),
+                Text('Tap a count to see listings', style: AppTextStyles.caption.copyWith(color: AppColors.primary)),
               ],
             ),
           ),
@@ -183,46 +156,55 @@ class PropertyFilterCard extends StatelessWidget {
   }
 }
 
-/// Compact outlined dropdown pill (city / builder).
-class _FilterPill extends StatelessWidget {
-  const _FilterPill({required this.icon, required this.label, required this.active, required this.onTap});
-
-  final IconData icon;
-  final String label;
-  final bool active;
-  final VoidCallback onTap;
+/// "Are you a property owner? Sell for free ›" across the card's top edge.
+class _OwnerStrip extends StatelessWidget {
+  const _OwnerStrip();
 
   @override
   Widget build(BuildContext context) {
-    final color = active ? AppColors.primary : AppColors.textPrimary;
     return Material(
-      color: active ? AppColors.primarySoft : AppColors.surface,
-      borderRadius: BorderRadius.circular(AppRadius.pill),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(AppRadius.pill),
-            border: Border.all(color: active ? AppColors.primary.withValues(alpha: 0.4) : AppColors.border),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 16, color: active ? AppColors.primary : AppColors.textSecondary),
-              const SizedBox(width: 6),
-              Flexible(
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.label.copyWith(color: color, fontWeight: FontWeight.w600),
+      color: Colors.transparent,
+      child: Ink(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(colors: [AppColors.primaryDark, AppColors.primary]),
+        ),
+        child: InkWell(
+          onTap: () {
+            AppHaptics.tap();
+            context.push(AppRoutes.sell);
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 13, horizontal: AppSpacing.md),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Iconsax.house_2_copy, size: 18, color: Colors.white),
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Text.rich(
+                    TextSpan(
+                      style: AppTextStyles.label.copyWith(color: Colors.white),
+                      children: [
+                        const TextSpan(text: 'Are you a property owner?  '),
+                        TextSpan(
+                          text: 'Sell for free',
+                          style: AppTextStyles.label.copyWith(
+                            color: AppColors.gold,
+                            fontWeight: FontWeight.w700,
+                            decoration: TextDecoration.underline,
+                            decorationColor: AppColors.gold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 4),
-              Icon(Iconsax.arrow_down_1_copy, size: 13, color: color),
-            ],
+                const SizedBox(width: 4),
+                const Icon(Iconsax.arrow_right_3_copy, size: 16, color: AppColors.gold),
+              ],
+            ),
           ),
         ),
       ),
@@ -230,9 +212,132 @@ class _FilterPill extends StatelessWidget {
   }
 }
 
-/// Sizes ranked by listing count, each with a bar scaled to the largest.
-class _SizeList extends StatelessWidget {
-  const _SizeList({super.key, required this.home, required this.onTap});
+/// White dropdown card (city / builder) on the grey band.
+class _PickerCard extends StatelessWidget {
+  const _PickerCard({required this.icon, required this.caption, required this.value, required this.onTap});
+
+  final IconData icon;
+  final String caption;
+  final String value;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final radius = BorderRadius.circular(AppRadius.lg);
+    return Material(
+      color: AppColors.surface,
+      borderRadius: radius,
+      child: InkWell(
+        borderRadius: radius,
+        onTap: onTap,
+        child: Ink(
+          decoration: BoxDecoration(
+            borderRadius: radius,
+            boxShadow: [
+              BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2)),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+            child: Row(
+              children: [
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: const BoxDecoration(color: AppColors.primarySoft, shape: BoxShape.circle),
+                  child: Icon(icon, size: 16, color: AppColors.primary),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(caption, style: AppTextStyles.caption.copyWith(fontSize: 10.5, height: 1.2)),
+                      Text(
+                        value,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyles.label.copyWith(fontWeight: FontWeight.w700, height: 1.3),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Iconsax.arrow_down_1_copy, size: 14, color: AppColors.textSecondary),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TabPill extends StatelessWidget {
+  const _TabPill({required this.label, required this.count, required this.selected, required this.onTap});
+
+  final String label;
+
+  /// Null while loading.
+  final int? count;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        if (selected) return;
+        AppHaptics.selection();
+        onTap();
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 220),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: selected ? AppColors.primary : AppColors.surface,
+          borderRadius: BorderRadius.circular(AppRadius.pill),
+          border: Border.all(color: selected ? AppColors.primary : AppColors.border),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              label,
+              style: AppTextStyles.label.copyWith(
+                color: selected ? Colors.white : AppColors.textPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            if (count != null) ...[
+              const SizedBox(width: 6),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 220),
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 1),
+                decoration: BoxDecoration(
+                  color: selected ? Colors.white.withValues(alpha: 0.2) : AppColors.background,
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                ),
+                child: Text(
+                  '$count',
+                  style: AppTextStyles.caption.copyWith(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: selected ? Colors.white : AppColors.textSecondary,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Size columns: label on top, tappable count badge below.
+class _Counts extends StatelessWidget {
+  const _Counts({super.key, required this.home, required this.onTap});
 
   final HomeController home;
   final ValueChanged<String> onTap;
@@ -241,7 +346,7 @@ class _SizeList extends StatelessWidget {
   Widget build(BuildContext context) {
     if (home.countsError != null && home.counts == null) {
       return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.fromLTRB(AppSpacing.md, 14, AppSpacing.md, 6),
         child: Row(
           children: [
             const Icon(Iconsax.warning_2_copy, size: 18, color: AppColors.error),
@@ -253,139 +358,110 @@ class _SizeList extends StatelessWidget {
       );
     }
 
-    final options = home.category == PropertyCategory.residential ? residentialTiles : commercialTiles;
-    final counts = home.counts;
+    final residential = home.category == PropertyCategory.residential;
+    final options = residential ? residentialTiles : commercialTiles;
+    Widget cell(SizeOption o) => _SizeCell(
+      option: o,
+      residential: residential,
+      count: home.counts?.count(home.deal, home.category, o.key),
+      onTap: () => onTap(o.key),
+    );
 
-    if (counts == null) {
-      return Column(
-        children: [
-          for (var i = 0; i < 4; i++)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 12),
-              child: Row(
-                children: [
-                  SkeletonBox(width: 56, height: 12),
-                  SizedBox(width: 14),
-                  Expanded(child: SkeletonBox(width: double.infinity, height: 6)),
-                  SizedBox(width: 14),
-                  SkeletonBox(width: 28, height: 12),
-                ],
+    // Six BHK sizes fit the width; nine commercial types scroll.
+    return Padding(
+      padding: const EdgeInsets.only(top: 16, bottom: 12),
+      child: residential
+          ? Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Row(children: [for (final o in options) Expanded(child: cell(o))]),
+            )
+          : SizedBox(
+              height: 84,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                children: [for (final o in options) SizedBox(width: 76, child: cell(o))],
               ),
             ),
-        ],
-      );
-    }
-
-    final rows = [
-      for (final o in options) (o, counts.count(home.deal, home.category, o.key)),
-    ].where((r) => r.$2 > 0).toList()
-      ..sort((a, b) => b.$2.compareTo(a.$2));
-
-    if (rows.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 24),
-        child: Column(
-          children: [
-            const Icon(Iconsax.search_status_copy, color: AppColors.textTertiary),
-            const SizedBox(height: 6),
-            Text('No listings here yet — try another city or tab.', style: AppTextStyles.caption),
-          ],
-        ),
-      );
-    }
-
-    final max = rows.first.$2;
-    return Column(
-      children: [
-        for (final (option, count) in rows)
-          _SizeRow(
-            option: option,
-            count: count,
-            share: count / max,
-            onTap: () => onTap(option.key),
-          ),
-      ],
     );
   }
 }
 
-class _SizeRow extends StatelessWidget {
-  const _SizeRow({required this.option, required this.count, required this.share, required this.onTap});
+class _SizeCell extends StatelessWidget {
+  const _SizeCell({required this.option, required this.residential, required this.count, required this.onTap});
 
   final SizeOption option;
-  final int count;
+  final bool residential;
 
-  /// 0–1, relative to the largest row.
-  final double share;
+  /// Null while loading.
+  final int? count;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(AppRadius.md),
-      onTap: () {
-        AppHaptics.tap();
-        onTap();
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 11),
-        child: Row(
-          children: [
-            SizedBox(
-              width: 92,
-              child: Row(
+    final has = (count ?? 0) > 0;
+    final parts = option.label.split(' ');
+
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: has
+          ? () {
+              AppHaptics.tap();
+              onTap();
+            }
+          : null,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (residential && parts.length == 2)
+            Text.rich(
+              TextSpan(
                 children: [
-                  if (option.icon != null) ...[
-                    Icon(option.icon, size: 15, color: AppColors.textSecondary),
-                    const SizedBox(width: 6),
-                  ],
-                  Flexible(
-                    child: Text(
-                      option.label,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600),
-                    ),
-                  ),
+                  TextSpan(text: parts[0], style: AppTextStyles.title.copyWith(fontSize: 16)),
+                  TextSpan(text: ' ${parts[1]}', style: AppTextStyles.caption.copyWith(fontSize: 11)),
                 ],
               ),
+            )
+          else ...[
+            if (!residential && option.icon != null) ...[
+              Icon(option.icon, size: 18, color: has ? AppColors.primary : AppColors.textTertiary),
+              const SizedBox(height: 3),
+            ],
+            Text(
+              option.label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTextStyles.label.copyWith(fontWeight: FontWeight.w600, height: 1.4),
             ),
-            Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(3),
-                child: Container(
-                  height: 6,
-                  color: AppColors.background,
-                  alignment: Alignment.centerLeft,
-                  child: TweenAnimationBuilder<double>(
-                    tween: Tween(begin: 0, end: share.clamp(0.04, 1)),
-                    duration: const Duration(milliseconds: 700),
-                    curve: Curves.easeOutCubic,
-                    builder: (context, value, _) => FractionallySizedBox(
-                      widthFactor: value,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(3),
-                          gradient: const LinearGradient(colors: [AppColors.primary, AppColors.primaryLight]),
-                        ),
-                      ),
-                    ),
+          ],
+          const SizedBox(height: 8),
+          if (count == null)
+            const SkeletonBox(width: 34, height: 26, radius: AppRadius.pill)
+          else
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 220),
+              constraints: const BoxConstraints(minWidth: 38),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: has ? AppColors.primarySoft : AppColors.background,
+                borderRadius: BorderRadius.circular(AppRadius.pill),
+                border: Border.all(color: has ? AppColors.primary.withValues(alpha: 0.35) : AppColors.border),
+              ),
+              child: TweenAnimationBuilder<double>(
+                tween: Tween(end: count!.toDouble()),
+                duration: const Duration(milliseconds: 600),
+                curve: Curves.easeOutCubic,
+                builder: (context, value, _) => Text(
+                  '${value.round()}',
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.label.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: has ? AppColors.primaryDark : AppColors.textTertiary,
                   ),
                 ),
               ),
             ),
-            SizedBox(
-              width: 48,
-              child: Text(
-                '$count',
-                textAlign: TextAlign.right,
-                style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w700),
-              ),
-            ),
-            const SizedBox(width: 6),
-            const Icon(Iconsax.arrow_right_3_copy, size: 16, color: AppColors.textTertiary),
-          ],
-        ),
+        ],
       ),
     );
   }

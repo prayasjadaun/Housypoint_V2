@@ -1,6 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_radius.dart';
@@ -208,7 +208,7 @@ class _GlassBackButton extends StatelessWidget {
         onTap: onTap,
         child: const SizedBox.square(
           dimension: 40,
-          child: Icon(Iconsax.arrow_left_copy, color: Colors.white, size: 20),
+          child: Icon(CupertinoIcons.back, color: Colors.white, size: 20),
         ),
       ),
     );

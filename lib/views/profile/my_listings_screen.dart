@@ -92,7 +92,7 @@ class _MyListingsScreenState extends State<MyListingsScreen> {
                   padding: const EdgeInsets.only(bottom: 14),
                   child: PropertyCard(
                     listing: l,
-                    imageHeight: 170,
+                    height: 280,
                     onTap: () => context.push(AppRoutes.listingPath(l.id, rental: l.isRental), extra: l),
                   ),
                 ),

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
@@ -22,6 +23,7 @@ import '../../widgets/common/glass_icon_button.dart';
 import '../../widgets/common/image_carousel.dart';
 import '../../widgets/common/image_gallery_viewer.dart';
 import '../../widgets/common/section_header.dart';
+import '../../widgets/icons/amenity_icon.dart';
 import '../listings/widgets/property_card.dart';
 
 /// A builder project — `GET /api/projects/{id}/` plus the listings
@@ -97,7 +99,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
               padding: const EdgeInsets.only(left: AppSpacing.md),
               child: Center(
                 child: GlassIconButton(
-                  icon: Iconsax.arrow_left_copy,
+                  icon: CupertinoIcons.back,
                   onTap: () => context.pop(),
                 ),
               ),
@@ -543,7 +545,7 @@ class _AmenitiesGrid extends StatelessWidget {
         crossAxisCount: 4,
         mainAxisSpacing: 12,
         crossAxisSpacing: 10,
-        mainAxisExtent: 84,
+        mainAxisExtent: 96,
       ),
       itemCount: amenities.length,
       itemBuilder: (_, i) {
@@ -553,16 +555,17 @@ class _AmenitiesGrid extends StatelessWidget {
             Container(
               width: 52,
               height: 52,
-              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppColors.primarySoft,
-                borderRadius: BorderRadius.circular(AppRadius.lg),
+                borderRadius: BorderRadius.circular(AppRadius.lg + 2),
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [AppColors.primarySoft, AppColors.surface],
+                ),
+                border: Border.all(color: AppColors.primary.withValues(alpha: 0.12)),
               ),
-              child: AppNetworkImage(
-                url: a.icon,
-                fit: BoxFit.contain,
-                fallbackIcon: Iconsax.tick_square_copy,
-              ),
+              alignment: Alignment.center,
+              child: AmenityIcon(name: a.name, size: 26, color: AppColors.primary),
             ),
             const SizedBox(height: 6),
             Text(

@@ -1,6 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 import '../../theme/app_colors.dart';
 import 'glass_app_bar.dart';
@@ -42,7 +42,7 @@ class PageScaffold extends StatelessWidget {
         title: Text(title),
         leading: IconButton(
           onPressed: () => context.canPop() ? context.pop() : null,
-          icon: const Icon(Iconsax.arrow_left_copy, color: AppColors.textPrimary),
+          icon: const Icon(CupertinoIcons.back, color: AppColors.textPrimary),
         ),
         actions: actions,
       ),

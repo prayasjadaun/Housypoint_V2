@@ -1,5 +1,4 @@
-import 'dart:async';
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
@@ -15,6 +14,7 @@ import '../../theme/app_spacing.dart';
 import '../../theme/app_text_styles.dart';
 import '../../widgets/common/app_network_image.dart';
 import '../../widgets/common/empty_state.dart';
+import 'dart:async';
 
 /// Global search across properties, projects and builders (API ref M7).
 class SearchScreen extends StatefulWidget {
@@ -95,7 +95,7 @@ class _SearchScreenState extends State<SearchScreen> {
               children: [
                 IconButton(
                   onPressed: () => context.pop(),
-                  icon: const Icon(Iconsax.arrow_left_copy, color: AppColors.textPrimary),
+                  icon: const Icon(CupertinoIcons.back, color: AppColors.textPrimary),
                 ),
                 Expanded(
                   child: TextField(

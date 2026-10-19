@@ -53,10 +53,10 @@ class ApiConfig {
 
   // Referral (R1–R7)
   static const String referralStats = 'referrals/earnings/detailed_stats/';
-  static const String referralPdiStats = 'referrals/pdi-stats';
-  static const String referralEarnings = 'referrals/earnings/earnings_history';
+  static const String referralPdiStats = 'referrals/pdi-stats/';
+  static const String referralEarnings = 'referrals/earnings/earnings_history/';
   static const String referralWithdrawals = 'referrals/withdrawals/';
-  static const String referredUsers = 'referrals/referred-users/detailed';
+  static const String referredUsers = 'referrals/referred-users/detailed/';
 
   // Consultations (K1–K5)
   static const String consultations = 'consultations/';

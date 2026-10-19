@@ -9,8 +9,8 @@ import '../../../theme/app_radius.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/common/app_network_image.dart';
 
-/// Listing card: photo with badge + save button, then price, title,
-/// project/builder, place and quick facts. Used in carousels and lists.
+/// Full-bleed listing card: the photo fills the card, details sit on a
+/// dark fade at the bottom. Used in carousels and lists.
 class PropertyCard extends StatelessWidget {
   const PropertyCard({
     super.key,
@@ -19,7 +19,7 @@ class PropertyCard extends StatelessWidget {
     this.onSave,
     this.isSaved = false,
     this.badge,
-    this.imageHeight = 150,
+    this.height,
   });
 
   final ListingModel listing;
@@ -29,194 +29,202 @@ class PropertyCard extends StatelessWidget {
   final VoidCallback? onSave;
   final bool isSaved;
 
-  /// Small label on the photo, e.g. "Hot deal".
+  /// Label on the photo, e.g. "Hot deal" (gold); defaults to For sale / For rent.
   final String? badge;
-  final double imageHeight;
+
+  /// Fixed height in lists; null fills the parent (carousels).
+  final double? height;
 
   @override
   Widget build(BuildContext context) {
-    final radius = BorderRadius.circular(AppRadius.xl);
+    final radius = BorderRadius.circular(AppRadius.xl + 4);
     final facts = [
       if (listing.areaLabel.isNotEmpty) (Iconsax.maximize_4_copy, listing.areaLabel),
       if (listing.floor.isNotEmpty) (Iconsax.layer_copy, 'Floor ${listing.floor}'),
-      if (listing.furnishing.isNotEmpty)
-        (Iconsax.lamp_on_copy, Formatters.humanize(listing.furnishing)),
+      if (listing.furnishing.isNotEmpty) (Iconsax.lamp_on_copy, Formatters.humanize(listing.furnishing)),
     ];
+    final subtitle = [listing.projectName, listing.builderName].where((s) => s.isNotEmpty).join(' · ');
 
-    return Material(
-      color: AppColors.surface,
+    final card = Material(
+      color: AppColors.textPrimary,
       borderRadius: radius,
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
-        borderRadius: radius,
         onTap: () {
           AppHaptics.tap();
           onTap();
         },
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: radius,
-            border: Border.all(color: AppColors.border.withValues(alpha: 0.7)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(AppRadius.xl),
-                ),
-                child: SizedBox(
-                  height: imageHeight,
-                  width: double.infinity,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      AppNetworkImage(url: listing.coverImage),
-                      // Bottom fade so the project logo reads on any photo
-                      const DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.center,
-                            end: Alignment.bottomCenter,
-                            colors: [Colors.transparent, Color(0x66000000)],
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        top: 10,
-                        left: 10,
-                        child: _Badge(
-                          text: badge ?? (listing.isRental ? 'For rent' : 'For sale'),
-                          highlight: badge != null,
-                        ),
-                      ),
-                      if (onSave != null)
-                        Positioned(
-                          top: 8,
-                          right: 8,
-                          child: _SaveButton(saved: isSaved, onTap: onSave!),
-                        ),
-                      if (listing.images.length > 1)
-                        Positioned(
-                          right: 10,
-                          bottom: 10,
-                          child: _PhotoCount(count: listing.images.length),
-                        ),
-                    ],
-                  ),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            AppNetworkImage(url: listing.coverImage),
+            // Light at the top for the chips, deep at the bottom for the text
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  stops: [0, 0.22, 0.45, 1],
+                  colors: [Color(0x40000000), Colors.transparent, Color(0x1A000000), Color(0xE6000000)],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Flexible(
+            ),
+            Positioned(
+              top: 12,
+              left: 12,
+              right: 60,
+              child: Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: [
+                  _GlassPill(
+                    text: badge ?? (listing.isRental ? 'For rent' : 'For sale'),
+                    gold: badge != null,
+                    icon: badge != null ? Iconsax.flash_1_copy : null,
+                  ),
+                  if (listing.images.length > 1)
+                    _GlassPill(text: '${listing.images.length}', icon: Iconsax.gallery_copy),
+                ],
+              ),
+            ),
+            if (onSave != null)
+              Positioned(top: 10, right: 10, child: _SaveButton(saved: isSaved, onTap: onSave!)),
+            Positioned(
+              left: 14,
+              right: 14,
+              bottom: 14,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          listing.priceLabel,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTextStyles.heading.copyWith(color: Colors.white, fontSize: 21, height: 1.2),
+                        ),
+                      ),
+                      if (listing.negotiable) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: AppColors.gold,
+                            borderRadius: BorderRadius.circular(AppRadius.pill),
+                          ),
                           child: Text(
-                            listing.priceLabel,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: AppTextStyles.title.copyWith(
-                              color: AppColors.primaryDark,
+                            'Negotiable',
+                            style: AppTextStyles.caption.copyWith(
+                              fontSize: 10,
                               fontWeight: FontWeight.w700,
+                              color: AppColors.textPrimary,
                             ),
                           ),
                         ),
-                        if (listing.negotiable) ...[
-                          const SizedBox(width: 8),
-                          Text(
-                            'Negotiable',
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    listing.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.body.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
+                  ),
+                  if (subtitle.isNotEmpty)
+                    Text(
+                      subtitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.caption.copyWith(color: Colors.white.withValues(alpha: 0.78)),
+                    ),
+                  if (listing.place.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(Iconsax.location_copy, size: 13, color: Colors.white.withValues(alpha: 0.78)),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            listing.place,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: AppTextStyles.caption.copyWith(
-                              color: AppColors.success,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 11,
+                              fontSize: 11.5,
+                              color: Colors.white.withValues(alpha: 0.78),
                             ),
                           ),
+                        ),
+                      ],
+                    ),
+                  ],
+                  if (facts.isNotEmpty) ...[
+                    const SizedBox(height: 10),
+                    // One line only, so fixed-height cards never overflow.
+                    Row(
+                      children: [
+                        for (final (icon, text) in facts.take(3)) ...[
+                          Flexible(child: _GlassPill(text: text, icon: icon, small: true)),
+                          const SizedBox(width: 6),
                         ],
                       ],
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      listing.title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.label.copyWith(fontWeight: FontWeight.w600),
-                    ),
-                    if (listing.projectName.isNotEmpty)
-                      Text(
-                        [listing.projectName, listing.builderName]
-                            .where((s) => s.isNotEmpty)
-                            .join(' · '),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTextStyles.caption,
-                      ),
-                    if (listing.place.isNotEmpty) ...[
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          const Icon(
-                            Iconsax.location_copy,
-                            size: 13,
-                            color: AppColors.textTertiary,
-                          ),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              listing.place,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: AppTextStyles.caption.copyWith(fontSize: 11.5),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                    if (facts.isNotEmpty) ...[
-                      const SizedBox(height: 10),
-                      // One line only, so cards in fixed-height carousels never overflow.
-                      Row(
-                        children: [
-                          for (final (icon, text) in facts.take(2)) ...[
-                            Flexible(child: _Fact(icon: icon, text: text)),
-                            const SizedBox(width: 6),
-                          ],
-                        ],
-                      ),
-                    ],
                   ],
-                ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
+
+    return height == null ? card : SizedBox(height: height, child: card);
   }
 }
 
-class _Badge extends StatelessWidget {
-  const _Badge({required this.text, required this.highlight});
+/// Translucent pill that reads on any photo.
+class _GlassPill extends StatelessWidget {
+  const _GlassPill({required this.text, this.icon, this.gold = false, this.small = false});
 
   final String text;
-  final bool highlight;
+  final IconData? icon;
+  final bool gold;
+  final bool small;
 
   @override
   Widget build(BuildContext context) {
+    final color = gold ? AppColors.textPrimary : Colors.white;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+      padding: EdgeInsets.symmetric(horizontal: small ? 8 : 10, vertical: small ? 4 : 5),
       decoration: BoxDecoration(
-        color: highlight ? AppColors.gold : Colors.white.withValues(alpha: 0.92),
+        color: gold ? AppColors.gold : Colors.white.withValues(alpha: 0.18),
         borderRadius: BorderRadius.circular(AppRadius.pill),
+        border: gold ? null : Border.all(color: Colors.white.withValues(alpha: 0.25)),
       ),
-      child: Text(
-        text,
-        style: AppTextStyles.caption.copyWith(
-          fontSize: 10.5,
-          fontWeight: FontWeight.w700,
-          color: highlight ? AppColors.textPrimary : AppColors.primaryDark,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: small ? 11 : 12, color: color),
+            const SizedBox(width: 4),
+          ],
+          Flexible(
+            child: Text(
+              text,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTextStyles.caption.copyWith(
+                fontSize: small ? 10.5 : 11,
+                fontWeight: FontWeight.w600,
+                color: color,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -231,84 +239,18 @@ class _SaveButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: saved ? AppColors.accentRose : Colors.white.withValues(alpha: 0.92),
-      shape: const CircleBorder(),
+      color: saved ? AppColors.accentRose : Colors.white.withValues(alpha: 0.18),
+      shape: CircleBorder(side: BorderSide(color: Colors.white.withValues(alpha: saved ? 0 : 0.3))),
       child: InkWell(
         customBorder: const CircleBorder(),
         onTap: () {
           AppHaptics.selection();
           onTap();
         },
-        child: SizedBox.square(
-          dimension: 34,
-          child: Icon(
-            Iconsax.heart_copy,
-            size: 17,
-            color: saved ? Colors.white : AppColors.textPrimary,
-          ),
+        child: const SizedBox.square(
+          dimension: 38,
+          child: Icon(Iconsax.heart_copy, size: 18, color: Colors.white),
         ),
-      ),
-    );
-  }
-}
-
-class _PhotoCount extends StatelessWidget {
-  const _PhotoCount({required this.count});
-
-  final int count;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.45),
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Iconsax.gallery_copy, size: 12, color: Colors.white),
-          const SizedBox(width: 4),
-          Text(
-            '$count',
-            style: AppTextStyles.caption.copyWith(color: Colors.white, fontSize: 11),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _Fact extends StatelessWidget {
-  const _Fact({required this.icon, required this.text});
-
-  final IconData icon;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceMuted,
-        borderRadius: BorderRadius.circular(AppRadius.sm),
-        border: Border.all(color: AppColors.border.withValues(alpha: 0.7)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 12, color: AppColors.textSecondary),
-          const SizedBox(width: 4),
-          Flexible(
-            child: Text(
-              text,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: AppTextStyles.caption.copyWith(fontSize: 11),
-            ),
-          ),
-        ],
       ),
     );
   }

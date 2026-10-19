@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
@@ -63,7 +64,7 @@ class WizardScaffold extends StatelessWidget {
                     onTap: onBack,
                     child: const SizedBox.square(
                       dimension: 54,
-                      child: Icon(Iconsax.arrow_left_copy, color: AppColors.textPrimary),
+                      child: Icon(CupertinoIcons.back, color: AppColors.textPrimary),
                     ),
                   ),
                 ),
