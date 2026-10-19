@@ -6,6 +6,7 @@ import 'config/app_config.dart';
 import 'controllers/auth_controller.dart';
 import 'router/app_router.dart';
 import 'theme/app_theme.dart';
+import 'widgets/common/connectivity_banner.dart';
 import 'widgets/common/keyboard_dismisser.dart';
 
 class App extends StatefulWidget {
@@ -26,8 +27,14 @@ class _AppState extends State<App> {
       title: AppConfig.appName,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
-      builder: (context, child) =>
-          KeyboardDismisser(child: child ?? const SizedBox.shrink()),
+      builder: (context, child) => KeyboardDismisser(
+        child: Stack(
+          children: [
+            child ?? const SizedBox.shrink(),
+            const ConnectivityBanner(),
+          ],
+        ),
+      ),
     );
   }
 }

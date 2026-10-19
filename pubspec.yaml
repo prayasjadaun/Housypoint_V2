@@ -19,6 +19,7 @@ dependencies:
 
   # Networking & storage
   dio: ^5.11.1
+  connectivity_plus: ^7.3.2
   http_parser: ^4.1.2
   flutter_secure_storage: ^11.2.0
   shared_preferences: ^2.5.6

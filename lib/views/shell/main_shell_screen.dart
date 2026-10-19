@@ -4,8 +4,12 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../../controllers/auth_controller.dart';
+import '../../controllers/home_controller.dart';
+import '../../controllers/listings_controller.dart';
+import '../../controllers/referral_controller.dart';
 import '../../controllers/saved_controller.dart';
 import '../../controllers/shell_controller.dart';
+import '../../core/network/connectivity_service.dart';
 import '../../router/app_routes.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
@@ -44,15 +48,52 @@ class _MainShellScreenState extends State<MainShellScreen> {
     ShellTab.menu: _Tab('Menu', Iconsax.category_copy),
   };
 
+  late final ConnectivityService _connectivity;
+  late bool _wasOnline;
+
   @override
   void initState() {
     super.initState();
+    _connectivity = context.read<ConnectivityService>()
+      ..addListener(_onConnectivityChanged);
+    _wasOnline = _connectivity.isOnline;
     // Saved hearts on every card need the wishlist from the start.
     final userId = context.read<AuthController>().user?.id;
     if (userId != null && userId.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback(
         (_) => context.read<SavedController>().load(userId),
       );
+    }
+  }
+
+  @override
+  void dispose() {
+    _connectivity.removeListener(_onConnectivityChanged);
+    super.dispose();
+  }
+
+  /// Back online → reload the visible tab so the user doesn't have to
+  /// pull-to-refresh after a dropped connection.
+  void _onConnectivityChanged() {
+    final online = _connectivity.isOnline;
+    final reconnected = online && !_wasOnline;
+    _wasOnline = online;
+    if (!reconnected) return;
+
+    switch (context.read<ShellController>().tab) {
+      case ShellTab.home:
+        context.read<HomeController>().refresh();
+      case ShellTab.listings:
+        final listings = context.read<ListingsController>();
+        if (listings.error != null) listings.load();
+      case ShellTab.saved:
+        context.read<SavedController>().refresh();
+      case ShellTab.refer:
+        final referral = context.read<ReferralController>();
+        if (referral.error != null) referral.load();
+      case ShellTab.profile:
+      case ShellTab.menu:
+        break;
     }
   }
 
