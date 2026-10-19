@@ -269,7 +269,7 @@ HomeLoanScreen (H1), bank comparison, loan calculator (EMI), know more (H4/H5), 
 3. **http/https mixed**: several calls use `http://housypoint.com`. Use https only.
 4. **Hardcoded API key** in `main.dart`. Move it to `--dart-define` or env.
 5. **Deep link bug**: `/listing` is pushed by name but never registered, so it falls back to Home. V2 should add a proper listing-detail route (go_router recommended).
-6. **Device token API path bug** (`/api/api/user/...`) and an empty device token. Rely on `/api/auth/fcm-token/`.
+6. **Device token API path bug** (`/api/api/user/...`) and an empty device token. Note `/api/auth/fcm-token/` (V1's FCM call) is a 404 too; V2 uses `/api/auth/update-fcm-token/`.
 7. **Inconsistent response shapes**: PDI bookings come back as a list or as `{bookings}`, dates as a list or `{dates}`, earnings history nested `results.results`. Write tolerant parsers or ask the backend to standardize.
 8. **`sendOTP` returns true on most errors** (anything except an invalid phone), so the user reaches the OTP screen even when sending failed.
 9. **`QuizApiService.getFullImageUrl`** returns only the CDN base and drops the path. Fix it in V2.

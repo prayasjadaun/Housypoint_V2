@@ -9,6 +9,7 @@ class AppPrefs {
   static late final SharedPreferences _prefs;
 
   static const _onboardingSeenKey = 'onboarding_seen';
+  static const _selectedCityKey = 'selected_city';
 
   static Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
@@ -18,4 +19,11 @@ class AppPrefs {
 
   static Future<void> setOnboardingSeen() =>
       _prefs.setBool(_onboardingSeenKey, true);
+
+  /// City picked on the home filter; null = all cities.
+  static String? get selectedCity => _prefs.getString(_selectedCityKey);
+
+  static Future<void> setSelectedCity(String? city) => city == null
+      ? _prefs.remove(_selectedCityKey)
+      : _prefs.setString(_selectedCityKey, city);
 }

@@ -9,7 +9,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../config/api_config.dart';
 
 /// FCM: permission, foreground display via local notifications, and keeping
-/// the backend's token in sync (`POST /api/auth/fcm-token/`, API ref A6).
+/// the backend's token in sync (`POST /api/auth/update-fcm-token/`, API ref A6).
 ///
 /// The backend stores classic FCM tokens, so this keeps `getToken()` /
 /// `onTokenRefresh` (deprecated in firebase_messaging 17 in favour of the

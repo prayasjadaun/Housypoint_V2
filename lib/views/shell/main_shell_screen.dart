@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../../controllers/auth_controller.dart';
+import '../../controllers/saved_controller.dart';
+import '../../controllers/shell_controller.dart';
+import '../../router/app_routes.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../widgets/common/app_logo.dart';
@@ -31,21 +35,29 @@ class MainShellScreen extends StatefulWidget {
 }
 
 class _MainShellScreenState extends State<MainShellScreen> {
-  int _index = 0;
+  static const _tabs = {
+    ShellTab.home: _Tab('Home', Iconsax.home_2_copy),
+    ShellTab.listings: _Tab('Listings', Iconsax.buildings_copy),
+    ShellTab.saved: _Tab('Saved', Iconsax.heart_copy),
+    ShellTab.refer: _Tab('Refer', Iconsax.gift_copy),
+    ShellTab.profile: _Tab('Profile', Iconsax.user_copy),
+    ShellTab.menu: _Tab('Menu', Iconsax.category_copy),
+  };
 
-  static const _tabs = [
-    _Tab('Home', Iconsax.home_2_copy),
-    _Tab('Listings', Iconsax.buildings_copy),
-    _Tab('Saved', Iconsax.heart_copy),
-    _Tab('Refer', Iconsax.gift_copy),
-    _Tab('Profile', Iconsax.user_copy),
-    _Tab('Menu', Iconsax.category_copy),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    // Saved hearts on every card need the wishlist from the start.
+    final userId = context.read<AuthController>().user?.id;
+    if (userId != null && userId.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => context.read<SavedController>().load(userId),
+      );
+    }
+  }
 
-  void _select(int index) => setState(() => _index = index);
-
-  GlassAppBar _appBar() {
-    if (_index == 0) {
+  GlassAppBar _appBar(ShellTab tab) {
+    if (tab == ShellTab.home) {
       final name = context.watch<AuthController>().user?.firstName ?? '';
       return GlassAppBar(
         titleSpacing: 16,
@@ -60,14 +72,14 @@ class _MainShellScreenState extends State<MainShellScreen> {
                   name.isEmpty ? 'Hello 👋' : 'Hi, $name 👋',
                   style: AppTextStyles.title.copyWith(fontSize: 16),
                 ),
-                Text('Find your next home', style: AppTextStyles.caption),
+                Text('Welcome to Housy Point', style: AppTextStyles.caption),
               ],
             ),
           ],
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () => context.push(AppRoutes.notifications),
             icon: const Icon(Iconsax.notification_copy, color: AppColors.textPrimary),
           ),
           const SizedBox(width: 6),
@@ -78,36 +90,48 @@ class _MainShellScreenState extends State<MainShellScreen> {
       automaticallyImplyLeading: false,
       centerTitle: false,
       titleSpacing: 20,
-      title: Text(_tabs[_index].label, style: AppTextStyles.heading.copyWith(fontSize: 20)),
+      title: Text(
+        _tabs[tab]!.label,
+        style: AppTextStyles.heading.copyWith(fontSize: 20),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final shell = context.watch<ShellController>();
+    final current = shell.tab;
+
+    final pages = {
+      ShellTab.home: const HomeScreen(),
+      ShellTab.listings: const ListingsScreen(),
+      ShellTab.saved: const SavedScreen(),
+      ShellTab.refer: const ReferralScreen(),
+      ShellTab.profile: const ProfileScreen(),
+      ShellTab.menu: const MenuScreen(),
+    };
+
     return Scaffold(
       extendBody: true,
       body: GlassAppBar.overlay(
-        appBar: _appBar(),
+        appBar: _appBar(current),
         body: IndexedStack(
-          index: _index,
+          index: current.index,
           children: [
-            const HomeScreen(),
-            const ListingsScreen(),
-            const SavedScreen(),
-            const ReferralScreen(),
-            const ProfileScreen(),
-            MenuScreen(onTabChangeRequest: _select),
+            for (final tab in ShellTab.values)
+              // Hidden tabs keep their state but pause their animations.
+              TickerMode(enabled: tab == current, child: pages[tab]!),
           ],
         ),
       ),
       bottomNavigationBar: GlassBottomNav(
         items: [
-          for (var i = 0; i < _tabs.length; i++)
+          for (final tab in ShellTab.values)
             GlassNavItem(
-              icon: _tabs[i].icon,
-              label: _tabs[i].label,
-              selected: i == _index,
-              onTap: () => _select(i),
+              icon: _tabs[tab]!.icon,
+              label: _tabs[tab]!.label,
+              selected: tab == current,
+              onTap: () => shell.go(tab),
             ),
         ],
       ),

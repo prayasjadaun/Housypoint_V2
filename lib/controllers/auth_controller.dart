@@ -97,6 +97,21 @@ class AuthController extends ChangeNotifier {
     status = AuthStatus.loggedIn;
   });
 
+  /// Edit profile (API ref A4). Phone can't change — it's the login.
+  Future<bool> updateProfile({
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String address,
+  }) => _run(() async {
+    user = await _repository.updateProfile(
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      address: address,
+    );
+  });
+
   Future<void> logout() async {
     await _notifications.deleteToken();
     await _repository.logout();

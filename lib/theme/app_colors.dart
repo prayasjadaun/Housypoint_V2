@@ -10,6 +10,7 @@ class AppColors {
   static const Color mainGreen = Color(0xFF00C566);
   static const Color primaryDark = Color(0xFF075C2E);
   static const Color primarySoft = Color(0xFFE8F6EE);
+  static const Color primaryLight = Color(0xFF34B36A);
   static const Color gold = Color(0xFFF2CF7E);
   static const Color goldDark = Color(0xFFB98A3E);
 

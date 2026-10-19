@@ -101,9 +101,12 @@ class AuthRepository {
         },
       );
       final data = response.data as Map<String, dynamic>;
-      final user = UserModel.fromJson(
-        (data['user'] ?? data) as Map<String, dynamic>,
-      );
+      final json = Map<String, dynamic>.from((data['user'] ?? data) as Map);
+      // Keep fields the update response may leave out.
+      final saved = await getSavedUser();
+      json['phone'] ??= saved?.phone;
+      json['id'] ??= saved?.id;
+      final user = UserModel.fromJson(json);
       await _storage.saveUserJson(jsonEncode(user.toJson()));
       return user;
     } on DioException catch (e) {

@@ -52,7 +52,7 @@ If an `image_url` is relative (`project_images/...`, `uploads/...`), prefix it w
 | A3 | GET | `/api/auth/profile/` | Bearer | auth provider (token check), `profile/settings.dart` |
 | A4 | PUT | `/api/auth/profile/` | Bearer | registration + settings |
 | A5 | POST | `/api/auth/logout/` | Bearer | auth provider |
-| A6 | POST | `/api/auth/fcm-token/` | Bearer | `services/fcm_service.dart` |
+| A6 | POST | `/api/auth/update-fcm-token/` | Bearer | V2 `firebase/notification_service.dart` (V1 called `/api/auth/fcm-token/`, which is a 404) |
 | A7 | POST | `/api/referrals/process-code` | Bearer | auth provider (after login) |
 | A8 | POST | `/api/user/device-token/update/` | Bearer | `quiz_api_service.dart` ⚠️ see note |
 | A9 | GET | `/api/version` | Bearer (optional) | `providers/app_update_service_provider.dart` |
@@ -96,7 +96,7 @@ If `requires_profile_update == true`, show the Registration screen. Otherwise go
 
 **A6. FCM token**: `{ "fcm_token": "..." }`
 **A7. Process referral**: `{ "referral_code": "ABC123" }` → `{ "success": true, "user": { "referral_code": "..." }, "message": "" }`
-**A8. Device token**: `{ "device_id", "device_token", "device_type": "android|ios" }`. ⚠️ In V1 the Dio base is `/api`, so the real URL becomes `/api/api/user/device-token/update/`, which is a bug. V1 also always sends `device_token` as `""`. In V2, A6 is enough.
+**A8. Device token**: `{ "device_id", "device_token", "device_type": "android|ios" }`. ⚠️ In V1 the Dio base is `/api`, so the real URL becomes `/api/api/user/device-token/update/`, which is a bug. V1 also always sends `device_token` as `""`. The real path `/api/user/device-token/update/` does exist on the server (POST). In V2, A6 is enough.
 **A9. Version**: `{ "success": true, "app_version": "1.0.5" }`. The app compares it with the local version and shows the update dialog. Skip lasts 24h (prefs `skipped_version`, `skip_until_time`).
 
 **Web links (open in browser)**
@@ -443,7 +443,7 @@ class Endpoints {
   static const login = 'auth/login/';
   static const profile = 'auth/profile/';
   static const logout = 'auth/logout/';
-  static const fcmToken = 'auth/fcm-token/';
+  static const fcmToken = 'auth/update-fcm-token/';
   static const processReferral = 'referrals/process-code';
   static const version = 'version';
   // content
@@ -509,3 +509,19 @@ class Endpoints {
   static const referredUsers = 'referrals/referred-users/detailed';
 }
 ```
+
+---
+
+## 14. Notes verified while building V2 (Oct 2026)
+
+- **Trailing slash matters.** `listings/properties` (no slash) answers **301**; always call `listings/properties/` and `listings/rentals/`.
+- **Listing detail exists:** `GET listings/properties/{id}/` and `GET listings/rentals/{id}/` return a single listing (same shape as list items).
+- **`bhk` takes comma-separated values.** The counts endpoint groups 3 + 3.5 under "three", so query `bhk=3,3.5` to match it (V2 maps one→`1,1.5` … five_plus→`5,5.5,6,6.5,7`).
+- **Cities:** Gurugram is named **"Gurgaon"**; there is a placeholder row **"Default City"** to hide.
+- **Builder detail (`builders/{id}/`) returns `id` as a string** and adds `headquaters_address`.
+- **Search** is `GET search/?q=…` and returns `{Properties, Projects, Builders}` (capitalised keys).
+- **FCM token:** `auth/fcm-token/` is a 404; the live endpoints are `auth/update-fcm-token/` (V2 uses this) and `user/device-token/update/`.
+- **No auth needed:** cities, builders, projects, listings, counts, distress deals, new launches, search, PDI plans/dates/slots, consultation options, loan banks.
+- **Auth needed (403/401 without token):** `wizard/*`, `upload-images/`, wishlist, interests, referrals, PDI booking/bookings, consultations list/book, `user/listings/`.
+- **PDI plans today:** Pro ₹5,999 (old ₹19,999) and Advanced ₹9,999 (old ₹24,999); `plan_type` is the lower-cased `name`.
+- **Loan data is test data** (one bank, placeholder text) — fine for UI, needs real content from the backend team.

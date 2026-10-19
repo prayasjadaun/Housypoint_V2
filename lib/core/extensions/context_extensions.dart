@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../widgets/common/app_snackbar.dart';
 
 /// Shortcuts on BuildContext so screens don't repeat

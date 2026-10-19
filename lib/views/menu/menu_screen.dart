@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:provider/provider.dart';
 
-import '../../controllers/auth_controller.dart';
-import '../../core/extensions/context_extensions.dart';
+import '../../controllers/shell_controller.dart';
+import '../../router/app_routes.dart';
 import '../../theme/app_colors.dart';
-import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_text_styles.dart';
 import '../../widgets/common/glass_bottom_nav.dart';
@@ -13,86 +13,48 @@ import 'widgets/menu_card.dart';
 
 /// 6th bottom-nav tab — every feature that doesn't have its own tab.
 class MenuScreen extends StatelessWidget {
-  const MenuScreen({super.key, required this.onTabChangeRequest});
-
-  /// Switches the shell's bottom-nav tab (e.g. Refer, Profile).
-  final ValueChanged<int> onTabChangeRequest;
+  const MenuScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final padding = MediaQuery.paddingOf(context);
-    void comingSoon() => context.showSnackBar('Coming soon');
+    void go(String route) => context.push(route);
+    void tab(ShellTab t) => context.read<ShellController>().go(t);
 
-    final cards = [
-      MenuCard(
-        title: 'Home\nInspection',
-        subtitle: 'Book a PDI for your flat',
-        icon: Iconsax.shield_tick_copy,
-        color: AppColors.primary,
-        onTap: comingSoon,
+    final sections = <(String, List<MenuCard>)>[
+      (
+        'Services',
+        [
+          MenuCard(title: 'Home\nInspection', subtitle: 'Book a PDI for your flat', icon: Iconsax.shield_tick_copy, color: AppColors.primary, onTap: () => go(AppRoutes.inspection)),
+          MenuCard(title: 'Expert\nConsultation', subtitle: 'Legal, tax & property advice', icon: Iconsax.messages_2_copy, color: AppColors.accentAmber, onTap: () => go(AppRoutes.consultation)),
+          MenuCard(title: 'Home Loan', subtitle: 'EMI calculator & banks', icon: Iconsax.money_recive_copy, color: AppColors.accentEmerald, onTap: () => go(AppRoutes.homeLoan)),
+          MenuCard(title: 'Compare\nProjects', subtitle: 'Side-by-side comparison', icon: Iconsax.chart_2_copy, color: AppColors.accentIndigo, onTap: () => go(AppRoutes.compare)),
+        ],
       ),
-      MenuCard(
-        title: 'Expert\nConsultation',
-        subtitle: 'Talk to a property expert',
-        icon: Iconsax.messages_2_copy,
-        color: AppColors.accentAmber,
-        onTap: comingSoon,
+      (
+        'Explore',
+        [
+          MenuCard(title: 'Builders', subtitle: 'Top developers & projects', icon: Iconsax.buildings_2_copy, color: AppColors.accentSky, onTap: () => go(AppRoutes.builders)),
+          MenuCard(title: 'Search', subtitle: 'Projects, builders, areas', icon: Iconsax.search_normal_1_copy, color: AppColors.accentViolet, onTap: () => go(AppRoutes.search)),
+        ],
       ),
-      MenuCard(
-        title: 'Compare\nProjects',
-        subtitle: 'Side-by-side comparison',
-        icon: Iconsax.chart_2_copy,
-        color: AppColors.accentIndigo,
-        onTap: comingSoon,
+      (
+        'Post',
+        [
+          MenuCard(title: 'Sell\nProperty', subtitle: 'Zero brokerage', icon: Iconsax.key_copy, color: AppColors.primary, onTap: () => go(AppRoutes.sell)),
+          MenuCard(title: 'Rent Out\nProperty', subtitle: 'Find good tenants', icon: Iconsax.home_hashtag_copy, color: AppColors.accentSky, onTap: () => go(AppRoutes.rentOut)),
+          MenuCard(title: 'Buy a\nProperty', subtitle: 'Share your requirement', icon: Iconsax.search_status_copy, color: AppColors.goldDark, onTap: () => go(AppRoutes.buy)),
+          MenuCard(title: 'My\nListings', subtitle: 'Properties you posted', icon: Iconsax.document_text_copy, color: AppColors.accentViolet, onTap: () => go(AppRoutes.myListings)),
+        ],
       ),
-      MenuCard(
-        title: 'Builders',
-        subtitle: 'Top developers & projects',
-        icon: Iconsax.buildings_2_copy,
-        color: AppColors.accentSky,
-        onTap: comingSoon,
-      ),
-      MenuCard(
-        title: 'Home Loan',
-        subtitle: 'Rates & EMI calculator',
-        icon: Iconsax.money_recive_copy,
-        color: AppColors.accentEmerald,
-        onTap: comingSoon,
-      ),
-      MenuCard(
-        title: 'My\nListings',
-        subtitle: 'Properties you posted',
-        icon: Iconsax.document_text_copy,
-        color: AppColors.accentViolet,
-        onTap: comingSoon,
-      ),
-      MenuCard(
-        title: 'My\nBookings',
-        subtitle: 'Inspections & consultations',
-        icon: Iconsax.calendar_tick_copy,
-        color: AppColors.accentBlue,
-        onTap: comingSoon,
-      ),
-      MenuCard(
-        title: 'Refer &\nEarn',
-        subtitle: 'Invite friends, earn rewards',
-        icon: Iconsax.gift_copy,
-        color: AppColors.accentRose,
-        onTap: () => onTabChangeRequest(3),
-      ),
-      MenuCard(
-        title: 'Support',
-        subtitle: 'Call, WhatsApp or email us',
-        icon: Iconsax.headphone_copy,
-        color: AppColors.goldDark,
-        onTap: comingSoon,
-      ),
-      MenuCard(
-        title: 'Profile',
-        subtitle: 'Account & settings',
-        icon: Iconsax.user_octagon_copy,
-        color: AppColors.accentEmerald,
-        onTap: () => onTabChangeRequest(4),
+      (
+        'My account',
+        [
+          MenuCard(title: 'My\nInspections', subtitle: 'Bookings & status', icon: Iconsax.calendar_tick_copy, color: AppColors.accentBlue, onTap: () => go(AppRoutes.myInspections)),
+          MenuCard(title: 'My\nConsultations', subtitle: 'Expert calls you booked', icon: Iconsax.message_text_copy, color: AppColors.accentAmber, onTap: () => go(AppRoutes.myConsultations)),
+          MenuCard(title: 'Refer &\nEarn', subtitle: 'Invite friends, earn rewards', icon: Iconsax.gift_copy, color: AppColors.accentRose, onTap: () => tab(ShellTab.refer)),
+          MenuCard(title: 'Support', subtitle: 'Call, WhatsApp or email us', icon: Iconsax.headphone_copy, color: AppColors.goldDark, onTap: () => go(AppRoutes.support)),
+        ],
       ),
     ];
 
@@ -104,74 +66,31 @@ class MenuScreen extends StatelessWidget {
         GlassBottomNav.totalHeight(context) + AppSpacing.lg,
       ),
       children: [
-        GridView.count(
-          crossAxisCount: 2,
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
-          childAspectRatio: 1.2,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          children: cards,
-        ),
-        const SizedBox(height: AppSpacing.md),
-        const _LogoutTile(),
-      ],
-    );
-  }
-}
-
-class _LogoutTile extends StatelessWidget {
-  const _LogoutTile();
-
-  Future<void> _confirm(BuildContext context) async {
-    final yes = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Log out?'),
-        content: const Text('You will need your mobile number and an OTP to log back in.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Log out'),
-          ),
-        ],
-      ),
-    );
-    if (yes == true && context.mounted) {
-      await context.read<AuthController>().logout();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: AppColors.surface,
-      borderRadius: BorderRadius.circular(AppRadius.lg),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        onTap: () => _confirm(context),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: Row(
-            children: [
-              const Icon(Iconsax.logout_copy, color: AppColors.error, size: 22),
-              const SizedBox(width: 12),
-              Text(
-                'Log out',
-                style: AppTextStyles.body.copyWith(
-                  color: AppColors.error,
-                  fontWeight: FontWeight.w600,
-                ),
+        for (final (title, cards) in sections) ...[
+          Padding(
+            padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
+            child: Text(
+              title.toUpperCase(),
+              style: AppTextStyles.caption.copyWith(
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.8,
+                color: AppColors.textTertiary,
               ),
-            ],
+            ),
           ),
-        ),
-      ),
+          GridView.count(
+            crossAxisCount: 2,
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
+            childAspectRatio: 1.25,
+            shrinkWrap: true,
+            padding: EdgeInsets.zero,
+            physics: const NeverScrollableScrollPhysics(),
+            children: cards,
+          ),
+          const SizedBox(height: AppSpacing.lg),
+        ],
+      ],
     );
   }
 }
