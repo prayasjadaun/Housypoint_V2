@@ -46,6 +46,7 @@ class ListingRepository {
     String? commercialSubtype,
     int? builderId,
     int? projectId,
+    String? search,
     int page = 1,
     int pageSize = 20,
   }) async {
@@ -59,6 +60,7 @@ class ListingRepository {
           'commercial_subtype': ?commercialSubtype,
           'builder': ?builderId,
           'project': ?projectId,
+          'search': ?search,
           'page': page,
           'page_size': pageSize,
         },

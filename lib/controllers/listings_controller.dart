@@ -21,6 +21,12 @@ class ListingsController extends ChangeNotifier {
   String? city;
   BuilderModel? builder;
 
+  /// Free-text search (project, builder, location…) sent as `search`.
+  String query = '';
+
+  /// Whether the app bar shows the search field instead of the title.
+  bool searchOpen = false;
+
   List<ListingModel> items = [];
   int total = 0;
   bool isLoading = false;
@@ -64,6 +70,32 @@ class ListingsController extends ChangeNotifier {
     this.sizeKey = sizeKey;
     this.city = city;
     this.builder = builder;
+    query = '';
+    searchOpen = false;
+    load();
+  }
+
+  void openSearch() {
+    if (searchOpen) return;
+    searchOpen = true;
+    notifyListeners();
+  }
+
+  /// Hides the field and drops the search, reloading if one was applied.
+  void closeSearch() {
+    searchOpen = false;
+    if (query.isEmpty) {
+      notifyListeners();
+      return;
+    }
+    query = '';
+    load();
+  }
+
+  void setQuery(String value) {
+    final q = value.trim();
+    if (q == query) return;
+    query = q;
     load();
   }
 
@@ -128,6 +160,7 @@ class ListingsController extends ChangeNotifier {
         bhk: residential && sizeKey != null ? _bhkQuery[sizeKey] : null,
         commercialSubtype: !residential ? sizeKey : null,
         builderId: builder?.id,
+        search: query.isEmpty ? null : query,
         page: _page + 1,
       );
       // A newer filter started meanwhile — drop this stale page.

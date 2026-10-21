@@ -18,6 +18,7 @@ import '../../widgets/common/glass_app_bar.dart';
 import 'home_screen.dart';
 import 'widgets/shell_bottom_nav.dart';
 import '../listings/listings_screen.dart';
+import '../listings/widgets/listings_search_field.dart';
 import '../menu/menu_screen.dart';
 import '../referral/referral_screen.dart';
 import '../saved/saved_screen.dart';
@@ -110,6 +111,16 @@ class _MainShellScreenState extends State<MainShellScreen> {
         ],
       );
     }
+    final listings = tab == ShellTab.listings
+        ? context.watch<ListingsController>()
+        : null;
+    if (listings != null && listings.searchOpen) {
+      return const GlassAppBar(
+        automaticallyImplyLeading: false,
+        titleSpacing: 16,
+        title: ListingsSearchField(),
+      );
+    }
     return GlassAppBar(
       automaticallyImplyLeading: false,
       centerTitle: false,
@@ -118,6 +129,18 @@ class _MainShellScreenState extends State<MainShellScreen> {
         ShellBottomNav.tabs[tab]!.label,
         style: AppTextStyles.heading.copyWith(fontSize: 20),
       ),
+      actions: [
+        if (listings != null) ...[
+          IconButton(
+            onPressed: listings.openSearch,
+            icon: const Icon(
+              Iconsax.search_normal_1_copy,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(width: 6),
+        ],
+      ],
     );
   }
 
