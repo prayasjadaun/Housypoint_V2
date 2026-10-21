@@ -29,15 +29,15 @@ class ReferBanner extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   'Invite friends,\nearn on every deal',
-                  style: AppTextStyles.title.copyWith(height: 1.3),
+                  style: AppTextStyles.title.copyWith(color: AppColors.ink, height: 1.3),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'Rewards when they buy, sell or book an inspection.',
-                  style: AppTextStyles.caption.copyWith(color: AppColors.textPrimary.withValues(alpha: 0.65)),
+                  style: AppTextStyles.caption.copyWith(color: AppColors.ink.withValues(alpha: 0.65)),
                 ),
                 const SizedBox(height: 12),
-                _CtaPill(label: 'Start earning', color: AppColors.textPrimary),
+                _CtaPill(label: 'Start earning', color: AppColors.ink),
               ],
             ),
           ),
@@ -97,7 +97,7 @@ class InspectionBanner extends StatelessWidget {
                     ),
                   ),
                 const SizedBox(height: 8),
-                _CtaPill(label: 'Book inspection', color: AppColors.gold, textColor: AppColors.textPrimary),
+                _CtaPill(label: 'Book inspection', color: AppColors.gold, textColor: AppColors.ink),
               ],
             ),
           ),
@@ -123,15 +123,20 @@ class CompareBanner extends StatelessWidget {
 
   final VoidCallback onTap;
 
+  /// Indigo that stays readable on the dark card.
+  static Color get accent => AppColors.isDark ? const Color(0xFFA5B4FC) : AppColors.accentIndigo;
+
   @override
   Widget build(BuildContext context) {
     return _BannerShell(
       onTap: onTap,
-      gradient: const [Color(0xFFEEF2FF), Color(0xFFE0E7FF)],
+      gradient: AppColors.isDark
+          ? const [Color(0xFF1E2142), Color(0xFF292E5E)]
+          : const [Color(0xFFEEF2FF), Color(0xFFE0E7FF)],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _Eyebrow(text: 'PROJECT COMPARISON', color: AppColors.accentIndigo),
+          _Eyebrow(text: 'PROJECT COMPARISON', color: accent),
           const SizedBox(height: 6),
           Text('Compare & pick the right home', style: AppTextStyles.title),
           Text(
@@ -175,12 +180,13 @@ class _CompareSlot extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: AppColors.isDark ? Colors.white.withValues(alpha: 0.07) : AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.md),
+        border: AppColors.isDark ? Border.all(color: Colors.white.withValues(alpha: 0.1)) : null,
       ),
       child: Row(
         children: [
-          const Icon(Iconsax.buildings_2_copy, size: 18, color: AppColors.accentIndigo),
+          Icon(Iconsax.buildings_2_copy, size: 18, color: CompareBanner.accent),
           const SizedBox(width: 8),
           Expanded(
             child: Text(label, style: AppTextStyles.label.copyWith(fontWeight: FontWeight.w600)),

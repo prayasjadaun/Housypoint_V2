@@ -621,6 +621,7 @@ class _Grid extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       mainAxisSpacing: 8,
+      padding: const EdgeInsets.only(top: 6),
       crossAxisSpacing: 8,
       children: children,
     );

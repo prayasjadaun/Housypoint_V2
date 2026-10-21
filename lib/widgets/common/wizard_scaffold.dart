@@ -68,10 +68,12 @@ class WizardScaffold extends StatelessWidget {
                   color: AppColors.surfaceMuted,
                   borderRadius: BorderRadius.vertical(
                     top: Radius.circular(AppRadius.xl),
+                    bottom: Radius.circular(AppRadius.xl),
                   ),
                   child: InkWell(
                     borderRadius: BorderRadius.vertical(
                       top: Radius.circular(AppRadius.xl),
+                      bottom: Radius.circular(AppRadius.xl),
                     ),
                     onTap: onBack,
                     child: SizedBox.square(

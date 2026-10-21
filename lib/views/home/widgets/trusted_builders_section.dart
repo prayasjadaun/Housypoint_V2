@@ -93,7 +93,7 @@ class _MarqueeState extends State<_Marquee> with SingleTickerProviderStateMixin 
                         height: _tile,
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: AppColors.surface,
+                          color: Colors.white,
                           borderRadius: BorderRadius.circular(AppRadius.lg),
                           border: Border.all(color: AppColors.border.withValues(alpha: 0.7)),
                         ),

@@ -366,7 +366,7 @@ class _MiniStat extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: AppTextStyles.label.copyWith(
             fontWeight: FontWeight.w700,
-            color: AppColors.primaryDark,
+            color: AppColors.primaryText,
           ),
         ),
       ],
@@ -1099,7 +1099,7 @@ class _MapActions extends StatelessWidget {
           child: OutlinedButton.icon(
             onPressed: () => Launcher.url(project.mapsSearchUrl),
             style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.primaryDark,
+              foregroundColor: AppColors.primaryText,
               backgroundColor: AppColors.surface,
               minimumSize: const Size.fromHeight(48),
               side: BorderSide(color: AppColors.border),

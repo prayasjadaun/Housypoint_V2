@@ -105,7 +105,7 @@ class _PlansStrip extends StatelessWidget {
                   Text(
                     'INSPECTION PLANS',
                     style: AppTextStyles.caption.copyWith(
-                      color: AppColors.primaryDark,
+                      color: AppColors.primaryText,
                       fontSize: 10.5,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 1.4,
@@ -295,7 +295,7 @@ class _PlanTile extends StatelessWidget {
                   _rupees(plan.price),
                   style: AppTextStyles.title.copyWith(
                     fontSize: 20,
-                    color: popular ? AppColors.primaryDark : AppColors.textPrimary,
+                    color: popular ? AppColors.primaryText : AppColors.textPrimary,
                   ),
                 ),
               ),
@@ -401,7 +401,7 @@ class _PlansSheetState extends State<_PlansSheet> {
                     children: [
                       Text(
                         _rupees(_selected.total),
-                        style: AppTextStyles.title.copyWith(color: AppColors.primaryDark),
+                        style: AppTextStyles.title.copyWith(color: AppColors.primaryText),
                       ),
                       Text('incl. GST', style: AppTextStyles.caption.copyWith(fontSize: 11)),
                     ],

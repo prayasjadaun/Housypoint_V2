@@ -111,7 +111,7 @@ class _OtpInputState extends State<OtpInput> {
       ),
       child: Text(
         digit,
-        style: AppTextStyles.heading.copyWith(color: AppColors.primaryDark),
+        style: AppTextStyles.heading.copyWith(color: AppColors.primaryText),
       ),
     );
   }

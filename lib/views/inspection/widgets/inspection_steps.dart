@@ -395,7 +395,7 @@ class PlanCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text(_rupees(plan.price), style: AppTextStyles.display.copyWith(fontSize: 24, color: AppColors.primaryDark)),
+                Text(_rupees(plan.price), style: AppTextStyles.display.copyWith(fontSize: 24, color: AppColors.primaryText)),
                 const SizedBox(width: 8),
                 if (plan.oldPrice > plan.price)
                   Padding(
@@ -670,7 +670,7 @@ class _PriceRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final style = bold
-        ? AppTextStyles.title.copyWith(fontSize: 16, color: AppColors.primaryDark)
+        ? AppTextStyles.title.copyWith(fontSize: 16, color: AppColors.primaryText)
         : AppTextStyles.body.copyWith(color: color ?? AppColors.textSecondary);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 3),

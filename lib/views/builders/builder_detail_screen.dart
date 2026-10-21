@@ -90,7 +90,7 @@ class _BuilderDetailScreenState extends State<BuilderDetailScreen> {
                     height: 72,
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppColors.surfaceMuted,
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(AppRadius.lg),
                       border: Border.all(color: AppColors.border),
                     ),

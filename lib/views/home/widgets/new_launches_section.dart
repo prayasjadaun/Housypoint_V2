@@ -42,7 +42,11 @@ class NewLaunchesSection extends StatelessWidget {
             itemCount: projects?.length ?? 2,
             separatorBuilder: (_, _) => const SizedBox(width: 12),
             itemBuilder: (context, i) => projects == null
-                ? const SkeletonBox(width: 230, height: 270, radius: AppRadius.xl)
+                ? const SkeletonBox(
+                    width: 230,
+                    height: 270,
+                    radius: AppRadius.xl,
+                  )
                 : LaunchCard(project: projects[i]),
           ),
         ),
@@ -59,7 +63,10 @@ class LaunchCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final place = [project.builderName, project.city].where((s) => s.isNotEmpty).join(' · ');
+    final place = [
+      project.builderName,
+      project.city,
+    ].where((s) => s.isNotEmpty).join(' · ');
 
     return SizedBox(
       width: 230,
@@ -82,7 +89,12 @@ class LaunchCard extends StatelessWidget {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     stops: [0, 0.25, 0.5, 1],
-                    colors: [Color(0x40000000), Colors.transparent, Color(0x1A000000), Color(0xE6000000)],
+                    colors: [
+                      Color(0x40000000),
+                      Colors.transparent,
+                      Color(0x1A000000),
+                      Color(0xE6000000),
+                    ],
                   ),
                 ),
               ),
@@ -90,7 +102,10 @@ class LaunchCard extends StatelessWidget {
                 top: 12,
                 left: 12,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.gold,
                     borderRadius: BorderRadius.circular(AppRadius.pill),
@@ -98,7 +113,11 @@ class LaunchCard extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Iconsax.flash_1_copy, size: 12, color: AppColors.ink),
+                      Icon(
+                        Iconsax.flash_1_copy,
+                        size: 12,
+                        color: AppColors.ink,
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         'New launch',
@@ -121,10 +140,14 @@ class LaunchCard extends StatelessWidget {
                     height: 42,
                     padding: const EdgeInsets.all(5),
                     decoration: BoxDecoration(
-                      color: AppColors.surface,
+                      // Always white — builder logos are made for a light background.
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(AppRadius.md),
                     ),
-                    child: AppNetworkImage(url: project.builderLogo, fit: BoxFit.contain),
+                    child: AppNetworkImage(
+                      url: project.builderLogo,
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
               Positioned(
@@ -139,21 +162,31 @@ class LaunchCard extends StatelessWidget {
                       project.name,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.title.copyWith(color: Colors.white, height: 1.25),
+                      style: AppTextStyles.title.copyWith(
+                        color: Colors.white,
+                        height: 1.25,
+                      ),
                     ),
                     if (place.isNotEmpty)
                       Text(
                         place,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: AppTextStyles.caption.copyWith(color: Colors.white.withValues(alpha: 0.78)),
+                        style: AppTextStyles.caption.copyWith(
+                          color: Colors.white.withValues(alpha: 0.78),
+                        ),
                       ),
                     const SizedBox(height: 8),
                     Row(
                       children: [
                         Text(
-                          project.priceRange.isEmpty ? 'Price on request' : '₹${project.priceRange}',
-                          style: AppTextStyles.body.copyWith(color: AppColors.gold, fontWeight: FontWeight.w700),
+                          project.priceRange.isEmpty
+                              ? 'Price on request'
+                              : '₹${project.priceRange}',
+                          style: AppTextStyles.body.copyWith(
+                            color: AppColors.gold,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                         const Spacer(),
                         Container(
@@ -162,9 +195,15 @@ class LaunchCard extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: Colors.white.withValues(alpha: 0.18),
                             shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.3),
+                            ),
                           ),
-                          child: const Icon(Iconsax.arrow_right_3_copy, size: 15, color: Colors.white),
+                          child: const Icon(
+                            Iconsax.arrow_right_3_copy,
+                            size: 15,
+                            color: Colors.white,
+                          ),
                         ),
                       ],
                     ),

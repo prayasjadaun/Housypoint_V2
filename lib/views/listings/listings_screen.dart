@@ -20,6 +20,7 @@ import '../../widgets/common/empty_state.dart';
 import '../../widgets/common/glass_bottom_nav.dart';
 import '../../widgets/common/segmented_toggle.dart';
 import '../../widgets/common/skeleton_box.dart';
+import '../../widgets/common/sliver_pinned_box.dart';
 import '../../widgets/pickers/location_pickers.dart';
 import '../home/widgets/size_options.dart';
 import 'widgets/property_card.dart';
@@ -38,9 +39,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ListingsController>().ensureStarted(
-        context.read<HomeController>().selectedCity,
-      );
+      context.read<ListingsController>().ensureStarted(context.read<HomeController>().selectedCity);
     });
   }
 
@@ -78,6 +77,11 @@ class _ListingsScreenState extends State<ListingsScreen> {
               sliver: SliverToBoxAdapter(
                 child: _Filters(controller: c, onPickCity: () => _pickCity(c)),
               ),
+            ),
+            // Size chips stick under the app bar; the toggles above scroll away.
+            SliverPinnedBox(
+              pinTop: top,
+              child: _SizeChips(controller: c),
             ),
             if (c.isLoading)
               SliverList.separated(
@@ -138,10 +142,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
                           context.showSnackBar(error, isError: true);
                         }
                       },
-                      onTap: () => context.push(
-                        AppRoutes.listingPath(l.id, rental: l.isRental),
-                        extra: l,
-                      ),
+                      onTap: () => context.push(AppRoutes.listingPath(l.id, rental: l.isRental), extra: l),
                     );
                   },
                 ),
@@ -149,9 +150,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
             SliverToBoxAdapter(
               child: Padding(
                 padding: EdgeInsets.only(top: AppSpacing.md, bottom: bottom + AppSpacing.md),
-                child: c.isLoadingMore
-                    ? const Center(child: AppSpinner(size: 24))
-                    : const SizedBox.shrink(),
+                child: c.isLoadingMore ? const Center(child: AppSpinner(size: 24)) : const SizedBox.shrink(),
               ),
             ),
           ],
@@ -170,7 +169,6 @@ class _Filters extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = controller;
-    final sizes = c.category == PropertyCategory.residential ? residentialTiles : commercialTiles;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -199,10 +197,7 @@ class _Filters extends StatelessWidget {
               ),
             ),
             if (!c.isLoading)
-              Text(
-                '${c.total} ${c.total == 1 ? 'property' : 'properties'}',
-                style: AppTextStyles.caption,
-              ),
+              Text('${c.total} ${c.total == 1 ? 'property' : 'properties'}', style: AppTextStyles.caption),
           ],
         ),
         const SizedBox(height: 12),
@@ -219,37 +214,46 @@ class _Filters extends StatelessWidget {
           selectedIndex: c.category.index,
           onChanged: (i) => c.setCategory(PropertyCategory.values[i]),
         ),
-        const SizedBox(height: 12),
-        SizedBox(
-          height: 38,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            clipBehavior: Clip.none,
-            children: [
-              _SizeChip(label: 'All', selected: c.sizeKey == null, onTap: () => c.setSize(null)),
-              for (final s in sizes)
-                _SizeChip(
-                  label: s.label,
-                  icon: s.icon,
-                  selected: c.sizeKey == s.key,
-                  onTap: () => c.setSize(s.key),
-                ),
-            ],
-          ),
-        ),
-        const SizedBox(height: AppSpacing.md),
+        const SizedBox(height: 4),
       ],
     );
   }
 }
 
+class _SizeChips extends StatelessWidget {
+  const _SizeChips({required this.controller});
+
+  final ListingsController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = controller;
+    final sizes = c.category == PropertyCategory.residential ? residentialTiles : commercialTiles;
+
+    // Opaque page-colored strip so cards scroll underneath when pinned.
+    return ColoredBox(
+      color: AppColors.background,
+      child: Padding(
+        padding: const EdgeInsets.only(top: 8, bottom: 12),
+        child: SizedBox(
+          height: 38,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+            children: [
+              _SizeChip(label: 'All', selected: c.sizeKey == null, onTap: () => c.setSize(null)),
+              for (final s in sizes)
+                _SizeChip(label: s.label, icon: s.icon, selected: c.sizeKey == s.key, onTap: () => c.setSize(s.key)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _SizeChip extends StatelessWidget {
-  const _SizeChip({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-    this.icon,
-  });
+  const _SizeChip({required this.label, required this.selected, required this.onTap, this.icon});
 
   final String label;
   final IconData? icon;

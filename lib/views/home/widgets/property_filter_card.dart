@@ -29,7 +29,11 @@ class PropertyFilterCard extends StatelessWidget {
     ('Commercial rent', DealType.rent, PropertyCategory.commercial),
   ];
 
-  void _openListings(BuildContext context, HomeController home, String sizeKey) {
+  void _openListings(
+    BuildContext context,
+    HomeController home,
+    String sizeKey,
+  ) {
     context.read<ListingsController>().applyFilter(
       deal: home.deal,
       category: home.category,
@@ -44,7 +48,11 @@ class PropertyFilterCard extends StatelessWidget {
     AppHaptics.selection();
     await home.ensureCities();
     if (!context.mounted) return;
-    final result = await showCityPicker(context, cities: home.cities, selected: home.selectedCity);
+    final result = await showCityPicker(
+      context,
+      cities: home.cities,
+      selected: home.selectedCity,
+    );
     if (result.picked) home.selectCity(result.value);
   }
 
@@ -111,7 +119,12 @@ class PropertyFilterCard extends StatelessWidget {
             height: 62,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.fromLTRB(AppSpacing.md, 14, AppSpacing.md, 10),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.md,
+                14,
+                AppSpacing.md,
+                10,
+              ),
               itemCount: _tabs.length,
               separatorBuilder: (_, _) => const SizedBox(width: 8),
               itemBuilder: (_, i) {
@@ -128,7 +141,12 @@ class PropertyFilterCard extends StatelessWidget {
               },
             ),
           ),
-          Divider(height: 1, indent: AppSpacing.md, endIndent: AppSpacing.md, color: AppColors.border),
+          Divider(
+            height: 1,
+            indent: AppSpacing.md,
+            endIndent: AppSpacing.md,
+            color: AppColors.border,
+          ),
           AnimatedSize(
             duration: const Duration(milliseconds: 250),
             curve: Curves.easeOutCubic,
@@ -144,9 +162,18 @@ class PropertyFilterCard extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Iconsax.finger_cricle_copy, size: 16, color: AppColors.primary),
+                const Icon(
+                  Iconsax.finger_cricle_copy,
+                  size: 16,
+                  color: AppColors.primary,
+                ),
                 const SizedBox(width: 6),
-                Text('Tap a count to see listings', style: AppTextStyles.caption.copyWith(color: AppColors.primary)),
+                Text(
+                  'Tap a count to see listings',
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.primary,
+                  ),
+                ),
               ],
             ),
           ),
@@ -166,7 +193,9 @@ class _OwnerStrip extends StatelessWidget {
       color: Colors.transparent,
       child: Ink(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(colors: [AppColors.primaryDark, AppColors.primary]),
+          gradient: LinearGradient(
+            colors: [AppColors.primaryDark, AppColors.primary],
+          ),
         ),
         child: InkWell(
           onTap: () {
@@ -174,7 +203,10 @@ class _OwnerStrip extends StatelessWidget {
             context.push(AppRoutes.sell);
           },
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 13, horizontal: AppSpacing.md),
+            padding: const EdgeInsets.symmetric(
+              vertical: 13,
+              horizontal: AppSpacing.md,
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -202,7 +234,11 @@ class _OwnerStrip extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 4),
-                const Icon(Iconsax.arrow_right_3_copy, size: 16, color: AppColors.gold),
+                const Icon(
+                  Iconsax.arrow_right_3_copy,
+                  size: 16,
+                  color: AppColors.gold,
+                ),
               ],
             ),
           ),
@@ -214,7 +250,12 @@ class _OwnerStrip extends StatelessWidget {
 
 /// White dropdown card (city / builder) on the grey band.
 class _PickerCard extends StatelessWidget {
-  const _PickerCard({required this.icon, required this.caption, required this.value, required this.onTap});
+  const _PickerCard({
+    required this.icon,
+    required this.caption,
+    required this.value,
+    required this.onTap,
+  });
 
   final IconData icon;
   final String caption;
@@ -234,7 +275,11 @@ class _PickerCard extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: radius,
             boxShadow: [
-              BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2)),
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
             ],
           ),
           child: Padding(
@@ -244,7 +289,10 @@ class _PickerCard extends StatelessWidget {
                 Container(
                   width: 32,
                   height: 32,
-                  decoration: BoxDecoration(color: AppColors.primarySoft, shape: BoxShape.circle),
+                  decoration: BoxDecoration(
+                    color: AppColors.primarySoft,
+                    shape: BoxShape.circle,
+                  ),
                   child: Icon(icon, size: 16, color: AppColors.primary),
                 ),
                 const SizedBox(width: 8),
@@ -252,17 +300,30 @@ class _PickerCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(caption, style: AppTextStyles.caption.copyWith(fontSize: 10.5, height: 1.2)),
+                      Text(
+                        caption,
+                        style: AppTextStyles.caption.copyWith(
+                          fontSize: 10.5,
+                          height: 1.2,
+                        ),
+                      ),
                       Text(
                         value,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: AppTextStyles.label.copyWith(fontWeight: FontWeight.w700, height: 1.3),
+                        style: AppTextStyles.label.copyWith(
+                          fontWeight: FontWeight.w700,
+                          height: 1.3,
+                        ),
                       ),
                     ],
                   ),
                 ),
-                Icon(Iconsax.arrow_down_1_copy, size: 14, color: AppColors.textSecondary),
+                Icon(
+                  Iconsax.arrow_down_1_copy,
+                  size: 14,
+                  color: AppColors.textSecondary,
+                ),
               ],
             ),
           ),
@@ -273,7 +334,12 @@ class _PickerCard extends StatelessWidget {
 }
 
 class _TabPill extends StatelessWidget {
-  const _TabPill({required this.label, required this.count, required this.selected, required this.onTap});
+  const _TabPill({
+    required this.label,
+    required this.count,
+    required this.selected,
+    required this.onTap,
+  });
 
   final String label;
 
@@ -297,7 +363,9 @@ class _TabPill extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected ? AppColors.primary : AppColors.surface,
           borderRadius: BorderRadius.circular(AppRadius.pill),
-          border: Border.all(color: selected ? AppColors.primary : AppColors.border),
+          border: Border.all(
+            color: selected ? AppColors.primary : AppColors.border,
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -315,7 +383,9 @@ class _TabPill extends StatelessWidget {
                 duration: const Duration(milliseconds: 220),
                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 1),
                 decoration: BoxDecoration(
-                  color: selected ? Colors.white.withValues(alpha: 0.2) : AppColors.background,
+                  color: selected
+                      ? Colors.white.withValues(alpha: 0.2)
+                      : AppColors.background,
                   borderRadius: BorderRadius.circular(AppRadius.pill),
                 ),
                 child: Text(
@@ -349,9 +419,15 @@ class _Counts extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(AppSpacing.md, 14, AppSpacing.md, 6),
         child: Row(
           children: [
-            const Icon(Iconsax.warning_2_copy, size: 18, color: AppColors.error),
+            const Icon(
+              Iconsax.warning_2_copy,
+              size: 18,
+              color: AppColors.error,
+            ),
             const SizedBox(width: 8),
-            Expanded(child: Text(home.countsError!, style: AppTextStyles.caption)),
+            Expanded(
+              child: Text(home.countsError!, style: AppTextStyles.caption),
+            ),
             TextButton(onPressed: home.loadCounts, child: const Text('Retry')),
           ],
         ),
@@ -373,14 +449,18 @@ class _Counts extends StatelessWidget {
       child: residential
           ? Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Row(children: [for (final o in options) Expanded(child: cell(o))]),
+              child: Row(
+                children: [for (final o in options) Expanded(child: cell(o))],
+              ),
             )
           : SizedBox(
               height: 84,
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                children: [for (final o in options) SizedBox(width: 76, child: cell(o))],
+                children: [
+                  for (final o in options) SizedBox(width: 76, child: cell(o)),
+                ],
               ),
             ),
     );
@@ -388,7 +468,12 @@ class _Counts extends StatelessWidget {
 }
 
 class _SizeCell extends StatelessWidget {
-  const _SizeCell({required this.option, required this.residential, required this.count, required this.onTap});
+  const _SizeCell({
+    required this.option,
+    required this.residential,
+    required this.count,
+    required this.onTap,
+  });
 
   final SizeOption option;
   final bool residential;
@@ -417,21 +502,34 @@ class _SizeCell extends StatelessWidget {
             Text.rich(
               TextSpan(
                 children: [
-                  TextSpan(text: parts[0], style: AppTextStyles.title.copyWith(fontSize: 16)),
-                  TextSpan(text: ' ${parts[1]}', style: AppTextStyles.caption.copyWith(fontSize: 11)),
+                  TextSpan(
+                    text: parts[0],
+                    style: AppTextStyles.title.copyWith(fontSize: 16),
+                  ),
+                  TextSpan(
+                    text: ' ${parts[1]}',
+                    style: AppTextStyles.caption.copyWith(fontSize: 11),
+                  ),
                 ],
               ),
             )
           else ...[
             if (!residential && option.icon != null) ...[
-              Icon(option.icon, size: 18, color: has ? AppColors.primary : AppColors.textTertiary),
+              Icon(
+                option.icon,
+                size: 18,
+                color: has ? AppColors.primary : AppColors.textTertiary,
+              ),
               const SizedBox(height: 3),
             ],
             Text(
               option.label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: AppTextStyles.label.copyWith(fontWeight: FontWeight.w600, height: 1.4),
+              style: AppTextStyles.label.copyWith(
+                fontWeight: FontWeight.w600,
+                height: 1.4,
+              ),
             ),
           ],
           const SizedBox(height: 8),
@@ -445,7 +543,13 @@ class _SizeCell extends StatelessWidget {
               decoration: BoxDecoration(
                 color: has ? AppColors.primarySoft : AppColors.background,
                 borderRadius: BorderRadius.circular(AppRadius.pill),
-                border: Border.all(color: has ? AppColors.primary.withValues(alpha: 0.35) : AppColors.border),
+                border: Border.all(
+                  color: has
+                      ? (AppColors.isDark
+                            ? AppColors.mainGreen.withValues(alpha: 0.45)
+                            : AppColors.primary.withValues(alpha: 0.35))
+                      : AppColors.border,
+                ),
               ),
               child: TweenAnimationBuilder<double>(
                 tween: Tween(end: count!.toDouble()),
@@ -456,7 +560,7 @@ class _SizeCell extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: AppTextStyles.label.copyWith(
                     fontWeight: FontWeight.w700,
-                    color: has ? AppColors.primaryDark : AppColors.textTertiary,
+                    color: has ? AppColors.primaryText : AppColors.textTertiary,
                   ),
                 ),
               ),

@@ -383,7 +383,7 @@ class _BankTile extends StatelessWidget {
                   height: 44,
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceMuted,
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(AppRadius.md),
                   ),
                   child: AppNetworkImage(url: bank.logo, fit: BoxFit.contain, fallbackIcon: Iconsax.bank_copy),
@@ -407,7 +407,7 @@ class _BankTile extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text(bank.interestRate, style: AppTextStyles.title.copyWith(fontSize: 16, color: AppColors.primaryDark)),
+                      Text(bank.interestRate, style: AppTextStyles.title.copyWith(fontSize: 16, color: AppColors.primaryText)),
                       Text('interest', style: AppTextStyles.caption.copyWith(fontSize: 11)),
                     ],
                   ),

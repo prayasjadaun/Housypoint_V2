@@ -464,7 +464,7 @@ class _Stat extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: AppTextStyles.body.copyWith(
             fontWeight: FontWeight.w700,
-            color: AppColors.primaryDark,
+            color: AppColors.primaryText,
           ),
         ),
       ],
@@ -617,7 +617,7 @@ class _ConfigCard extends StatelessWidget {
                 Text(
                   '₹${config.marketPrice}',
                   style: AppTextStyles.body.copyWith(
-                    color: AppColors.primaryDark,
+                    color: AppColors.primaryText,
                     fontWeight: FontWeight.w700,
                   ),
                 ),

@@ -626,7 +626,7 @@ class _BrowseHeader extends StatelessWidget {
               '$count available',
               style: AppTextStyles.caption.copyWith(
                 fontWeight: FontWeight.w600,
-                color: AppColors.primaryDark,
+                color: AppColors.primaryText,
               ),
             ),
           ),

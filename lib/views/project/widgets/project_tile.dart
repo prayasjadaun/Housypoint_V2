@@ -98,7 +98,7 @@ class ProjectTile extends StatelessWidget {
                           Text(
                             '₹${project.priceRange}',
                             style: AppTextStyles.label.copyWith(
-                              color: AppColors.primaryDark,
+                              color: AppColors.primaryText,
                               fontWeight: FontWeight.w700,
                             ),
                           ),

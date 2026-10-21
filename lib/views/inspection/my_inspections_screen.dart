@@ -158,7 +158,7 @@ class _BookingCard extends StatelessWidget {
               Expanded(child: Text(when.isEmpty ? '—' : when, style: AppTextStyles.caption)),
               Text(
                 '₹${Formatters.grouped(booking.finalPrice)}',
-                style: AppTextStyles.label.copyWith(color: AppColors.primaryDark, fontWeight: FontWeight.w700),
+                style: AppTextStyles.label.copyWith(color: AppColors.primaryText, fontWeight: FontWeight.w700),
               ),
             ],
           ),

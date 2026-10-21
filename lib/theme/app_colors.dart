@@ -18,6 +18,10 @@ class AppColors {
   // these can't be `const`.
   static bool isDark = false;
 
+  /// Green for text/icons — [primaryDark] on light, a bright green on dark
+  /// (primaryDark itself stays dark for gradients and backgrounds).
+  static Color get primaryText => isDark ? const Color(0xFF4ADE80) : primaryDark;
+
   static Color get primarySoft => isDark ? const Color(0xFF15301F) : const Color(0xFFE8F6EE);
 
   static Color get background => isDark ? const Color(0xFF0F1112) : const Color(0xFFF5F7F8);
