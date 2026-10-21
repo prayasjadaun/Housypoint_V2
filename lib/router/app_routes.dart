@@ -37,5 +37,9 @@ class AppRoutes {
 
   static String projectPath(int id) => '/project/$id';
 
+  /// Pass the loaded ProjectDetail as `extra` to skip a refetch.
+  static const String projectLocation = '/project/:id/location';
+  static String projectLocationPath(int id) => '/project/$id/location';
+
   static const Set<String> authFlow = {login, otp};
 }

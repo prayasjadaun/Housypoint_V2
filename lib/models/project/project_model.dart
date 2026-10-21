@@ -127,6 +127,10 @@ class ProjectDetail {
   String get mapsSearchUrl =>
       'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent('${summary.name} ${summary.city}')}';
 
+  /// Google Maps turn-by-turn directions to the project.
+  String get directionsUrl =>
+      'https://www.google.com/maps/dir/?api=1&destination=${Uri.encodeComponent('${summary.name} ${summary.city}')}';
+
   factory ProjectDetail.fromJson(Map<String, dynamic> json) {
     String str(Object? v) {
       final s = v?.toString().trim() ?? '';

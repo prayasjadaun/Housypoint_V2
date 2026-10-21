@@ -8,6 +8,7 @@ import '../controllers/inspection_controller.dart';
 import '../controllers/post_property_controller.dart';
 import '../models/listing/listing_model.dart';
 import '../models/master/builder_model.dart';
+import '../models/project/project_model.dart';
 import '../repositories/master_data_repository.dart';
 import '../repositories/pdi_repository.dart';
 import '../repositories/project_repository.dart';
@@ -32,6 +33,7 @@ import '../views/profile/edit_profile_screen.dart';
 import '../views/profile/my_listings_screen.dart';
 import '../views/profile/profile_screen.dart';
 import '../views/project/project_detail_screen.dart';
+import '../views/project/project_location_screen.dart';
 import '../views/search/search_screen.dart';
 import '../views/home/main_shell_screen.dart';
 import '../views/splash/splash_screen.dart';
@@ -154,6 +156,13 @@ GoRouter createRouter(AuthController auth) {
         path: AppRoutes.project,
         builder: (_, state) =>
             ProjectDetailScreen(id: int.parse(state.pathParameters['id']!)),
+      ),
+      GoRoute(
+        path: AppRoutes.projectLocation,
+        builder: (_, state) => ProjectLocationScreen(
+          id: int.parse(state.pathParameters['id']!),
+          initial: state.extra is ProjectDetail ? state.extra as ProjectDetail : null,
+        ),
       ),
     ],
   );

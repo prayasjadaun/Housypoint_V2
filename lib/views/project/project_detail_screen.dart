@@ -42,6 +42,20 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
   List<ListingModel> _listings = [];
   String? _error;
 
+  /// True once the project name has scrolled under the collapsed app bar.
+  bool _showTitle = false;
+
+  static const double _expandedHeight = 300;
+
+  bool _onScroll(ScrollNotification n) {
+    if (n.depth != 0 || n.metrics.axis != Axis.vertical) return false;
+    final collapseAt =
+        _expandedHeight - kToolbarHeight - MediaQuery.paddingOf(context).top;
+    final show = n.metrics.pixels > collapseAt + 40;
+    if (show != _showTitle) setState(() => _showTitle = show);
+    return false;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -90,180 +104,214 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.surface,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 300,
-            pinned: true,
-            backgroundColor: AppColors.surface,
-            surfaceTintColor: Colors.transparent,
-            automaticallyImplyLeading: false,
-            leadingWidth: 64,
-            leading: Padding(
-              padding: const EdgeInsets.only(left: AppSpacing.md),
-              child: Center(
-                child: GlassIconButton(
-                  icon: CupertinoIcons.back,
-                  onTap: () => context.pop(),
+      body: NotificationListener<ScrollNotification>(
+        onNotification: _onScroll,
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              expandedHeight: _expandedHeight,
+              pinned: true,
+              backgroundColor: AppColors.surface,
+              surfaceTintColor: Colors.transparent,
+              automaticallyImplyLeading: false,
+              leadingWidth: 64,
+              leading: Padding(
+                padding: const EdgeInsets.only(left: AppSpacing.md),
+                child: Center(
+                  child: GlassIconButton(
+                    icon: CupertinoIcons.back,
+                    color: _showTitle ? AppColors.textPrimary : Colors.white,
+                    background: _showTitle ? AppColors.surfaceMuted : null,
+                    onTap: () => context.pop(),
+                  ),
+                ),
+              ),
+              titleSpacing: 0,
+              title: AnimatedOpacity(
+                opacity: _showTitle ? 1 : 0,
+                duration: const Duration(milliseconds: 200),
+                child: AnimatedSlide(
+                  offset: _showTitle ? Offset.zero : const Offset(0, 0.4),
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeOut,
+                  child: Text(
+                    p.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.title,
+                  ),
+                ),
+              ),
+              flexibleSpace: FlexibleSpaceBar(
+                background: ImageCarousel(
+                  images: project.images.isNotEmpty
+                      ? project.images
+                      : [p.image],
                 ),
               ),
             ),
-            flexibleSpace: FlexibleSpaceBar(
-              background: ImageCarousel(
-                images: project.images.isNotEmpty ? project.images : [p.image],
-              ),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: Container(
-              transform: Matrix4.translationValues(0, -24, 0),
-              decoration: const BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-              ),
-              padding: const EdgeInsets.only(
-                top: AppSpacing.lg,
-                bottom: AppSpacing.xl,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.lg,
+            SliverToBoxAdapter(
+              child: Container(
+                transform: Matrix4.translationValues(0, -24, 0),
+                decoration: const BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+                ),
+                padding: const EdgeInsets.only(
+                  top: AppSpacing.lg,
+                  bottom: AppSpacing.xl,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.lg,
+                      ),
+                      child: _Header(project: project),
                     ),
-                    child: _Header(project: project),
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.lg,
-                    ),
-                    child: _QuickActions(project: project),
-                  ),
-                  if (project.configurations.isNotEmpty) ...[
                     const SizedBox(height: AppSpacing.lg),
-                    const SectionHeader(
-                      title: 'Configurations',
-                      padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.lg,
+                      ),
+                      child: _QuickActions(project: project),
                     ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      height: 132,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
+                    if (project.configurations.isNotEmpty) ...[
+                      const SizedBox(height: AppSpacing.lg),
+                      const SectionHeader(
+                        title: 'Configurations',
+                        padding: EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        height: 132,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.lg,
+                          ),
+                          itemCount: project.configurations.length,
+                          separatorBuilder: (_, _) => const SizedBox(width: 10),
+                          itemBuilder: (_, i) =>
+                              _ConfigCard(config: project.configurations[i]),
+                        ),
+                      ),
+                    ],
+                    if (_listings.isNotEmpty) ...[
+                      const SizedBox(height: AppSpacing.lg),
+                      SectionHeader(
+                        title: 'Available in this project',
+                        subtitle:
+                            '${_listings.length} resale ${_listings.length == 1 ? 'listing' : 'listings'}',
                         padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.lg,
                         ),
-                        itemCount: project.configurations.length,
-                        separatorBuilder: (_, _) => const SizedBox(width: 10),
-                        itemBuilder: (_, i) =>
-                            _ConfigCard(config: project.configurations[i]),
                       ),
-                    ),
-                  ],
-                  if (_listings.isNotEmpty) ...[
-                    const SizedBox(height: AppSpacing.lg),
-                    SectionHeader(
-                      title: 'Available in this project',
-                      subtitle:
-                          '${_listings.length} resale ${_listings.length == 1 ? 'listing' : 'listings'}',
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.lg,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    _ListingsCarousel(listings: _listings),
-                  ],
-                  if (project.amenities.isNotEmpty) ...[
-                    const SizedBox(height: AppSpacing.lg),
-                    const SectionHeader(
-                      title: 'Amenities',
-                      padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                    ),
-                    const SizedBox(height: 12),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.lg,
-                      ),
-                      child: _AmenitiesGrid(amenities: project.amenities),
-                    ),
-                  ],
-                  if (project.landmarks.isNotEmpty) ...[
-                    const SizedBox(height: AppSpacing.lg),
-                    const SectionHeader(
-                      title: 'Nearby',
-                      padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                    ),
-                    const SizedBox(height: 8),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.lg,
-                      ),
-                      child: Column(
-                        children: [
-                          for (final l in project.landmarks)
-                            _LandmarkRow(landmark: l),
-                        ],
-                      ),
-                    ),
-                  ],
-                  if (project.masterLayout.isNotEmpty) ...[
-                    const SizedBox(height: AppSpacing.lg),
-                    const SectionHeader(
-                      title: 'Master layout',
-                      padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                    ),
-                    const SizedBox(height: 12),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.lg,
-                      ),
-                      child: GestureDetector(
-                        onTap: () => showImageGallery(
-                          context,
-                          images: [project.masterLayout],
+                      const SizedBox(height: 12),
+                      _ListingsCarousel(listings: _listings),
+                    ],
+                    if (project.amenities.isNotEmpty) ...[
+                      const SizedBox(height: AppSpacing.lg),
+                      const SectionHeader(
+                        title: 'Amenities',
+                        padding: EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
                         ),
-                        child: Container(
-                          height: 200,
-                          clipBehavior: Clip.antiAlias,
-                          decoration: BoxDecoration(
-                            color: AppColors.surfaceMuted,
-                            borderRadius: BorderRadius.circular(AppRadius.lg),
-                            border: Border.all(color: AppColors.border),
+                      ),
+                      const SizedBox(height: 12),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
+                        ),
+                        child: _AmenitiesGrid(amenities: project.amenities),
+                      ),
+                    ],
+                    if (project.landmarks.isNotEmpty) ...[
+                      const SizedBox(height: AppSpacing.lg),
+                      const SectionHeader(
+                        title: 'Nearby',
+                        padding: EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
+                        ),
+                        child: Column(
+                          children: [
+                            for (final l in project.landmarks)
+                              _LandmarkRow(landmark: l),
+                          ],
+                        ),
+                      ),
+                    ],
+                    if (project.masterLayout.isNotEmpty) ...[
+                      const SizedBox(height: AppSpacing.lg),
+                      const SectionHeader(
+                        title: 'Master layout',
+                        padding: EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
+                        ),
+                        child: GestureDetector(
+                          onTap: () => showImageGallery(
+                            context,
+                            images: [project.masterLayout],
                           ),
-                          child: AppNetworkImage(
-                            url: project.masterLayout,
-                            fit: BoxFit.contain,
+                          child: Container(
+                            height: 200,
+                            clipBehavior: Clip.antiAlias,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: AppColors.surfaceMuted,
+                              borderRadius: BorderRadius.circular(AppRadius.lg),
+                              border: Border.all(color: AppColors.border),
+                            ),
+                            child: AppNetworkImage(
+                              url: project.masterLayout,
+                              fit: BoxFit.contain,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                  if (project.about.isNotEmpty) ...[
-                    const SizedBox(height: AppSpacing.lg),
-                    const SectionHeader(
-                      title: 'About the project',
-                      padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                    ),
-                    const SizedBox(height: 8),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.lg,
-                      ),
-                      child: Text(
-                        project.about,
-                        style: AppTextStyles.body.copyWith(
-                          color: AppColors.textSecondary,
+                    ],
+                    if (project.about.isNotEmpty) ...[
+                      const SizedBox(height: AppSpacing.lg),
+                      const SectionHeader(
+                        title: 'About the project',
+                        padding: EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
                         ),
                       ),
-                    ),
+                      const SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
+                        ),
+                        child: Text(
+                          project.about,
+                          style: AppTextStyles.body.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -475,7 +523,14 @@ class _QuickActions extends StatelessWidget {
           'Brochure',
           () => Launcher.url(project.brochureUrl),
         ),
-      (Iconsax.map_copy, 'Location', () => Launcher.url(project.mapsSearchUrl)),
+      (
+        Iconsax.map_copy,
+        'Location',
+        () => context.push(
+          AppRoutes.projectLocationPath(project.summary.id),
+          extra: project,
+        ),
+      ),
       if (project.masterLayout.isNotEmpty)
         (
           Iconsax.maximize_4_copy,
