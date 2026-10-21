@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:housypoint_v2/theme/app_radius.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -55,12 +56,16 @@ class _BuyRequirementScreenState extends State<BuyRequirementScreen> {
     super.dispose();
   }
 
-  String _snake(String s) => s.toLowerCase().replaceAll(' ', '_').replaceAll('-', '_');
+  String _snake(String s) =>
+      s.toLowerCase().replaceAll(' ', '_').replaceAll('-', '_');
 
   Future<void> _submit() async {
     final budget = int.tryParse(_budget.text) ?? 0;
     if (_subtype == null || budget <= 0 || _timeline == null) {
-      context.showSnackBar('Add property type, budget and when you plan to buy', isError: true);
+      context.showSnackBar(
+        'Add property type, budget and when you plan to buy',
+        isError: true,
+      );
       return;
     }
     FocusScope.of(context).unfocus();
@@ -92,7 +97,8 @@ class _BuyRequirementScreenState extends State<BuyRequirementScreen> {
       await showSuccessSheet(
         context,
         title: 'Requirement shared',
-        message: 'Our property experts will reach out with homes that match what you need.',
+        message:
+            'Our property experts will reach out with homes that match what you need.',
       );
       if (mounted) context.pop();
     } on ApiException catch (e) {
@@ -111,17 +117,44 @@ class _BuyRequirementScreenState extends State<BuyRequirementScreen> {
   Widget build(BuildContext context) {
     final top = PageScaffold.topInset(context);
     final budget = int.tryParse(_budget.text) ?? 0;
-    final subtypes = _commercial ? WizardOptions.commercialSubtypes : WizardOptions.residentialSubtypes;
+    final subtypes = _commercial
+        ? WizardOptions.commercialSubtypes
+        : WizardOptions.residentialSubtypes;
 
     return PageScaffold(
       title: 'Buy a property',
       backgroundColor: AppColors.surface,
-      bottomBar: Padding(
-        padding: EdgeInsets.fromLTRB(AppSpacing.md, 8, AppSpacing.md, MediaQuery.paddingOf(context).bottom + 12),
-        child: AppButton(label: 'Share requirement', icon: Iconsax.send_2_copy, isLoading: _busy, onPressed: _submit),
+      bottomBar: Container(
+        padding: EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          8,
+          AppSpacing.md,
+          MediaQuery.paddingOf(context).bottom + 12,
+        ),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10),
+          ],
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(AppRadius.xl),
+          ),
+          border: Border.all(color: AppColors.border, width: 0.5),
+        ),
+        child: AppButton(
+          label: 'Share requirement',
+          icon: Iconsax.send_2_copy,
+          isLoading: _busy,
+          onPressed: _submit,
+        ),
       ),
       body: ListView(
-        padding: EdgeInsets.fromLTRB(AppSpacing.lg, top + AppSpacing.sm, AppSpacing.lg, AppSpacing.xl),
+        padding: EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          top + AppSpacing.sm,
+          AppSpacing.lg,
+          AppSpacing.xl,
+        ),
         children: [
           Text(
             'Tell us what you’re looking for — we’ll shortlist verified homes for you.',
@@ -132,7 +165,8 @@ class _BuyRequirementScreenState extends State<BuyRequirementScreen> {
             labels: WizardOptions.buySources,
             icons: const [Iconsax.key_copy, Iconsax.flash_1_copy],
             selectedIndex: WizardOptions.buySources.indexOf(_source),
-            onChanged: (i) => setState(() => _source = WizardOptions.buySources[i]),
+            onChanged: (i) =>
+                setState(() => _source = WizardOptions.buySources[i]),
           ),
           const SizedBox(height: 10),
           SegmentedToggle(
@@ -200,7 +234,10 @@ class _BuyRequirementScreenState extends State<BuyRequirementScreen> {
               padding: const EdgeInsets.only(top: 6, left: 4),
               child: Text(
                 'Up to ${Formatters.price(budget)}',
-                style: AppTextStyles.caption.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600),
+                style: AppTextStyles.caption.copyWith(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           _label('When do you plan to buy?'),
