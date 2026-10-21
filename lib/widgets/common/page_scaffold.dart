@@ -52,7 +52,16 @@ class PageScaffold extends StatelessWidget {
         actions: actions,
       ),
       body: body,
-      bottomNavigationBar: bottomBar,
+      // Scaffold leaves bottomNavigationBar under the keyboard; lift it so
+      // action buttons (Save, Next…) stay reachable while typing.
+      bottomNavigationBar: bottomBar == null
+          ? null
+          : Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.viewInsetsOf(context).bottom,
+              ),
+              child: bottomBar,
+            ),
     );
   }
 }
