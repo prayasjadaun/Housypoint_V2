@@ -52,12 +52,28 @@ class HomeController extends ChangeNotifier {
     _started = true;
     await Future.wait([
       _loadCities(),
-      _loadBuilders(),
+      // With no city both lists come from the same request.
+      if (selectedCity == null) _loadAllBuilders() else ...[
+        _loadBuilders(),
+        _loadTopBuilders(),
+      ],
       loadCounts(),
       _loadSections(),
-      _loadTopBuilders(),
     ]);
   }
+
+  Future<void> _loadAllBuilders() async {
+    try {
+      builders = await _masterData.getBuilders();
+    } on ApiException {
+      builders = [];
+    }
+    topBuilders = _top(builders);
+    notifyListeners();
+  }
+
+  static List<BuilderModel> _top(List<BuilderModel> all) =>
+      all.where((b) => b.logoUrl.isNotEmpty).take(24).toList();
 
   Future<void> refresh() =>
       Future.wait([_loadBuilders(), loadCounts(), _loadSections()]);
@@ -149,7 +165,7 @@ class HomeController extends ChangeNotifier {
   Future<void> _loadTopBuilders() async {
     try {
       final all = await _masterData.getBuilders();
-      topBuilders = all.where((b) => b.logoUrl.isNotEmpty).take(24).toList();
+      topBuilders = _top(all);
     } on ApiException {
       topBuilders = const [];
     }

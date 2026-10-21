@@ -35,6 +35,7 @@ class MainShellScreen extends StatefulWidget {
 class _MainShellScreenState extends State<MainShellScreen> {
   late final ConnectivityService _connectivity;
   late bool _wasOnline;
+  final Set<ShellTab> _visited = {};
 
   @override
   void initState() {
@@ -148,6 +149,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
   Widget build(BuildContext context) {
     final shell = context.watch<ShellController>();
     final current = shell.tab;
+    _visited.add(current);
 
     final pages = {
       ShellTab.home: const HomeScreen(),
@@ -165,8 +167,11 @@ class _MainShellScreenState extends State<MainShellScreen> {
           index: current.index,
           children: [
             for (final tab in ShellTab.values)
-              // Hidden tabs keep their state but pause their animations.
-              TickerMode(enabled: tab == current, child: pages[tab]!),
+              // Tabs build on first visit so their APIs don't all fire at
+              // launch; once built they keep state but pause animations.
+              _visited.contains(tab)
+                  ? TickerMode(enabled: tab == current, child: pages[tab]!)
+                  : const SizedBox.shrink(),
           ],
         ),
       ),
