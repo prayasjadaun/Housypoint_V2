@@ -51,12 +51,16 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
   Future<void> _load() async {
     setState(() => _error = null);
     try {
-      final project = await context.read<ProjectRepository>().getProject(widget.id);
+      final project = await context.read<ProjectRepository>().getProject(
+        widget.id,
+      );
       if (!mounted) return;
       setState(() => _project = project);
-      final listings = await context
-          .read<ListingRepository>()
-          .getListings(rental: false, projectId: widget.id, pageSize: 10);
+      final listings = await context.read<ListingRepository>().getListings(
+        rental: false,
+        projectId: widget.id,
+        pageSize: 10,
+      );
       if (mounted) setState(() => _listings = listings.items);
     } on ApiException catch (e) {
       if (mounted && _project == null) setState(() => _error = e.message);
@@ -117,17 +121,24 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                 color: AppColors.surface,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
               ),
-              padding: const EdgeInsets.only(top: AppSpacing.lg, bottom: AppSpacing.xl),
+              padding: const EdgeInsets.only(
+                top: AppSpacing.lg,
+                bottom: AppSpacing.xl,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.lg,
+                    ),
                     child: _Header(project: project),
                   ),
                   const SizedBox(height: AppSpacing.lg),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.lg,
+                    ),
                     child: _QuickActions(project: project),
                   ),
                   if (project.configurations.isNotEmpty) ...[
@@ -141,10 +152,13 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                       height: 132,
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
+                        ),
                         itemCount: project.configurations.length,
                         separatorBuilder: (_, _) => const SizedBox(width: 10),
-                        itemBuilder: (_, i) => _ConfigCard(config: project.configurations[i]),
+                        itemBuilder: (_, i) =>
+                            _ConfigCard(config: project.configurations[i]),
                       ),
                     ),
                   ],
@@ -152,8 +166,11 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                     const SizedBox(height: AppSpacing.lg),
                     SectionHeader(
                       title: 'Available in this project',
-                      subtitle: '${_listings.length} resale ${_listings.length == 1 ? 'listing' : 'listings'}',
-                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                      subtitle:
+                          '${_listings.length} resale ${_listings.length == 1 ? 'listing' : 'listings'}',
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.lg,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     _ListingsCarousel(listings: _listings),
@@ -166,7 +183,9 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                     ),
                     const SizedBox(height: 12),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.lg,
+                      ),
                       child: _AmenitiesGrid(amenities: project.amenities),
                     ),
                   ],
@@ -178,10 +197,13 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                     ),
                     const SizedBox(height: 8),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.lg,
+                      ),
                       child: Column(
                         children: [
-                          for (final l in project.landmarks) _LandmarkRow(landmark: l),
+                          for (final l in project.landmarks)
+                            _LandmarkRow(landmark: l),
                         ],
                       ),
                     ),
@@ -194,9 +216,14 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                     ),
                     const SizedBox(height: 12),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.lg,
+                      ),
                       child: GestureDetector(
-                        onTap: () => showImageGallery(context, images: [project.masterLayout]),
+                        onTap: () => showImageGallery(
+                          context,
+                          images: [project.masterLayout],
+                        ),
                         child: Container(
                           height: 200,
                           clipBehavior: Clip.antiAlias,
@@ -205,7 +232,10 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                             borderRadius: BorderRadius.circular(AppRadius.lg),
                             border: Border.all(color: AppColors.border),
                           ),
-                          child: AppNetworkImage(url: project.masterLayout, fit: BoxFit.contain),
+                          child: AppNetworkImage(
+                            url: project.masterLayout,
+                            fit: BoxFit.contain,
+                          ),
                         ),
                       ),
                     ),
@@ -218,10 +248,14 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                     ),
                     const SizedBox(height: 8),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.lg,
+                      ),
                       child: Text(
                         project.about,
-                        style: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
+                        style: AppTextStyles.body.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                     ),
                   ],
@@ -256,6 +290,7 @@ class _Header extends StatelessWidget {
             Container(
               width: 56,
               height: 56,
+              margin: const EdgeInsets.only(top: 12),
               padding: const EdgeInsets.all(6),
               clipBehavior: Clip.antiAlias,
               decoration: BoxDecoration(
@@ -274,7 +309,10 @@ class _Header extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(p.name, style: AppTextStyles.heading.copyWith(fontSize: 20)),
+                  Text(
+                    p.name,
+                    style: AppTextStyles.heading.copyWith(fontSize: 20),
+                  ),
                   if (p.builderName.isNotEmpty)
                     Text('by ${p.builderName}', style: AppTextStyles.caption),
                 ],
@@ -287,9 +325,16 @@ class _Header extends StatelessWidget {
           spacing: 8,
           runSpacing: 8,
           children: [
-            if (p.status.isNotEmpty) _Chip(icon: Iconsax.timer_1_copy, text: p.status),
-            if (p.projectType.isNotEmpty) _Chip(icon: Iconsax.building_copy, text: p.projectType),
-            if (p.isNewLaunch) const _Chip(icon: Iconsax.flash_1_copy, text: 'New launch', gold: true),
+            if (p.status.isNotEmpty)
+              _Chip(icon: Iconsax.timer_1_copy, text: p.status),
+            if (p.projectType.isNotEmpty)
+              _Chip(icon: Iconsax.building_copy, text: p.projectType),
+            if (p.isNewLaunch)
+              const _Chip(
+                icon: Iconsax.flash_1_copy,
+                text: 'New launch',
+                gold: true,
+              ),
           ],
         ),
         if (place.isNotEmpty || project.location.isNotEmpty) ...[
@@ -297,12 +342,21 @@ class _Header extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(Iconsax.location_copy, size: 16, color: AppColors.textSecondary),
+              const Icon(
+                Iconsax.location_copy,
+                size: 16,
+                color: AppColors.textSecondary,
+              ),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
-                  [project.location, place].where((s) => s.isNotEmpty).join(' · '),
-                  style: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
+                  [
+                    project.location,
+                    place,
+                  ].where((s) => s.isNotEmpty).join(' · '),
+                  style: AppTextStyles.body.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ),
             ],
@@ -320,13 +374,21 @@ class _Header extends StatelessWidget {
               Expanded(
                 child: _Stat(
                   label: 'Price range',
-                  value: p.priceRange.isEmpty ? 'On request' : '₹${p.priceRange}',
+                  value: p.priceRange.isEmpty
+                      ? 'On request'
+                      : '₹${p.priceRange}',
                 ),
               ),
               if (project.rera.isNotEmpty) ...[
-                Container(width: 1, height: 34, color: AppColors.primary.withValues(alpha: 0.15)),
+                Container(
+                  width: 1,
+                  height: 34,
+                  color: AppColors.primary.withValues(alpha: 0.15),
+                ),
                 const SizedBox(width: 14),
-                Expanded(child: _Stat(label: 'RERA', value: project.rera)),
+                Expanded(
+                  child: _Stat(label: 'RERA', value: project.rera),
+                ),
               ],
             ],
           ),
@@ -375,7 +437,9 @@ class _Chip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: gold ? AppColors.gold.withValues(alpha: 0.18) : AppColors.surfaceMuted,
+        color: gold
+            ? AppColors.gold.withValues(alpha: 0.18)
+            : AppColors.surfaceMuted,
         borderRadius: BorderRadius.circular(AppRadius.pill),
         border: Border.all(color: gold ? Colors.transparent : AppColors.border),
       ),
@@ -384,7 +448,13 @@ class _Chip extends StatelessWidget {
         children: [
           Icon(icon, size: 13, color: color),
           const SizedBox(width: 5),
-          Text(text, style: AppTextStyles.caption.copyWith(color: color, fontWeight: FontWeight.w600)),
+          Text(
+            text,
+            style: AppTextStyles.caption.copyWith(
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );
@@ -400,10 +470,18 @@ class _QuickActions extends StatelessWidget {
   Widget build(BuildContext context) {
     final actions = [
       if (project.brochureUrl.isNotEmpty)
-        (Iconsax.document_download_copy, 'Brochure', () => Launcher.url(project.brochureUrl)),
+        (
+          Iconsax.document_download_copy,
+          'Brochure',
+          () => Launcher.url(project.brochureUrl),
+        ),
       (Iconsax.map_copy, 'Location', () => Launcher.url(project.mapsSearchUrl)),
       if (project.masterLayout.isNotEmpty)
-        (Iconsax.maximize_4_copy, 'Layout', () => showImageGallery(context, images: [project.masterLayout])),
+        (
+          Iconsax.maximize_4_copy,
+          'Layout',
+          () => showImageGallery(context, images: [project.masterLayout]),
+        ),
     ];
 
     return Row(
@@ -421,13 +499,20 @@ class _QuickActions extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(AppRadius.lg),
-                    border: Border.all(color: AppColors.border.withValues(alpha: 0.7)),
+                    border: Border.all(
+                      color: AppColors.border.withValues(alpha: 0.7),
+                    ),
                   ),
                   child: Column(
                     children: [
                       Icon(actions[i].$1, size: 20, color: AppColors.primary),
                       const SizedBox(height: 4),
-                      Text(actions[i].$2, style: AppTextStyles.caption.copyWith(fontWeight: FontWeight.w600)),
+                      Text(
+                        actions[i].$2,
+                        style: AppTextStyles.caption.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -453,7 +538,9 @@ class _ConfigCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(AppRadius.lg),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        onTap: hasPlan ? () => showImageGallery(context, images: [config.layoutImage]) : null,
+        onTap: hasPlan
+            ? () => showImageGallery(context, images: [config.layoutImage])
+            : null,
         child: Container(
           width: 150,
           padding: const EdgeInsets.all(12),
@@ -464,7 +551,10 @@ class _ConfigCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(config.detail, style: AppTextStyles.title.copyWith(fontSize: 16)),
+              Text(
+                config.detail,
+                style: AppTextStyles.title.copyWith(fontSize: 16),
+              ),
               if (config.size.isNotEmpty)
                 Text('${config.size} sqft', style: AppTextStyles.caption),
               const Spacer(),
@@ -479,11 +569,18 @@ class _ConfigCard extends StatelessWidget {
               if (hasPlan)
                 Row(
                   children: [
-                    const Icon(Iconsax.maximize_4_copy, size: 12, color: AppColors.primary),
+                    const Icon(
+                      Iconsax.maximize_4_copy,
+                      size: 12,
+                      color: AppColors.primary,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       'Floor plan',
-                      style: AppTextStyles.caption.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600),
+                      style: AppTextStyles.caption.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),
@@ -519,9 +616,13 @@ class _ListingsCarousel extends StatelessWidget {
               isSaved: saved.savedState(l),
               onSave: () async {
                 final error = await saved.toggleSave(l);
-                if (error != null && context.mounted) context.showSnackBar(error, isError: true);
+                if (error != null && context.mounted)
+                  context.showSnackBar(error, isError: true);
               },
-              onTap: () => context.push(AppRoutes.listingPath(l.id, rental: l.isRental), extra: l),
+              onTap: () => context.push(
+                AppRoutes.listingPath(l.id, rental: l.isRental),
+                extra: l,
+              ),
             ),
           );
         },
@@ -562,14 +663,22 @@ class _AmenitiesGrid extends StatelessWidget {
                   end: Alignment.bottomRight,
                   colors: [AppColors.primarySoft, AppColors.surface],
                 ),
-                border: Border.all(color: AppColors.primary.withValues(alpha: 0.12)),
+                border: Border.all(
+                  color: AppColors.primary.withValues(alpha: 0.12),
+                ),
               ),
               alignment: Alignment.center,
-              child: AmenityIcon(name: a.name, size: 26, color: AppColors.primary),
+              child: AmenityIcon(
+                name: a.name,
+                size: 26,
+                color: AppColors.primary,
+              ),
             ),
             const SizedBox(height: 6),
             Text(
-              a.name.isEmpty ? '' : a.name[0].toUpperCase() + a.name.substring(1),
+              a.name.isEmpty
+                  ? ''
+                  : a.name[0].toUpperCase() + a.name.substring(1),
               maxLines: 2,
               textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,
@@ -599,9 +708,15 @@ class _LandmarkRow extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.surfaceMuted,
               borderRadius: BorderRadius.circular(AppRadius.sm + 2),
-              border: Border.all(color: AppColors.border.withValues(alpha: 0.7)),
+              border: Border.all(
+                color: AppColors.border.withValues(alpha: 0.7),
+              ),
             ),
-            child: const Icon(Iconsax.location_tick_copy, size: 17, color: AppColors.primary),
+            child: const Icon(
+              Iconsax.location_tick_copy,
+              size: 17,
+              color: AppColors.primary,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(child: Text(landmark.name, style: AppTextStyles.body)),
