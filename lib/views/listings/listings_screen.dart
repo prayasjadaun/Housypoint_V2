@@ -104,14 +104,14 @@ class _ListingsScreenState extends State<ListingsScreen> {
                           )
                         : c.query.isNotEmpty
                         ? EmptyState(
-                            lottie: AppAssets.lottieNotFound,
+                            lottie: AppAssets.lottieNoResults,
                             title: 'No results for “${c.query}”',
                             message: 'Try another name, or change the filters above.',
                             actionLabel: 'Clear search',
                             onAction: c.closeSearch,
                           )
                         : EmptyState(
-                            lottie: AppAssets.lottieNotFound,
+                            lottie: AppAssets.lottieNoResults,
                             title: 'No properties found',
                             message: 'Try another size, city or switch between resale and rent.',
                             actionLabel: c.sizeKey != null ? 'Show all sizes' : null,

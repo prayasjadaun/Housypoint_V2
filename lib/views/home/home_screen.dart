@@ -1,11 +1,15 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 import '../../controllers/home_controller.dart';
 import '../../controllers/shell_controller.dart';
 import '../../router/app_routes.dart';
+import '../../theme/app_assets.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
@@ -19,7 +23,6 @@ import 'widgets/post_property_section.dart';
 import 'widgets/promo_banners.dart';
 import 'widgets/property_filter_card.dart';
 import 'widgets/services_section.dart';
-import 'widgets/skyline_animation.dart';
 import 'widgets/trusted_builders_section.dart';
 
 /// Home tab: animated skyline hero with the property filter card
@@ -108,10 +111,13 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               children: [
                 ReferBanner(
-                  onTap: () => context.read<ShellController>().go(ShellTab.refer),
+                  onTap: () =>
+                      context.read<ShellController>().go(ShellTab.refer),
                 ),
                 const SizedBox(height: 12),
-                InspectionBanner(onTap: () => context.push(AppRoutes.inspection)),
+                InspectionBanner(
+                  onTap: () => context.push(AppRoutes.inspection),
+                ),
                 const SizedBox(height: 12),
                 CompareBanner(onTap: () => context.push(AppRoutes.compare)),
               ],
@@ -120,7 +126,8 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: _gap),
           TrustedBuildersSection(
             onViewAll: () => context.push(AppRoutes.builders),
-            onTapBuilder: (b) => context.push(AppRoutes.builderPath(b.id), extra: b),
+            onTapBuilder: (b) =>
+                context.push(AppRoutes.builderPath(b.id), extra: b),
           ),
           const SizedBox(height: AppSpacing.xxl),
           const HomeFooter(),
@@ -151,12 +158,21 @@ class _Hero extends StatelessWidget {
         children: [
           // Ground sits under the card's top edge, so the buildings
           // look like they stand behind it.
-          const Positioned(
+          // SkylineAnimation (widgets/skyline_animation.dart) is kept for
+          // switching back.
+          Positioned(
             left: 0,
             right: 0,
             bottom: 36,
             height: 170,
-            child: SkylineAnimation(),
+            // Full width; the sky at the top of the art is cropped.
+            child: ClipRect(
+              child: Lottie.asset(
+                AppAssets.lottieBuilding,
+                fit: BoxFit.cover,
+                alignment: Alignment.bottomCenter,
+              ),
+            ),
           ),
           Padding(
             padding: EdgeInsets.fromLTRB(
@@ -189,7 +205,7 @@ class _Hero extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 8),
                 const _SearchBar(),
               ],
             ),
@@ -206,25 +222,42 @@ class _SearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white.withValues(alpha: 0.96),
-      borderRadius: BorderRadius.circular(AppRadius.pill),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-        onTap: () => context.push(AppRoutes.search),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
-          child: Row(
-            children: [
-              const Icon(Iconsax.search_normal_1_copy, size: 19, color: AppColors.textSecondary),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  'Search projects, builders, localities',
-                  style: AppTextStyles.body.copyWith(color: AppColors.textTertiary),
-                ),
+    final radius = BorderRadius.circular(AppRadius.pill);
+    // Blurs whatever the hero paints behind it (skyline art, gradient).
+    return ClipRRect(
+      borderRadius: radius,
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+        child: Material(
+          color: Colors.white.withValues(alpha: 0.18),
+          shape: RoundedRectangleBorder(
+            borderRadius: radius,
+            side: BorderSide(color: Colors.white.withValues(alpha: 0.35)),
+          ),
+          child: InkWell(
+            borderRadius: radius,
+            onTap: () => context.push(AppRoutes.search),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+              child: Row(
+                children: [
+                  const Icon(
+                    Iconsax.search_normal_1_copy,
+                    size: 19,
+                    color: Colors.white,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'Search projects, builders, localities',
+                      style: AppTextStyles.body.copyWith(
+                        color: Colors.white.withValues(alpha: 0.85),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

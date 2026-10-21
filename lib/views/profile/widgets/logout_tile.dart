@@ -11,6 +11,38 @@ import '../../../theme/app_colors.dart';
 import '../../../theme/app_radius.dart';
 import '../../../theme/app_spacing.dart';
 import '../../../theme/app_text_styles.dart';
+import '../../../widgets/common/app_refresh_indicator.dart';
+
+class _LoggingOutDialog extends StatelessWidget {
+  const _LoggingOutDialog();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(AppRadius.xl),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const AppSpinner(),
+            const SizedBox(height: 14),
+            Text(
+              'Logging out…',
+              style: AppTextStyles.body.copyWith(
+                fontWeight: FontWeight.w600,
+                decoration: TextDecoration.none,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 /// "Log out" row with a confirmation dialog.
 class LogoutTile extends StatelessWidget {
@@ -46,10 +78,21 @@ class LogoutTile extends StatelessWidget {
       ),
     );
     if (yes == true && context.mounted) {
+      // Logout waits on the FCM token delete and the API call; block the
+      // screen meanwhile. The redirect to login removes this dialog.
+      var dialogOpen = true;
+      showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => const PopScope(canPop: false, child: _LoggingOutDialog()),
+      ).whenComplete(() => dialogOpen = false);
+
       context.read<SavedController>().clear();
       context.read<ReferralController>().clear();
       context.read<ShellController>().reset();
       await context.read<AuthController>().logout();
+
+      if (dialogOpen && context.mounted) Navigator.of(context).pop();
     }
   }
 
