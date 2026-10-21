@@ -18,6 +18,7 @@ import '../../widgets/common/app_refresh_indicator.dart';
 import '../../widgets/common/glass_bottom_nav.dart';
 import 'widgets/home_footer.dart';
 import 'widgets/hot_deals_section.dart';
+import 'widgets/inspection_plans.dart';
 import 'widgets/new_launches_section.dart';
 import 'widgets/post_property_section.dart';
 import 'widgets/promo_banners.dart';
@@ -115,8 +116,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       context.read<ShellController>().go(ShellTab.refer),
                 ),
                 const SizedBox(height: 12),
-                InspectionBanner(
-                  onTap: () => context.push(AppRoutes.inspection),
+                InspectionPlansBanner(
+                  onBook: (planId) =>
+                      context.push(AppRoutes.inspection, extra: planId),
                 ),
                 const SizedBox(height: 12),
                 CompareBanner(onTap: () => context.push(AppRoutes.compare)),

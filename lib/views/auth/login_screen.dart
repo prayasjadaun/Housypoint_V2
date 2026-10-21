@@ -33,7 +33,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   late final _phoneController = TextEditingController(
     text: context.read<AuthController>().phoneNumber,
-  )..addListener(() => setState(() {}));
+  )..addListener(_onPhoneChanged);
+  int _lastPhoneLength = 0;
   final _referralController = TextEditingController();
   bool _showReferral = false;
   late Country _country =
@@ -45,6 +46,27 @@ class _LoginScreenState extends State<LoginScreen> {
       _country.example.isNotEmpty ? _country.example.length : 10;
 
   bool get _isValid => _phoneController.text.length == _phoneLength;
+
+  @override
+  void initState() {
+    super.initState();
+    // Read before any typing, so a restored number isn't seen as "just typed".
+    _lastPhoneLength = _phoneController.text.length;
+  }
+
+  /// Typing the last digit sends the OTP right away — unless the referral
+  /// field is open, where the user may still be entering a code.
+  void _onPhoneChanged() {
+    final length = _phoneController.text.length;
+    final completed = length == _phoneLength && _lastPhoneLength < length;
+    _lastPhoneLength = length;
+    setState(() {});
+    if (completed &&
+        !_showReferral &&
+        !context.read<AuthController>().isBusy) {
+      _continue();
+    }
+  }
 
   @override
   void dispose() {

@@ -114,12 +114,14 @@ GoRouter createRouter(AuthController auth) {
       ),
       GoRoute(
         path: AppRoutes.inspection,
-        builder: (context, _) => ChangeNotifierProvider(
+        // extra: plan id to preselect.
+        builder: (context, state) => ChangeNotifierProvider(
           create: (_) => InspectionController(
             context.read<PdiRepository>(),
             context.read<MasterDataRepository>(),
             context.read<ProjectRepository>(),
             city: context.read<HomeController>().selectedCity,
+            initialPlanId: state.extra as int?,
           ),
           child: const InspectionBookingScreen(),
         ),

@@ -11,9 +11,18 @@ import '../repositories/project_repository.dart';
 /// State of the 5-step home inspection booking:
 /// location → property → plan → schedule → review.
 class InspectionController extends ChangeNotifier {
-  InspectionController(this._pdi, this._master, this._projects, {this.city}) {
+  InspectionController(
+    this._pdi,
+    this._master,
+    this._projects, {
+    this.city,
+    this.initialPlanId,
+  }) {
     _init();
   }
+
+  /// Plan picked before the flow started (home plan sheet).
+  final int? initialPlanId;
 
   final PdiRepository _pdi;
   final MasterDataRepository _master;
@@ -62,7 +71,11 @@ class InspectionController extends ChangeNotifier {
       final results = await Future.wait([_pdi.getPlans(), _pdi.getDates()]);
       plans = results[0] as List<PdiPlan>;
       dates = results[1] as List<DateTime>;
-      plan = plans!.firstWhere((p) => p.isPopular, orElse: () => plans!.first);
+      plan = plans!.firstWhere(
+        (p) => p.id == initialPlanId,
+        orElse: () =>
+            plans!.firstWhere((p) => p.isPopular, orElse: () => plans!.first),
+      );
     } on ApiException catch (e) {
       error = e.message;
     } catch (_) {

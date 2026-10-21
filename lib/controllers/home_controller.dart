@@ -7,17 +7,20 @@ import '../models/master/builder_model.dart';
 import '../models/master/city_model.dart';
 import '../models/project/project_model.dart';
 import '../repositories/listing_repository.dart';
+import '../models/pdi/pdi_models.dart';
 import '../repositories/master_data_repository.dart';
+import '../repositories/pdi_repository.dart';
 import '../repositories/project_repository.dart';
 
 /// State of the home screen's property filter: city, builder, deal type,
 /// category and the listing counts for that selection.
 class HomeController extends ChangeNotifier {
-  HomeController(this._masterData, this._listings, this._projects);
+  HomeController(this._masterData, this._listings, this._projects, this._pdi);
 
   final MasterDataRepository _masterData;
   final ListingRepository _listings;
   final ProjectRepository _projects;
+  final PdiRepository _pdi;
 
   List<CityModel> cities = [];
   List<BuilderModel> builders = [];
@@ -37,6 +40,9 @@ class HomeController extends ChangeNotifier {
   DistressDeals? hotDeals;
   List<ProjectSummary>? newLaunches;
   List<BuilderModel>? topBuilders;
+
+  /// Home inspection plans for the pricing strip. Empty = hidden.
+  List<PdiPlan>? inspectionPlans;
 
   bool _started = false;
 
@@ -59,7 +65,17 @@ class HomeController extends ChangeNotifier {
       ],
       loadCounts(),
       _loadSections(),
+      _loadInspectionPlans(),
     ]);
+  }
+
+  Future<void> _loadInspectionPlans() async {
+    try {
+      inspectionPlans = await _pdi.getPlans();
+    } catch (_) {
+      inspectionPlans = const [];
+    }
+    notifyListeners();
   }
 
   Future<void> _loadAllBuilders() async {
@@ -75,8 +91,13 @@ class HomeController extends ChangeNotifier {
   static List<BuilderModel> _top(List<BuilderModel> all) =>
       all.where((b) => b.logoUrl.isNotEmpty).take(24).toList();
 
-  Future<void> refresh() =>
-      Future.wait([_loadBuilders(), loadCounts(), _loadSections()]);
+  Future<void> refresh() => Future.wait([
+    _loadBuilders(),
+    loadCounts(),
+    _loadSections(),
+    // Plans rarely change; only retry when the first load failed.
+    if (inspectionPlans?.isEmpty ?? false) _loadInspectionPlans(),
+  ]);
 
   Future<void> selectCity(String? city) async {
     if (city == selectedCity) return;

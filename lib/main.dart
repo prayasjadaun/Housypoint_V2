@@ -63,6 +63,7 @@ Future<void> main() async {
             MasterDataRepository(dio),
             ListingRepository(dio),
             ProjectRepository(dio),
+            PdiRepository(dio),
           ),
         ),
         ChangeNotifierProvider(create: (_) => SavedController(SavedRepository(dio))),

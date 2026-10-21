@@ -333,15 +333,17 @@ class PlanStep extends StatelessWidget {
           for (final p in plans)
             Padding(
               padding: const EdgeInsets.only(bottom: 14),
-              child: _PlanCard(plan: p, selected: c.plan?.id == p.id, onTap: () => c.setPlan(p)),
+              child: PlanCard(plan: p, selected: c.plan?.id == p.id, onTap: () => c.setPlan(p)),
             ),
       ],
     );
   }
 }
 
-class _PlanCard extends StatelessWidget {
-  const _PlanCard({required this.plan, required this.selected, required this.onTap});
+/// Selectable plan with price, savings and feature list. Also used by the
+/// home screen's plan comparison sheet.
+class PlanCard extends StatelessWidget {
+  const PlanCard({super.key, required this.plan, required this.selected, required this.onTap});
 
   final PdiPlan plan;
   final bool selected;

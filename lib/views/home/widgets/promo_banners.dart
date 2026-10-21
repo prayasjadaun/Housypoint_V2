@@ -54,9 +54,12 @@ class ReferBanner extends StatelessWidget {
 
 /// Home inspection (PDI) — dark green card.
 class InspectionBanner extends StatelessWidget {
-  const InspectionBanner({super.key, required this.onTap});
+  const InspectionBanner({super.key, required this.onTap, this.attached = false});
 
   final VoidCallback onTap;
+
+  /// Square bottom corners, for the plan panel joined underneath.
+  final bool attached;
 
   static const _points = ['Civil & finishing', 'Plumbing & electrical', 'Detailed report'];
 
@@ -64,6 +67,7 @@ class InspectionBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return _BannerShell(
       onTap: onTap,
+      squareBottom: attached,
       gradient: const [AppColors.primary, AppColors.primaryDark],
       child: Row(
         children: [
@@ -189,15 +193,24 @@ class _CompareSlot extends StatelessWidget {
 }
 
 class _BannerShell extends StatelessWidget {
-  const _BannerShell({required this.onTap, required this.gradient, required this.child});
+  const _BannerShell({
+    required this.onTap,
+    required this.gradient,
+    required this.child,
+    this.squareBottom = false,
+  });
 
   final VoidCallback onTap;
   final List<Color> gradient;
   final Widget child;
+  final bool squareBottom;
 
   @override
   Widget build(BuildContext context) {
-    final radius = BorderRadius.circular(AppRadius.xl + 4);
+    const corner = Radius.circular(AppRadius.xl + 4);
+    final radius = squareBottom
+        ? const BorderRadius.vertical(top: corner)
+        : const BorderRadius.all(corner);
     return Material(
       color: Colors.transparent,
       child: InkWell(
