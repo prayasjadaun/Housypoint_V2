@@ -43,7 +43,7 @@ class NewLaunchesSection extends StatelessWidget {
             separatorBuilder: (_, _) => const SizedBox(width: 12),
             itemBuilder: (context, i) => projects == null
                 ? const SkeletonBox(width: 230, height: 270, radius: AppRadius.xl)
-                : _LaunchCard(project: projects[i]),
+                : LaunchCard(project: projects[i]),
           ),
         ),
       ],
@@ -52,8 +52,8 @@ class NewLaunchesSection extends StatelessWidget {
 }
 
 /// Full-bleed project card: photo fills the card, details on a dark fade.
-class _LaunchCard extends StatelessWidget {
-  const _LaunchCard({required this.project});
+class LaunchCard extends StatelessWidget {
+  const LaunchCard({super.key, required this.project});
 
   final ProjectSummary project;
 
