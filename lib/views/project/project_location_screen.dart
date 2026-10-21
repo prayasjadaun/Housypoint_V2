@@ -1042,7 +1042,7 @@ class _Legend extends StatelessWidget {
           'Nearby place',
         ),
         item(
-          const Icon(
+          Icon(
             Iconsax.radar_copy,
             size: 11,
             color: AppColors.textTertiary,
@@ -1102,7 +1102,7 @@ class _MapActions extends StatelessWidget {
               foregroundColor: AppColors.primaryDark,
               backgroundColor: AppColors.surface,
               minimumSize: const Size.fromHeight(48),
-              side: const BorderSide(color: AppColors.border),
+              side: BorderSide(color: AppColors.border),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(AppRadius.lg),
               ),
@@ -1139,7 +1139,7 @@ class _PlacesList extends StatelessWidget {
         children: [
           for (var i = 0; i < places.length; i++) ...[
             if (i > 0)
-              const Divider(
+              Divider(
                 height: 1,
                 indent: 62,
                 color: AppColors.border,
@@ -1254,7 +1254,7 @@ class _PlaceRow extends StatelessWidget {
                 ),
               ),
             const SizedBox(width: 4),
-            const Icon(
+            Icon(
               CupertinoIcons.chevron_right,
               size: 14,
               color: AppColors.textTertiary,

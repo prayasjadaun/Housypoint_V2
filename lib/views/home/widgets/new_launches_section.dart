@@ -64,7 +64,7 @@ class LaunchCard extends StatelessWidget {
     return SizedBox(
       width: 230,
       child: Material(
-        color: AppColors.textPrimary,
+        color: AppColors.ink,
         borderRadius: BorderRadius.circular(AppRadius.xl + 4),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
@@ -98,14 +98,14 @@ class LaunchCard extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Iconsax.flash_1_copy, size: 12, color: AppColors.textPrimary),
+                      Icon(Iconsax.flash_1_copy, size: 12, color: AppColors.ink),
                       const SizedBox(width: 4),
                       Text(
                         'New launch',
                         style: AppTextStyles.caption.copyWith(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
+                          color: AppColors.ink,
                         ),
                       ),
                     ],

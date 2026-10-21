@@ -153,7 +153,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
             SliverToBoxAdapter(
               child: Container(
                 transform: Matrix4.translationValues(0, -24, 0),
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   color: AppColors.surface,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
                 ),
@@ -390,7 +390,7 @@ class _Header extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(
+              Icon(
                 Iconsax.location_copy,
                 size: 16,
                 color: AppColors.textSecondary,
@@ -713,7 +713,7 @@ class _AmenitiesGrid extends StatelessWidget {
               height: 52,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(AppRadius.lg + 2),
-                gradient: const LinearGradient(
+                gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [AppColors.primarySoft, AppColors.surface],

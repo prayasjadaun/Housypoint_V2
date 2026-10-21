@@ -54,7 +54,7 @@ class WizardScaffold extends StatelessWidget {
             AppSpacing.md,
             MediaQuery.paddingOf(context).bottom + 10,
           ),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.vertical(
               top: Radius.circular(AppRadius.xl),
@@ -74,7 +74,7 @@ class WizardScaffold extends StatelessWidget {
                       top: Radius.circular(AppRadius.xl),
                     ),
                     onTap: onBack,
-                    child: const SizedBox.square(
+                    child: SizedBox.square(
                       dimension: 54,
                       child: Icon(
                         CupertinoIcons.back,

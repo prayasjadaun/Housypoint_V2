@@ -155,7 +155,7 @@ class _Slot extends StatelessWidget {
                       Container(
                         width: 48,
                         height: 48,
-                        decoration: const BoxDecoration(color: AppColors.primarySoft, shape: BoxShape.circle),
+                        decoration: BoxDecoration(color: AppColors.primarySoft, shape: BoxShape.circle),
                         child: const Icon(Iconsax.add_copy, color: AppColors.primary),
                       ),
                       const SizedBox(height: 10),
@@ -235,7 +235,7 @@ class _Table extends StatelessWidget {
       child: Column(
         children: [
           for (var i = 0; i < rows.length; i++) ...[
-            if (i > 0) const Divider(height: 1, color: AppColors.border),
+            if (i > 0) Divider(height: 1, color: AppColors.border),
             Padding(
               padding: const EdgeInsets.all(12),
               child: Column(
@@ -261,7 +261,7 @@ class _Table extends StatelessWidget {
               ),
             ),
           ],
-          const Divider(height: 1, color: AppColors.border),
+          Divider(height: 1, color: AppColors.border),
           Padding(
             padding: const EdgeInsets.all(8),
             child: Row(

@@ -39,7 +39,7 @@ class AppSnackBar {
               vertical: 14,
             ),
             decoration: BoxDecoration(
-              color: AppColors.textPrimary.withValues(alpha: 0.95),
+              color: AppColors.ink.withValues(alpha: 0.95),
               borderRadius: BorderRadius.circular(AppRadius.md),
               boxShadow: [
                 BoxShadow(

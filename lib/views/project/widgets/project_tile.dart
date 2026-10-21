@@ -61,7 +61,7 @@ class ProjectTile extends StatelessWidget {
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          const Icon(Iconsax.location_copy, size: 12, color: AppColors.textTertiary),
+                          Icon(Iconsax.location_copy, size: 12, color: AppColors.textTertiary),
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(

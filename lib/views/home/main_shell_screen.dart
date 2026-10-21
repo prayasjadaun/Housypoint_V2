@@ -106,7 +106,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
         actions: [
           IconButton(
             onPressed: () => context.push(AppRoutes.notifications),
-            icon: const Icon(Iconsax.notification_copy, color: AppColors.textPrimary),
+            icon: Icon(Iconsax.notification_copy, color: AppColors.textPrimary),
           ),
           const SizedBox(width: 6),
         ],
@@ -134,7 +134,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
         if (listings != null) ...[
           IconButton(
             onPressed: listings.openSearch,
-            icon: const Icon(
+            icon: Icon(
               Iconsax.search_normal_1_copy,
               color: AppColors.textPrimary,
             ),

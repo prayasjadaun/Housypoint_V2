@@ -78,7 +78,7 @@ class _ListingsSearchFieldState extends State<ListingsSearchField> {
                   color: AppColors.textTertiary,
                 ),
                 contentPadding: const EdgeInsets.symmetric(vertical: 11),
-                prefixIcon: const Icon(
+                prefixIcon: Icon(
                   Iconsax.search_normal_1_copy,
                   size: 18,
                   color: AppColors.textSecondary,
@@ -88,7 +88,7 @@ class _ListingsSearchFieldState extends State<ListingsSearchField> {
                     ? null
                     : GestureDetector(
                         onTap: _clear,
-                        child: const Icon(
+                        child: Icon(
                           Icons.cancel_rounded,
                           size: 18,
                           color: AppColors.textTertiary,

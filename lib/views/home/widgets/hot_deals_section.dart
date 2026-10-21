@@ -36,7 +36,9 @@ class _HotDealsSectionState extends State<HotDealsSection> {
 
   @override
   Widget build(BuildContext context) {
-    final deals = context.select<HomeController, DistressDeals?>((h) => h.hotDeals);
+    final deals = context.select<HomeController, DistressDeals?>(
+      (h) => h.hotDeals,
+    );
     final saved = context.watch<SavedController>();
 
     // Hide entirely once loaded with nothing to show.
@@ -58,7 +60,11 @@ class _HotDealsSectionState extends State<HotDealsSection> {
                   color: AppColors.accentRose.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(AppRadius.sm + 2),
                 ),
-                child: const Icon(Iconsax.flash_1_copy, size: 18, color: AppColors.accentRose),
+                child: const Icon(
+                  Iconsax.flash_1_copy,
+                  size: 18,
+                  color: AppColors.accentRose,
+                ),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -66,7 +72,10 @@ class _HotDealsSectionState extends State<HotDealsSection> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Hot deals', style: AppTextStyles.title),
-                    Text('Priced below market — grab them fast', style: AppTextStyles.caption),
+                    Text(
+                      'Priced below market — grab them fast',
+                      style: AppTextStyles.caption,
+                    ),
                   ],
                 ),
               ),
@@ -97,12 +106,18 @@ class _HotDealsSectionState extends State<HotDealsSection> {
                   decoration: BoxDecoration(
                     color: selected ? AppColors.textPrimary : AppColors.surface,
                     borderRadius: BorderRadius.circular(AppRadius.pill),
-                    border: Border.all(color: selected ? AppColors.textPrimary : AppColors.border),
+                    border: Border.all(
+                      color: selected
+                          ? AppColors.textPrimary
+                          : AppColors.border,
+                    ),
                   ),
                   child: Text(
                     count == null ? label : '$label · $count',
                     style: AppTextStyles.caption.copyWith(
-                      color: selected ? Colors.white : AppColors.textPrimary,
+                      color: selected
+                          ? AppColors.surface
+                          : AppColors.textPrimary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -117,19 +132,29 @@ class _HotDealsSectionState extends State<HotDealsSection> {
           child: deals == null
               ? ListView.separated(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                  ),
                   itemCount: 2,
                   separatorBuilder: (_, _) => const SizedBox(width: 12),
-                  itemBuilder: (_, _) =>
-                      const SkeletonBox(width: 260, height: 330, radius: AppRadius.xl),
+                  itemBuilder: (_, _) => const SkeletonBox(
+                    width: 260,
+                    height: 330,
+                    radius: AppRadius.xl,
+                  ),
                 )
               : items.isEmpty
               ? Center(
-                  child: Text('No deals in this category right now', style: AppTextStyles.caption),
+                  child: Text(
+                    'No deals in this category right now',
+                    style: AppTextStyles.caption,
+                  ),
                 )
               : ListView.separated(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                  ),
                   itemCount: items.length,
                   separatorBuilder: (_, _) => const SizedBox(width: 12),
                   itemBuilder: (context, i) {
@@ -147,7 +172,11 @@ class _HotDealsSectionState extends State<HotDealsSection> {
                           }
                         },
                         onTap: () => context.push(
-                          AppRoutes.listingPath(l.id, rental: l.isRental, hotDeal: true),
+                          AppRoutes.listingPath(
+                            l.id,
+                            rental: l.isRental,
+                            hotDeal: true,
+                          ),
                           extra: l,
                         ),
                       ),

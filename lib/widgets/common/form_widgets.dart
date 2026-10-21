@@ -88,7 +88,7 @@ class PickerField extends StatelessWidget {
                   if (loading)
                     const AppSpinner(size: 16)
                   else
-                    const Icon(Iconsax.arrow_down_1_copy, size: 16, color: AppColors.textSecondary),
+                    Icon(Iconsax.arrow_down_1_copy, size: 16, color: AppColors.textSecondary),
                 ],
               ),
             ),
@@ -121,7 +121,7 @@ class CheckRow extends StatelessWidget {
                 value: value,
                 onChanged: (v) => onChanged(v ?? false),
                 activeColor: AppColors.primary,
-                side: const BorderSide(color: AppColors.border, width: 1.5),
+                side: BorderSide(color: AppColors.border, width: 1.5),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
               ),
             ),

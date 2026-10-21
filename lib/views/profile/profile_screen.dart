@@ -108,6 +108,19 @@ class ProfileScreen extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.lg),
           SettingsGroup(
+            title: 'Preferences',
+            children: [
+              SettingsTile(
+                icon: Iconsax.setting_2_copy,
+                title: 'Your preferences',
+                subtitle: 'Appearance and app behaviour',
+                color: AppColors.accentIndigo,
+                onTap: () => context.push(AppRoutes.preferences),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          SettingsGroup(
             title: 'Support',
             children: [
               SettingsTile(icon: Iconsax.headphone_copy, title: 'Help & support', subtitle: 'Call, WhatsApp or email us', color: AppColors.accentBlue, onTap: () => context.push(AppRoutes.support)),
@@ -185,7 +198,7 @@ class _AccountCard extends StatelessWidget {
               ],
             ),
           ),
-          const Icon(Iconsax.edit_2_copy, size: 18, color: AppColors.textTertiary),
+          Icon(Iconsax.edit_2_copy, size: 18, color: AppColors.textTertiary),
         ],
       ),
     );

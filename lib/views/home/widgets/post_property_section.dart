@@ -192,7 +192,7 @@ class _BuyBanner extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(Iconsax.arrow_right_3_copy, size: 18, color: AppColors.textTertiary),
+              Icon(Iconsax.arrow_right_3_copy, size: 18, color: AppColors.textTertiary),
             ],
           ),
         ),

@@ -41,7 +41,7 @@ class SettingsGroup extends StatelessWidget {
             children: [
               for (var i = 0; i < children.length; i++) ...[
                 if (i > 0)
-                  const Divider(height: 1, indent: 64, color: AppColors.border),
+                  Divider(height: 1, indent: 64, color: AppColors.border),
                 children[i],
               ],
             ],
@@ -111,7 +111,7 @@ class SettingsTile extends StatelessWidget {
               ),
             ),
             trailing ??
-                const Icon(Iconsax.arrow_right_3_copy, size: 18, color: AppColors.textTertiary),
+                Icon(Iconsax.arrow_right_3_copy, size: 18, color: AppColors.textTertiary),
           ],
         ),
       ),

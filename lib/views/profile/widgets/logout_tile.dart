@@ -133,7 +133,7 @@ class LogoutTile extends StatelessWidget {
                   ),
                 ),
               ),
-              const Icon(
+              Icon(
                 Iconsax.arrow_right_3_copy,
                 size: 18,
                 color: AppColors.textTertiary,

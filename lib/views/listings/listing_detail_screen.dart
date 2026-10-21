@@ -155,7 +155,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
             child: Container(
               // Rounded sheet pulled over the photos
               transform: Matrix4.translationValues(0, -24, 0),
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
               ),
@@ -369,7 +369,7 @@ class _Body extends StatelessWidget {
                         vertical: 5,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.textPrimary.withValues(alpha: 0.75),
+                        color: AppColors.ink.withValues(alpha: 0.75),
                         borderRadius: BorderRadius.circular(AppRadius.pill),
                       ),
                       child: Row(
@@ -509,7 +509,7 @@ class _SpecBar extends StatelessWidget {
           children: [
             for (var i = 0; i < specs.length; i++) ...[
               if (i > 0)
-                const VerticalDivider(
+                VerticalDivider(
                   width: 1,
                   thickness: 1,
                   color: AppColors.border,
@@ -761,7 +761,7 @@ class _DetailsList extends StatelessWidget {
       child: Column(
         children: [
           for (var i = 0; i < rows.length; i++) ...[
-            if (i > 0) const Divider(height: 1, color: AppColors.border),
+            if (i > 0) Divider(height: 1, color: AppColors.border),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 13),
               child: Row(
@@ -844,7 +844,7 @@ class _AmenitiesGridState extends State<_AmenitiesGrid> {
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(AppRadius.lg + 2),
-                    gradient: const LinearGradient(
+                    gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [AppColors.primarySoft, AppColors.surface],
@@ -997,7 +997,7 @@ class _ActionBar extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        border: const Border(top: BorderSide(color: AppColors.border)),
+        border: Border(top: BorderSide(color: AppColors.border)),
         borderRadius: const BorderRadius.vertical(
           top: Radius.circular(AppRadius.xl),
         ),

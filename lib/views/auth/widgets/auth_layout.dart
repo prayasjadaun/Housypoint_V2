@@ -145,7 +145,7 @@ class _Header extends StatelessWidget {
             bottom: 0,
             height: _capHeight,
             child: Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.vertical(
                   top: Radius.circular(AppRadius.xl + 8),

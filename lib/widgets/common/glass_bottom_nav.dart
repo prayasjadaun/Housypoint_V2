@@ -62,6 +62,7 @@ class GlassBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selectedIndex = items.indexWhere((i) => i.selected);
+    final dark = AppColors.isDark;
     final radius = BorderRadius.circular(_pillHeight / 2);
 
     return Padding(
@@ -72,7 +73,7 @@ class GlassBottomNav extends StatelessWidget {
           borderRadius: radius,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.14),
+              color: Colors.black.withValues(alpha: dark ? 0.4 : 0.14),
               blurRadius: 24,
               offset: const Offset(0, 10),
             ),
@@ -91,14 +92,19 @@ class GlassBottomNav extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [
-                    const Color(0xFFF4F6F8).withValues(alpha: 0.55),
-                    const Color(0xFFE9EDF1).withValues(alpha: 0.45),
-                  ],
+                  colors: dark
+                      ? [
+                          const Color(0xFF23272A).withValues(alpha: 0.72),
+                          const Color(0xFF16191B).withValues(alpha: 0.66),
+                        ]
+                      : [
+                          const Color(0xFFF4F6F8).withValues(alpha: 0.55),
+                          const Color(0xFFE9EDF1).withValues(alpha: 0.45),
+                        ],
                 ),
                 border: Border.all(
                   width: 0.8,
-                  color: Colors.white.withValues(alpha: 0.6),
+                  color: Colors.white.withValues(alpha: dark ? 0.1 : 0.6),
                 ),
               ),
               child: LayoutBuilder(
@@ -161,20 +167,30 @@ class GlassBottomNav extends StatelessWidget {
 
   // Translucent brand-tinted pill — reads as glass on the blurred bar
   Widget _buildPill() {
+    final dark = AppColors.isDark;
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(_pillHeight / 2),
-        color: Color.alphaBlend(
-          AppColors.primary.withValues(alpha: 0.10),
-          Colors.white.withValues(alpha: 0.45),
+        color: dark
+            ? AppColors.mainGreen.withValues(alpha: 0.16)
+            : Color.alphaBlend(
+                AppColors.primary.withValues(alpha: 0.10),
+                Colors.white.withValues(alpha: 0.45),
+              ),
+        border: Border.all(
+          width: 0.8,
+          color: dark ? AppColors.mainGreen.withValues(alpha: 0.28) : Colors.white.withValues(alpha: 0.7),
         ),
-        border: Border.all(width: 0.8, color: Colors.white.withValues(alpha: 0.7)),
       ),
     );
   }
 
   Widget _buildItem(GlassNavItem item) {
-    final color = item.selected ? AppColors.primary : AppColors.textSecondary;
+    // Brighter green on dark — primary is too low-contrast on the dark bar.
+    final selectedColor = AppColors.isDark ? AppColors.mainGreen : AppColors.primary;
+    // Unselected icons near-white on dark so they don't wash out to grey.
+    final idleColor = AppColors.isDark ? AppColors.textPrimary.withValues(alpha: 0.85) : AppColors.textSecondary;
+    final color = item.selected ? selectedColor : idleColor;
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,

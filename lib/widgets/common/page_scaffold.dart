@@ -20,7 +20,7 @@ class PageScaffold extends StatelessWidget {
     this.actions,
     this.bottomBar,
     this.extendBody = false,
-    this.backgroundColor = AppColors.background,
+    this.backgroundColor,
   });
 
   final String title;
@@ -30,7 +30,7 @@ class PageScaffold extends StatelessWidget {
 
   /// Body scrolls under [bottomBar] — needed for the floating glass nav.
   final bool extendBody;
-  final Color backgroundColor;
+  final Color? backgroundColor;
 
   /// Top padding for content under the glass app bar.
   static double topInset(BuildContext context) =>
@@ -39,7 +39,7 @@ class PageScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: backgroundColor ?? AppColors.background,
       extendBodyBehindAppBar: true,
       extendBody: extendBody,
       appBar: GlassAppBar(
@@ -47,7 +47,7 @@ class PageScaffold extends StatelessWidget {
         title: Text(title),
         leading: IconButton(
           onPressed: () => context.canPop() ? context.pop() : null,
-          icon: const Icon(CupertinoIcons.back, color: AppColors.textPrimary),
+          icon: Icon(CupertinoIcons.back, color: AppColors.textPrimary),
         ),
         actions: actions,
       ),

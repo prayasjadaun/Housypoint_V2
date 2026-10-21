@@ -119,7 +119,7 @@ class _PropertyStepState extends State<PropertyStep> {
       leadingOf: (p, selected) => SelectionLeading(
         selected: selected,
         child: p.logo.isEmpty
-            ? const Icon(Iconsax.buildings_2_copy, size: 20, color: AppColors.textSecondary)
+            ? Icon(Iconsax.buildings_2_copy, size: 20, color: AppColors.textSecondary)
             : Padding(padding: const EdgeInsets.all(4), child: AppNetworkImage(url: p.logo, fit: BoxFit.contain)),
       ),
     );
@@ -297,7 +297,7 @@ class _FloorPlanCard extends StatelessWidget {
               if (uploaded)
                 IconButton(
                   onPressed: onRemove,
-                  icon: const Icon(Iconsax.close_circle_copy, size: 20, color: AppColors.textSecondary),
+                  icon: Icon(Iconsax.close_circle_copy, size: 20, color: AppColors.textSecondary),
                 ),
             ],
           ),
@@ -591,7 +591,7 @@ class _ReviewStepState extends State<ReviewStep> {
               if (plan.savings > 0)
                 _PriceRow(label: 'You save', value: '-${_rupees(plan.savings)}', color: AppColors.success),
               _PriceRow(label: 'GST (18%)', value: _rupees(plan.gst)),
-              const Divider(height: 20, color: AppColors.border),
+              Divider(height: 20, color: AppColors.border),
               _PriceRow(label: 'Total payable', value: _rupees(plan.total), bold: true),
             ],
           ),

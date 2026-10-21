@@ -137,7 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
           const SizedBox(height: 10),
           Row(
             children: [
-              const Icon(
+              Icon(
                 Iconsax.shield_tick_copy,
                 size: 15,
                 color: AppColors.textTertiary,
@@ -242,7 +242,7 @@ class _ReferralTile extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(
+              Icon(
                 Iconsax.add_copy,
                 size: 20,
                 color: AppColors.textSecondary,
@@ -303,7 +303,7 @@ class _TermsText extends StatelessWidget {
 
   TextSpan _link(String text, String url) => TextSpan(
     text: text,
-    style: const TextStyle(
+    style: TextStyle(
       color: AppColors.textPrimary,
       fontWeight: FontWeight.w600,
       decoration: TextDecoration.underline,

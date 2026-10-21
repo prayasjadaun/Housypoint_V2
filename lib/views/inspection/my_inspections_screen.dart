@@ -150,10 +150,10 @@ class _BookingCard extends StatelessWidget {
               PdiStatusPill(booking: booking),
             ],
           ),
-          const Divider(height: 22, color: AppColors.border),
+          Divider(height: 22, color: AppColors.border),
           Row(
             children: [
-              const Icon(Iconsax.calendar_copy, size: 14, color: AppColors.textTertiary),
+              Icon(Iconsax.calendar_copy, size: 14, color: AppColors.textTertiary),
               const SizedBox(width: 6),
               Expanded(child: Text(when.isEmpty ? '—' : when, style: AppTextStyles.caption)),
               Text(

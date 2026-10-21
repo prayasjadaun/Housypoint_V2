@@ -46,7 +46,7 @@ class PropertyCard extends StatelessWidget {
     final subtitle = [listing.projectName, listing.builderName].where((s) => s.isNotEmpty).join(' · ');
 
     final card = Material(
-      color: AppColors.textPrimary,
+      color: AppColors.ink,
       borderRadius: radius,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -121,7 +121,7 @@ class PropertyCard extends StatelessWidget {
                             style: AppTextStyles.caption.copyWith(
                               fontSize: 10,
                               fontWeight: FontWeight.w700,
-                              color: AppColors.textPrimary,
+                              color: AppColors.ink,
                             ),
                           ),
                         ),
@@ -197,7 +197,7 @@ class _GlassPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = gold ? AppColors.textPrimary : Colors.white;
+    final color = gold ? AppColors.ink : Colors.white;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: small ? 8 : 10, vertical: small ? 4 : 5),
       decoration: BoxDecoration(

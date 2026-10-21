@@ -130,12 +130,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
               child: Row(
                 children: [
-                  const Icon(Iconsax.call_copy, size: 20, color: AppColors.textSecondary),
+                  Icon(Iconsax.call_copy, size: 20, color: AppColors.textSecondary),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text('+${_user?.phone ?? ''}', style: AppTextStyles.body.copyWith(fontSize: 15)),
                   ),
-                  const Icon(Iconsax.lock_copy, size: 16, color: AppColors.textTertiary),
+                  Icon(Iconsax.lock_copy, size: 16, color: AppColors.textTertiary),
                 ],
               ),
             ),

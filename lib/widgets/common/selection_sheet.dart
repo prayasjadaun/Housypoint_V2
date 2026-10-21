@@ -148,7 +148,7 @@ class _SelectionSheetState<T> extends State<_SelectionSheet<T>> {
       padding: EdgeInsets.only(bottom: keyboard),
       child: Container(
         height: height,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         ),
@@ -184,7 +184,7 @@ class _SelectionSheetState<T> extends State<_SelectionSheet<T>> {
                   ),
                   IconButton(
                     onPressed: () => Navigator.pop(context),
-                    icon: const Icon(
+                    icon: Icon(
                       Iconsax.close_circle_copy,
                       color: AppColors.textSecondary,
                     ),
@@ -202,7 +202,7 @@ class _SelectionSheetState<T> extends State<_SelectionSheet<T>> {
                 decoration: InputDecoration(
                   hintText: widget.searchHint,
                   contentPadding: const EdgeInsets.symmetric(vertical: 14),
-                  prefixIcon: const Icon(
+                  prefixIcon: Icon(
                     Iconsax.search_normal_1_copy,
                     size: 20,
                     color: AppColors.textSecondary,
@@ -213,7 +213,7 @@ class _SelectionSheetState<T> extends State<_SelectionSheet<T>> {
                             _searchController.clear();
                             setState(() => _query = '');
                           },
-                          icon: const Icon(
+                          icon: Icon(
                             Iconsax.close_circle_copy,
                             size: 18,
                             color: AppColors.textTertiary,
@@ -354,7 +354,7 @@ class _EmptyResults extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(
+          Icon(
             Iconsax.search_status_copy,
             size: 40,
             color: AppColors.textTertiary,

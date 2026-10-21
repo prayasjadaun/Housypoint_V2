@@ -67,7 +67,7 @@ class _BuildersScreenState extends State<BuildersScreen> {
                   TextField(
                     onChanged: (v) => setState(() => _query = v),
                     textInputAction: TextInputAction.search,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       hintText: 'Search builders',
                       prefixIcon: Icon(Iconsax.search_normal_1_copy, size: 20, color: AppColors.textSecondary),
                     ),

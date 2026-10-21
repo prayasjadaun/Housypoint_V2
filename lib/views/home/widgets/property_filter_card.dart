@@ -128,7 +128,7 @@ class PropertyFilterCard extends StatelessWidget {
               },
             ),
           ),
-          const Divider(height: 1, indent: AppSpacing.md, endIndent: AppSpacing.md, color: AppColors.border),
+          Divider(height: 1, indent: AppSpacing.md, endIndent: AppSpacing.md, color: AppColors.border),
           AnimatedSize(
             duration: const Duration(milliseconds: 250),
             curve: Curves.easeOutCubic,
@@ -244,7 +244,7 @@ class _PickerCard extends StatelessWidget {
                 Container(
                   width: 32,
                   height: 32,
-                  decoration: const BoxDecoration(color: AppColors.primarySoft, shape: BoxShape.circle),
+                  decoration: BoxDecoration(color: AppColors.primarySoft, shape: BoxShape.circle),
                   child: Icon(icon, size: 16, color: AppColors.primary),
                 ),
                 const SizedBox(width: 8),
@@ -262,7 +262,7 @@ class _PickerCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Icon(Iconsax.arrow_down_1_copy, size: 14, color: AppColors.textSecondary),
+                Icon(Iconsax.arrow_down_1_copy, size: 14, color: AppColors.textSecondary),
               ],
             ),
           ),

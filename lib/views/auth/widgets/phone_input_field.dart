@@ -186,7 +186,7 @@ class _CountryButton extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 4),
-            const Icon(
+            Icon(
               Iconsax.arrow_down_1_copy,
               size: 14,
               color: AppColors.textSecondary,

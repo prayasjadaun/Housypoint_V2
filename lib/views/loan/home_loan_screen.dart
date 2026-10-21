@@ -262,7 +262,7 @@ class _ExpertCard extends StatelessWidget {
               Container(
                 width: 44,
                 height: 44,
-                decoration: const BoxDecoration(color: AppColors.surface, shape: BoxShape.circle),
+                decoration: BoxDecoration(color: AppColors.surface, shape: BoxShape.circle),
                 child: const Icon(Iconsax.money_recive_copy, color: AppColors.goldDark),
               ),
               const SizedBox(width: 12),
@@ -308,7 +308,7 @@ class _BankTile extends StatelessWidget {
         maxChildSize: 0.92,
         expand: false,
         builder: (_, scroll) => Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
           ),

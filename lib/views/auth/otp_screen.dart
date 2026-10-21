@@ -104,7 +104,7 @@ class _OtpScreenState extends State<OtpScreen> {
             const TextSpan(text: 'Enter the 5-digit code sent to '),
             TextSpan(
               text: formatted,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.w600,
               ),
@@ -124,7 +124,7 @@ class _OtpScreenState extends State<OtpScreen> {
           const SizedBox(height: AppSpacing.lg),
           Row(
             children: [
-              const Icon(Iconsax.timer_1_copy, size: 18, color: AppColors.textSecondary),
+              Icon(Iconsax.timer_1_copy, size: 18, color: AppColors.textSecondary),
               const SizedBox(width: 6),
               if (_secondsLeft > 0)
                 Text(

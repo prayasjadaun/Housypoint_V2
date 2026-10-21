@@ -739,7 +739,7 @@ class _EmptyNote extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(
+          Icon(
             Iconsax.search_status_copy,
             size: 20,
             color: AppColors.textSecondary,

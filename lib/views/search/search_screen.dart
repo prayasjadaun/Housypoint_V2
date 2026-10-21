@@ -102,7 +102,7 @@ class _SearchScreenState extends State<SearchScreen> {
               children: [
                 IconButton(
                   onPressed: () => context.pop(),
-                  icon: const Icon(
+                  icon: Icon(
                     CupertinoIcons.back,
                     color: AppColors.textPrimary,
                   ),
@@ -118,7 +118,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     decoration: InputDecoration(
                       hintText: 'Search projects, builders, localities',
                       contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                      prefixIcon: const Icon(
+                      prefixIcon: Icon(
                         Iconsax.search_normal_1_copy,
                         size: 20,
                         color: AppColors.textSecondary,
@@ -130,7 +130,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 _controller.clear();
                                 _onChanged('');
                               },
-                              icon: const Icon(
+                              icon: Icon(
                                 Iconsax.close_circle_copy,
                                 size: 18,
                                 color: AppColors.textTertiary,
@@ -171,7 +171,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               ),
                               label: Text(s, style: AppTextStyles.label),
                               backgroundColor: AppColors.surface,
-                              side: const BorderSide(color: AppColors.border),
+                              side: BorderSide(color: AppColors.border),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(
                                   AppRadius.pill,
@@ -280,7 +280,7 @@ class _Section extends StatelessWidget {
               children: [
                 for (var i = 0; i < hits.length; i++) ...[
                   if (i > 0)
-                    const Divider(
+                    Divider(
                       height: 1,
                       indent: 66,
                       color: AppColors.border,
@@ -322,7 +322,7 @@ class _Section extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             style: AppTextStyles.caption,
                           ),
-                    trailing: const Icon(
+                    trailing: Icon(
                       Iconsax.arrow_right_3_copy,
                       size: 16,
                       color: AppColors.textTertiary,

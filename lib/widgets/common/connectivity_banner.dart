@@ -95,7 +95,7 @@ class _Pill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = online ? AppColors.success : AppColors.textPrimary;
+    final color = online ? AppColors.success : AppColors.ink;
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(999),

@@ -10,6 +10,7 @@ class AppPrefs {
 
   static const _onboardingSeenKey = 'onboarding_seen';
   static const _selectedCityKey = 'selected_city';
+  static const _themeModeKey = 'theme_mode';
 
   static Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
@@ -26,4 +27,10 @@ class AppPrefs {
   static Future<void> setSelectedCity(String? city) => city == null
       ? _prefs.remove(_selectedCityKey)
       : _prefs.setString(_selectedCityKey, city);
+
+  /// ThemeMode name (light / dark / system); null = never chosen.
+  static String? get themeMode => _prefs.getString(_themeModeKey);
+
+  static Future<void> setThemeMode(String mode) =>
+      _prefs.setString(_themeModeKey, mode);
 }

@@ -12,6 +12,7 @@ import 'controllers/listings_controller.dart';
 import 'controllers/referral_controller.dart';
 import 'controllers/saved_controller.dart';
 import 'controllers/shell_controller.dart';
+import 'controllers/theme_controller.dart';
 import 'core/network/connectivity_service.dart';
 import 'core/network/dio_client.dart';
 import 'core/storage/app_prefs.dart';
@@ -57,6 +58,7 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: authController),
+        ChangeNotifierProvider(create: (_) => ThemeController()),
         ChangeNotifierProvider(create: (_) => ConnectivityService(), lazy: false),
         ChangeNotifierProvider(
           create: (_) => HomeController(

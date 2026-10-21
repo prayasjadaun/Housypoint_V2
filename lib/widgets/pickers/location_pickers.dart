@@ -87,7 +87,7 @@ Future<PickResult<BuilderModel>> showBuilderPicker(
                 b.logoUrl,
                 fit: BoxFit.contain,
                 cacheWidth: 120,
-                errorBuilder: (_, _, _) => const Icon(
+                errorBuilder: (_, _, _) => Icon(
                   Iconsax.buildings_2_copy,
                   size: 20,
                   color: AppColors.textSecondary,

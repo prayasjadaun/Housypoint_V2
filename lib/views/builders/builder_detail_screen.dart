@@ -109,7 +109,7 @@ class _BuilderDetailScreenState extends State<BuilderDetailScreen> {
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Padding(
+                              Padding(
                                 padding: EdgeInsets.only(top: 2),
                                 child: Icon(Iconsax.building_copy, size: 13, color: AppColors.textTertiary),
                               ),

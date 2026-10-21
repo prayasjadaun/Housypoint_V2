@@ -20,7 +20,7 @@ Future<void> showSuccessSheet(
     enableDrag: false,
     backgroundColor: Colors.transparent,
     builder: (sheetContext) => Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
@@ -42,7 +42,7 @@ Future<void> showSuccessSheet(
                 Container(
                   width: 72,
                   height: 72,
-                  decoration: const BoxDecoration(color: AppColors.primarySoft, shape: BoxShape.circle),
+                  decoration: BoxDecoration(color: AppColors.primarySoft, shape: BoxShape.circle),
                   child: const Icon(Icons.check_rounded, size: 40, color: AppColors.primary),
                 ),
               ],

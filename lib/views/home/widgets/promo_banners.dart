@@ -37,7 +37,7 @@ class ReferBanner extends StatelessWidget {
                   style: AppTextStyles.caption.copyWith(color: AppColors.textPrimary.withValues(alpha: 0.65)),
                 ),
                 const SizedBox(height: 12),
-                const _CtaPill(label: 'Start earning', color: AppColors.textPrimary),
+                _CtaPill(label: 'Start earning', color: AppColors.textPrimary),
               ],
             ),
           ),
@@ -97,7 +97,7 @@ class InspectionBanner extends StatelessWidget {
                     ),
                   ),
                 const SizedBox(height: 8),
-                const _CtaPill(label: 'Book inspection', color: AppColors.gold, textColor: AppColors.textPrimary),
+                _CtaPill(label: 'Book inspection', color: AppColors.gold, textColor: AppColors.textPrimary),
               ],
             ),
           ),
@@ -185,7 +185,7 @@ class _CompareSlot extends StatelessWidget {
           Expanded(
             child: Text(label, style: AppTextStyles.label.copyWith(fontWeight: FontWeight.w600)),
           ),
-          const Icon(Iconsax.add_copy, size: 16, color: AppColors.textTertiary),
+          Icon(Iconsax.add_copy, size: 16, color: AppColors.textTertiary),
         ],
       ),
     );

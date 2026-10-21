@@ -97,12 +97,12 @@ class _CodeCard extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Iconsax.crown_1_copy, size: 14, color: AppColors.textPrimary),
+                    Icon(Iconsax.crown_1_copy, size: 14, color: AppColors.ink),
                     const SizedBox(width: 5),
                     Text(
                       stats.tier,
                       style: AppTextStyles.caption.copyWith(
-                        color: AppColors.textPrimary,
+                        color: AppColors.ink,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -203,7 +203,7 @@ class _RoundButton extends StatelessWidget {
         onTap: onTap,
         child: SizedBox.square(
           dimension: 48,
-          child: Icon(icon, size: 20, color: filled ? AppColors.textPrimary : Colors.white),
+          child: Icon(icon, size: 20, color: filled ? AppColors.ink : Colors.white),
         ),
       ),
     );
@@ -327,7 +327,7 @@ class _LinkTile extends StatelessWidget {
               await ShareHelper.copy(url);
               if (context.mounted) context.showSnackBar('Link copied');
             },
-            icon: const Icon(Iconsax.copy_copy, size: 18, color: AppColors.textSecondary),
+            icon: Icon(Iconsax.copy_copy, size: 18, color: AppColors.textSecondary),
           ),
           IconButton(
             visualDensity: VisualDensity.compact,

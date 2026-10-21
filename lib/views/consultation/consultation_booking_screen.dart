@@ -132,7 +132,7 @@ class _ConsultationBookingScreenState extends State<ConsultationBookingScreen> {
           AppSpacing.md,
           MediaQuery.paddingOf(context).bottom + 12,
         ),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: AppColors.surface,
           border: Border(top: BorderSide(color: AppColors.border)),
           borderRadius: BorderRadius.vertical(

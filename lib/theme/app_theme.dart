@@ -8,14 +8,17 @@ import 'app_text_styles.dart';
 class AppTheme {
   AppTheme._();
 
-  static ThemeData get light {
+  /// Built from [AppColors], so it follows [AppColors.isDark].
+  static ThemeData get current {
+    final brightness = AppColors.isDark ? Brightness.dark : Brightness.light;
     final inputBorder = OutlineInputBorder(
       borderRadius: BorderRadius.circular(AppRadius.lg),
-      borderSide: const BorderSide(color: AppColors.border, width: 1.2),
+      borderSide: BorderSide(color: AppColors.border, width: 1.2),
     );
 
     return ThemeData(
       useMaterial3: true,
+      brightness: brightness,
       scaffoldBackgroundColor: AppColors.background,
       textTheme: GoogleFonts.poppinsTextTheme().copyWith(
         headlineSmall: AppTextStyles.heading,
@@ -25,10 +28,22 @@ class AppTheme {
       ),
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primary,
+        brightness: brightness,
         primary: AppColors.primary,
         secondary: AppColors.gold,
         surface: AppColors.surface,
         error: AppColors.error,
+        onSurface: AppColors.textPrimary,
+        outline: AppColors.border,
+      ),
+      dividerColor: AppColors.border,
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: AppColors.surface,
+        surfaceTintColor: Colors.transparent,
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: AppColors.surface,
+        surfaceTintColor: Colors.transparent,
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.surface,

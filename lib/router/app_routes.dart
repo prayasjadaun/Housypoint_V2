@@ -12,6 +12,7 @@ class AppRoutes {
   static const String profile = '/profile';
   static const String editProfile = '/profile/edit';
   static const String myListings = '/profile/listings';
+  static const String preferences = '/profile/preferences';
   static const String support = '/support';
   static const String search = '/search';
   static const String notifications = '/notifications';

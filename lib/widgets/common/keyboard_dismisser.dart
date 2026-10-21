@@ -145,7 +145,7 @@ class _KeyboardToolbar extends StatelessWidget {
     return Material(
       color: AppColors.surfaceMuted,
       child: DecoratedBox(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           border: Border(top: BorderSide(color: AppColors.border)),
         ),
         child: Row(
@@ -154,7 +154,7 @@ class _KeyboardToolbar extends StatelessWidget {
             IconButton(
               tooltip: 'Previous',
               onPressed: () => _move(false),
-              icon: const Icon(
+              icon: Icon(
                 Iconsax.arrow_up_2_copy,
                 size: 20,
                 color: AppColors.textSecondary,
@@ -163,7 +163,7 @@ class _KeyboardToolbar extends StatelessWidget {
             IconButton(
               tooltip: 'Next',
               onPressed: () => _move(true),
-              icon: const Icon(
+              icon: Icon(
                 Iconsax.arrow_down_1_copy,
                 size: 20,
                 color: AppColors.textSecondary,

@@ -84,7 +84,7 @@ class _PlansStrip extends StatelessWidget {
         Container(
           width: double.infinity,
           padding: const EdgeInsets.fromLTRB(14, 16, 14, 14),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.vertical(bottom: _corner),
             boxShadow: [
@@ -190,7 +190,7 @@ class _PlansStrip extends StatelessWidget {
             child: Container(
               width: _notch,
               height: _notch,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: AppColors.background,
                 shape: BoxShape.circle,
               ),
@@ -345,7 +345,7 @@ class _PlansSheetState extends State<_PlansSheet> {
       maxChildSize: 0.94,
       expand: false,
       builder: (context, scroll) => Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         ),
@@ -389,7 +389,7 @@ class _PlansSheetState extends State<_PlansSheet> {
             ),
             Container(
               padding: EdgeInsets.fromLTRB(AppSpacing.md, 10, AppSpacing.md, bottom + 12),
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: AppColors.surface,
                 border: Border(top: BorderSide(color: AppColors.border)),
               ),

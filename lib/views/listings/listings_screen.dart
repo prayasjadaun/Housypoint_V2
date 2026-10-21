@@ -193,7 +193,7 @@ class _Filters extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 2),
-                    const Icon(Iconsax.arrow_down_1_copy, size: 14, color: AppColors.textSecondary),
+                    Icon(Iconsax.arrow_down_1_copy, size: 14, color: AppColors.textSecondary),
                   ],
                 ),
               ),
