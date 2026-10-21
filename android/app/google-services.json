@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "874269720625",
+    "project_id": "housypoint-48b1f",
+    "storage_bucket": "housypoint-48b1f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:874269720625:android:b0efe85fa7c9394e191510",
+        "android_client_info": {
+          "package_name": "com.housypoint.housy_point"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPSMib_oQVIUI7Pni5rWaZo__rYwRApMY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
