@@ -30,9 +30,10 @@ import '../views/onboarding/onboarding_screen.dart';
 import '../views/post_property/post_property_screen.dart';
 import '../views/profile/edit_profile_screen.dart';
 import '../views/profile/my_listings_screen.dart';
+import '../views/profile/profile_screen.dart';
 import '../views/project/project_detail_screen.dart';
 import '../views/search/search_screen.dart';
-import '../views/shell/main_shell_screen.dart';
+import '../views/home/main_shell_screen.dart';
 import '../views/splash/splash_screen.dart';
 import '../views/support/support_screen.dart';
 import 'app_routes.dart';
@@ -99,6 +100,7 @@ GoRouter createRouter(AuthController auth) {
           initial: state.extra is ListingModel ? state.extra as ListingModel : null,
         ),
       ),
+      GoRoute(path: AppRoutes.profile, builder: (_, _) => const ProfileScreen()),
       GoRoute(path: AppRoutes.editProfile, builder: (_, _) => const EditProfileScreen()),
       GoRoute(path: AppRoutes.myListings, builder: (_, _) => const MyListingsScreen()),
       GoRoute(path: AppRoutes.support, builder: (_, _) => const SupportScreen()),

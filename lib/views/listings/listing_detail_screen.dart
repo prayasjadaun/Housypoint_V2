@@ -240,6 +240,7 @@ class _Body extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        SizedBox(height: AppSpacing.md),
         // ── Price & title ───────────────────────────────
         Row(
           children: [
@@ -997,6 +998,9 @@ class _ActionBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         border: const Border(top: BorderSide(color: AppColors.border)),
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(AppRadius.xl),
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),

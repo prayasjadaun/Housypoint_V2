@@ -32,7 +32,14 @@ class _SearchScreenState extends State<SearchScreen> {
   String? _error;
   String _lastQuery = '';
 
-  static const _suggestions = ['DLF', 'M3M', 'Godrej', 'Sector 65', 'Golf Course Road', 'Noida'];
+  static const _suggestions = [
+    'DLF',
+    'M3M',
+    'Godrej',
+    'Sector 65',
+    'Golf Course Road',
+    'Noida',
+  ];
 
   @override
   void dispose() {
@@ -95,7 +102,10 @@ class _SearchScreenState extends State<SearchScreen> {
               children: [
                 IconButton(
                   onPressed: () => context.pop(),
-                  icon: const Icon(CupertinoIcons.back, color: AppColors.textPrimary),
+                  icon: const Icon(
+                    CupertinoIcons.back,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
                 Expanded(
                   child: TextField(
@@ -108,7 +118,11 @@ class _SearchScreenState extends State<SearchScreen> {
                     decoration: InputDecoration(
                       hintText: 'Search projects, builders, localities',
                       contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                      prefixIcon: const Icon(Iconsax.search_normal_1_copy, size: 20, color: AppColors.textSecondary),
+                      prefixIcon: const Icon(
+                        Iconsax.search_normal_1_copy,
+                        size: 20,
+                        color: AppColors.textSecondary,
+                      ),
                       suffixIcon: _controller.text.isEmpty
                           ? null
                           : IconButton(
@@ -116,7 +130,11 @@ class _SearchScreenState extends State<SearchScreen> {
                                 _controller.clear();
                                 _onChanged('');
                               },
-                              icon: const Icon(Iconsax.close_circle_copy, size: 18, color: AppColors.textTertiary),
+                              icon: const Icon(
+                                Iconsax.close_circle_copy,
+                                size: 18,
+                                color: AppColors.textTertiary,
+                              ),
                             ),
                     ),
                   ),
@@ -124,25 +142,41 @@ class _SearchScreenState extends State<SearchScreen> {
               ],
             ),
           ),
-          if (_loading) const LinearProgressIndicator(minHeight: 2, color: AppColors.primary, backgroundColor: Colors.transparent),
+          if (_loading)
+            const LinearProgressIndicator(
+              minHeight: 2,
+              color: AppColors.primary,
+              backgroundColor: Colors.transparent,
+            ),
           Expanded(
             child: results == null && _error == null
                 ? ListView(
                     padding: const EdgeInsets.all(AppSpacing.lg),
                     children: [
-                      Text('Popular searches', style: AppTextStyles.title.copyWith(fontSize: 15)),
+                      Text(
+                        'Popular searches',
+                        style: AppTextStyles.title.copyWith(fontSize: 15),
+                      ),
                       const SizedBox(height: 10),
                       Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
+                        spacing: 5,
+                        runSpacing: 0,
                         children: [
                           for (final s in _suggestions)
                             ActionChip(
-                              avatar: const Icon(Iconsax.trend_up_copy, size: 15, color: AppColors.primary),
+                              avatar: const Icon(
+                                Iconsax.trend_up_copy,
+                                size: 15,
+                                color: AppColors.primary,
+                              ),
                               label: Text(s, style: AppTextStyles.label),
                               backgroundColor: AppColors.surface,
                               side: const BorderSide(color: AppColors.border),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.pill)),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                  AppRadius.pill,
+                                ),
+                              ),
                               onPressed: () {
                                 _controller.text = s;
                                 _search(s);
@@ -153,7 +187,13 @@ class _SearchScreenState extends State<SearchScreen> {
                     ],
                   )
                 : _error != null
-                ? Center(child: EmptyState(icon: Iconsax.warning_2_copy, title: 'Search failed', message: _error!))
+                ? Center(
+                    child: EmptyState(
+                      icon: Iconsax.warning_2_copy,
+                      title: 'Search failed',
+                      message: _error!,
+                    ),
+                  )
                 : results!.isEmpty
                 ? const Center(
                     child: EmptyState(
@@ -163,12 +203,30 @@ class _SearchScreenState extends State<SearchScreen> {
                     ),
                   )
                 : ListView(
-                    keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                    padding: EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, MediaQuery.paddingOf(context).bottom + AppSpacing.lg),
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
+                    padding: EdgeInsets.fromLTRB(
+                      AppSpacing.md,
+                      AppSpacing.md,
+                      AppSpacing.md,
+                      MediaQuery.paddingOf(context).bottom + AppSpacing.lg,
+                    ),
                     children: [
-                      _Section(title: 'Projects', hits: results.projects, onTap: _open),
-                      _Section(title: 'Builders', hits: results.builders, onTap: _open),
-                      _Section(title: 'Properties', hits: results.properties, onTap: _open),
+                      _Section(
+                        title: 'Projects',
+                        hits: results.projects,
+                        onTap: _open,
+                      ),
+                      _Section(
+                        title: 'Builders',
+                        hits: results.builders,
+                        onTap: _open,
+                      ),
+                      _Section(
+                        title: 'Properties',
+                        hits: results.properties,
+                        onTap: _open,
+                      ),
                     ],
                   ),
           ),
@@ -179,7 +237,11 @@ class _SearchScreenState extends State<SearchScreen> {
 }
 
 class _Section extends StatelessWidget {
-  const _Section({required this.title, required this.hits, required this.onTap});
+  const _Section({
+    required this.title,
+    required this.hits,
+    required this.onTap,
+  });
 
   final String title;
   final List<SearchHit> hits;
@@ -197,19 +259,32 @@ class _Section extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(6, 0, 6, 8),
             child: Text(
               title.toUpperCase(),
-              style: AppTextStyles.caption.copyWith(fontWeight: FontWeight.w600, letterSpacing: 0.8, color: AppColors.textTertiary),
+              style: AppTextStyles.caption.copyWith(
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.8,
+                color: AppColors.textTertiary,
+              ),
             ),
           ),
           Container(
             decoration: BoxDecoration(
               color: AppColors.surface,
-              borderRadius: BorderRadius.circular(AppRadius.xl),
-              border: Border.all(color: AppColors.border.withValues(alpha: 0.6)),
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(AppRadius.xl),
+              ),
+              border: Border.all(
+                color: AppColors.border.withValues(alpha: 0.6),
+              ),
             ),
             child: Column(
               children: [
                 for (var i = 0; i < hits.length; i++) ...[
-                  if (i > 0) const Divider(height: 1, indent: 66, color: AppColors.border),
+                  if (i > 0)
+                    const Divider(
+                      height: 1,
+                      indent: 66,
+                      color: AppColors.border,
+                    ),
                   ListTile(
                     onTap: () => onTap(hits[i]),
                     leading: Container(
@@ -219,19 +294,39 @@ class _Section extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: AppColors.surfaceMuted,
                         borderRadius: BorderRadius.circular(AppRadius.sm + 2),
-                        border: Border.all(color: AppColors.border.withValues(alpha: 0.7)),
+                        border: Border.all(
+                          color: AppColors.border.withValues(alpha: 0.7),
+                        ),
                       ),
                       child: AppNetworkImage(
                         url: hits[i].image,
                         fit: BoxFit.contain,
-                        fallbackIcon: hits[i].kind == 'builder' ? Iconsax.buildings_2_copy : Iconsax.building_copy,
+                        fallbackIcon: hits[i].kind == 'builder'
+                            ? Iconsax.buildings_2_copy
+                            : Iconsax.building_copy,
                       ),
                     ),
-                    title: Text(hits[i].title, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600)),
+                    title: Text(
+                      hits[i].title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.body.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     subtitle: hits[i].subtitle.isEmpty
                         ? null
-                        : Text(hits[i].subtitle, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.caption),
-                    trailing: const Icon(Iconsax.arrow_right_3_copy, size: 16, color: AppColors.textTertiary),
+                        : Text(
+                            hits[i].subtitle,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTextStyles.caption,
+                          ),
+                    trailing: const Icon(
+                      Iconsax.arrow_right_3_copy,
+                      size: 16,
+                      color: AppColors.textTertiary,
+                    ),
                   ),
                 ],
               ],

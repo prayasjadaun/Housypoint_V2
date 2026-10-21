@@ -15,21 +15,14 @@ import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../widgets/common/app_logo.dart';
 import '../../widgets/common/glass_app_bar.dart';
-import '../../widgets/common/glass_bottom_nav.dart';
-import '../home/home_screen.dart';
+import 'home_screen.dart';
+import 'widgets/shell_bottom_nav.dart';
 import '../listings/listings_screen.dart';
 import '../menu/menu_screen.dart';
-import '../profile/profile_screen.dart';
 import '../referral/referral_screen.dart';
 import '../saved/saved_screen.dart';
 
-class _Tab {
-  const _Tab(this.label, this.icon);
-  final String label;
-  final IconData icon;
-}
-
-/// Logged-in home: glass app bar on top, 6-tab glass bottom nav below,
+/// Logged-in home: glass app bar on top, 5-tab glass bottom nav below,
 /// tabs kept alive in an IndexedStack.
 class MainShellScreen extends StatefulWidget {
   const MainShellScreen({super.key});
@@ -39,15 +32,6 @@ class MainShellScreen extends StatefulWidget {
 }
 
 class _MainShellScreenState extends State<MainShellScreen> {
-  static const _tabs = {
-    ShellTab.home: _Tab('Home', Iconsax.home_2_copy),
-    ShellTab.listings: _Tab('Listings', Iconsax.buildings_copy),
-    ShellTab.saved: _Tab('Saved', Iconsax.heart_copy),
-    ShellTab.refer: _Tab('Refer', Iconsax.gift_copy),
-    ShellTab.profile: _Tab('Profile', Iconsax.user_copy),
-    ShellTab.menu: _Tab('Menu', Iconsax.category_copy),
-  };
-
   late final ConnectivityService _connectivity;
   late bool _wasOnline;
 
@@ -91,7 +75,6 @@ class _MainShellScreenState extends State<MainShellScreen> {
       case ShellTab.refer:
         final referral = context.read<ReferralController>();
         if (referral.error != null) referral.load();
-      case ShellTab.profile:
       case ShellTab.menu:
         break;
     }
@@ -132,7 +115,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
       centerTitle: false,
       titleSpacing: 20,
       title: Text(
-        _tabs[tab]!.label,
+        ShellBottomNav.tabs[tab]!.label,
         style: AppTextStyles.heading.copyWith(fontSize: 20),
       ),
     );
@@ -148,7 +131,6 @@ class _MainShellScreenState extends State<MainShellScreen> {
       ShellTab.listings: const ListingsScreen(),
       ShellTab.saved: const SavedScreen(),
       ShellTab.refer: const ReferralScreen(),
-      ShellTab.profile: const ProfileScreen(),
       ShellTab.menu: const MenuScreen(),
     };
 
@@ -165,17 +147,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: GlassBottomNav(
-        items: [
-          for (final tab in ShellTab.values)
-            GlassNavItem(
-              icon: _tabs[tab]!.icon,
-              label: _tabs[tab]!.label,
-              selected: tab == current,
-              onTap: () => shell.go(tab),
-            ),
-        ],
-      ),
+      bottomNavigationBar: const ShellBottomNav(),
     );
   }
 }

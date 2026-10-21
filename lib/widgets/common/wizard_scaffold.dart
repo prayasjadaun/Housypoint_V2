@@ -48,9 +48,17 @@ class WizardScaffold extends StatelessWidget {
         title: title,
         backgroundColor: AppColors.surface,
         bottomBar: Container(
-          padding: EdgeInsets.fromLTRB(AppSpacing.md, 10, AppSpacing.md, MediaQuery.paddingOf(context).bottom + 10),
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.md,
+            10,
+            AppSpacing.md,
+            MediaQuery.paddingOf(context).bottom + 10,
+          ),
           decoration: const BoxDecoration(
             color: AppColors.surface,
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(AppRadius.xl),
+            ),
             border: Border(top: BorderSide(color: AppColors.border)),
           ),
           child: Row(
@@ -58,20 +66,32 @@ class WizardScaffold extends StatelessWidget {
               if (step > 0) ...[
                 Material(
                   color: AppColors.surfaceMuted,
-                  borderRadius: BorderRadius.circular(AppRadius.lg),
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(AppRadius.xl),
+                  ),
                   child: InkWell(
-                    borderRadius: BorderRadius.circular(AppRadius.lg),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(AppRadius.xl),
+                    ),
                     onTap: onBack,
                     child: const SizedBox.square(
                       dimension: 54,
-                      child: Icon(CupertinoIcons.back, color: AppColors.textPrimary),
+                      child: Icon(
+                        CupertinoIcons.back,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
                   ),
                 ),
                 const SizedBox(width: 12),
               ],
               Expanded(
-                child: AppButton(label: primaryLabel, icon: primaryIcon, isLoading: loading, onPressed: onPrimary),
+                child: AppButton(
+                  label: primaryLabel,
+                  icon: primaryIcon,
+                  isLoading: loading,
+                  onPressed: onPrimary,
+                ),
               ),
             ],
           ),
@@ -80,7 +100,12 @@ class WizardScaffold extends StatelessWidget {
           children: [
             SizedBox(height: top),
             Padding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.md, AppSpacing.lg, 0),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.md,
+                AppSpacing.lg,
+                0,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -93,7 +118,9 @@ class WizardScaffold extends StatelessWidget {
                             duration: const Duration(milliseconds: 300),
                             height: 4,
                             decoration: BoxDecoration(
-                              color: i <= step ? AppColors.primary : AppColors.border,
+                              color: i <= step
+                                  ? AppColors.primary
+                                  : AppColors.border,
                               borderRadius: BorderRadius.circular(2),
                             ),
                           ),
@@ -104,7 +131,9 @@ class WizardScaffold extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     'Step ${step + 1} of ${stepTitles.length} · ${stepTitles[step]}',
-                    style: AppTextStyles.caption.copyWith(fontWeight: FontWeight.w600),
+                    style: AppTextStyles.caption.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               ),
@@ -115,7 +144,10 @@ class WizardScaffold extends StatelessWidget {
                 transitionBuilder: (child, animation) => FadeTransition(
                   opacity: animation,
                   child: SlideTransition(
-                    position: Tween(begin: const Offset(0.04, 0), end: Offset.zero).animate(animation),
+                    position: Tween(
+                      begin: const Offset(0.04, 0),
+                      end: Offset.zero,
+                    ).animate(animation),
                     child: child,
                   ),
                 ),

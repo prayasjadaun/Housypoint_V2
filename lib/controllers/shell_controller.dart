@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 /// Bottom-nav tabs, in order.
-enum ShellTab { home, listings, saved, refer, profile, menu }
+enum ShellTab { home, listings, saved, refer, menu }
 
 /// Which bottom-nav tab is showing. Any screen can switch tabs, e.g. a home
 /// count tile opens the Listings tab.

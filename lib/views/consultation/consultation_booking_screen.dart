@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:housypoint_v2/theme/app_radius.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -26,7 +27,8 @@ class ConsultationBookingScreen extends StatefulWidget {
   final String? initialService;
 
   @override
-  State<ConsultationBookingScreen> createState() => _ConsultationBookingScreenState();
+  State<ConsultationBookingScreen> createState() =>
+      _ConsultationBookingScreenState();
 }
 
 class _ConsultationBookingScreenState extends State<ConsultationBookingScreen> {
@@ -99,7 +101,8 @@ class _ConsultationBookingScreenState extends State<ConsultationBookingScreen> {
       await showSuccessSheet(
         context,
         title: 'Consultation booked',
-        message: 'Our ${_service!.label.toLowerCase()} expert will call you between ${_slot!.label}.',
+        message:
+            'Our ${_service!.label.toLowerCase()} expert will call you between ${_slot!.label}.',
       );
       if (mounted) context.pop();
     } on ApiException catch (e) {
@@ -122,8 +125,20 @@ class _ConsultationBookingScreenState extends State<ConsultationBookingScreen> {
     return PageScaffold(
       title: 'Expert consultation',
       backgroundColor: AppColors.surface,
-      bottomBar: Padding(
-        padding: EdgeInsets.fromLTRB(AppSpacing.md, 8, AppSpacing.md, MediaQuery.paddingOf(context).bottom + 12),
+      bottomBar: Container(
+        padding: EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          8,
+          AppSpacing.md,
+          MediaQuery.paddingOf(context).bottom + 12,
+        ),
+        decoration: const BoxDecoration(
+          color: AppColors.surface,
+          border: Border(top: BorderSide(color: AppColors.border)),
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(AppRadius.xl),
+          ),
+        ),
         child: AppButton(
           label: 'Book consultation',
           icon: Iconsax.calendar_tick_copy,
@@ -136,18 +151,26 @@ class _ConsultationBookingScreenState extends State<ConsultationBookingScreen> {
           : Form(
               key: _formKey,
               child: ListView(
-                padding: EdgeInsets.fromLTRB(AppSpacing.lg, top + AppSpacing.sm, AppSpacing.lg, AppSpacing.xl),
+                padding: EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  top + AppSpacing.sm,
+                  AppSpacing.lg,
+                  AppSpacing.xl,
+                ),
                 children: [
                   Text(
                     'Talk to a verified expert. Free first call — pick a slot and we’ll ring you.',
-                    style: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
+                    style: AppTextStyles.body.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                   _label('What do you need help with?'),
                   ChoiceChips<OptionItem>(
                     options: options.serviceTypes,
                     selected: _service,
                     labelOf: (o) => o.label,
-                    iconOf: (o) => _serviceIcons[o.value] ?? Iconsax.more_circle_copy,
+                    iconOf: (o) =>
+                        _serviceIcons[o.value] ?? Iconsax.more_circle_copy,
                     onSelected: (o) => setState(() => _service = o),
                   ),
                   _label('Which property is it about?'),
@@ -163,7 +186,8 @@ class _ConsultationBookingScreenState extends State<ConsultationBookingScreen> {
                       controller: _other,
                       label: 'Please specify',
                       hintText: 'Tell us briefly',
-                      validator: (v) => (v ?? '').trim().isEmpty ? 'Required' : null,
+                      validator: (v) =>
+                          (v ?? '').trim().isEmpty ? 'Required' : null,
                     ),
                   ],
                   _label('Preferred time slot'),
@@ -181,7 +205,8 @@ class _ConsultationBookingScreenState extends State<ConsultationBookingScreen> {
                     hintText: 'Your name',
                     icon: Iconsax.user_copy,
                     textCapitalization: TextCapitalization.words,
-                    validator: (v) => (v ?? '').trim().isEmpty ? 'Required' : null,
+                    validator: (v) =>
+                        (v ?? '').trim().isEmpty ? 'Required' : null,
                   ),
                   const SizedBox(height: AppSpacing.md),
                   AppTextField(
@@ -190,7 +215,9 @@ class _ConsultationBookingScreenState extends State<ConsultationBookingScreen> {
                     hintText: '919876543210',
                     icon: Iconsax.call_copy,
                     keyboardType: TextInputType.phone,
-                    validator: (v) => (v ?? '').trim().length < 10 ? 'Enter a valid number' : null,
+                    validator: (v) => (v ?? '').trim().length < 10
+                        ? 'Enter a valid number'
+                        : null,
                   ),
                   const SizedBox(height: AppSpacing.md),
                   AppTextField(
@@ -199,7 +226,8 @@ class _ConsultationBookingScreenState extends State<ConsultationBookingScreen> {
                     hintText: 'you@example.com',
                     icon: Iconsax.sms_copy,
                     keyboardType: TextInputType.emailAddress,
-                    validator: (v) => (v ?? '').contains('@') ? null : 'Enter a valid email',
+                    validator: (v) =>
+                        (v ?? '').contains('@') ? null : 'Enter a valid email',
                   ),
                   const SizedBox(height: AppSpacing.md),
                   AppTextField(

@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import 'package:provider/provider.dart';
-
-import '../../controllers/shell_controller.dart';
 import '../../router/app_routes.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
@@ -11,7 +8,7 @@ import '../../theme/app_text_styles.dart';
 import '../../widgets/common/glass_bottom_nav.dart';
 import 'widgets/menu_card.dart';
 
-/// 6th bottom-nav tab — every feature that doesn't have its own tab.
+/// Last bottom-nav tab — every feature that doesn't have its own tab.
 class MenuScreen extends StatelessWidget {
   const MenuScreen({super.key});
 
@@ -19,7 +16,6 @@ class MenuScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final padding = MediaQuery.paddingOf(context);
     void go(String route) => context.push(route);
-    void tab(ShellTab t) => context.read<ShellController>().go(t);
 
     final sections = <(String, List<MenuCard>)>[
       (
@@ -50,10 +46,7 @@ class MenuScreen extends StatelessWidget {
       (
         'My account',
         [
-          MenuCard(title: 'My\nInspections', subtitle: 'Bookings & status', icon: Iconsax.calendar_tick_copy, color: AppColors.accentBlue, onTap: () => go(AppRoutes.myInspections)),
-          MenuCard(title: 'My\nConsultations', subtitle: 'Expert calls you booked', icon: Iconsax.message_text_copy, color: AppColors.accentAmber, onTap: () => go(AppRoutes.myConsultations)),
-          MenuCard(title: 'Refer &\nEarn', subtitle: 'Invite friends, earn rewards', icon: Iconsax.gift_copy, color: AppColors.accentRose, onTap: () => tab(ShellTab.refer)),
-          MenuCard(title: 'Support', subtitle: 'Call, WhatsApp or email us', icon: Iconsax.headphone_copy, color: AppColors.goldDark, onTap: () => go(AppRoutes.support)),
+          MenuCard(title: 'Profile', subtitle: 'Account, support & settings', icon: Iconsax.user_copy, color: AppColors.accentBlue, onTap: () => go(AppRoutes.profile)),
         ],
       ),
     ];

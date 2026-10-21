@@ -19,6 +19,7 @@ class PageScaffold extends StatelessWidget {
     required this.body,
     this.actions,
     this.bottomBar,
+    this.extendBody = false,
     this.backgroundColor = AppColors.background,
   });
 
@@ -26,6 +27,9 @@ class PageScaffold extends StatelessWidget {
   final Widget body;
   final List<Widget>? actions;
   final Widget? bottomBar;
+
+  /// Body scrolls under [bottomBar] — needed for the floating glass nav.
+  final bool extendBody;
   final Color backgroundColor;
 
   /// Top padding for content under the glass app bar.
@@ -37,6 +41,7 @@ class PageScaffold extends StatelessWidget {
     return Scaffold(
       backgroundColor: backgroundColor,
       extendBodyBehindAppBar: true,
+      extendBody: extendBody,
       appBar: GlassAppBar(
         centerTitle: true,
         title: Text(title),

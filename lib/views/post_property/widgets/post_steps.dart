@@ -53,7 +53,9 @@ class TypeStep extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.lg),
       children: [
         StepHeading(
-          title: c.isRent ? 'What are you renting out?' : 'What are you selling?',
+          title: c.isRent
+              ? 'What are you renting out?'
+              : 'What are you selling?',
           subtitle: 'Zero brokerage — we connect you with verified people.',
         ),
         SegmentedToggle(
@@ -66,6 +68,7 @@ class TypeStep extends StatelessWidget {
         GridView.count(
           crossAxisCount: 3,
           shrinkWrap: true,
+          padding: const EdgeInsets.only(top: AppSpacing.lg),
           physics: const NeverScrollableScrollPhysics(),
           mainAxisSpacing: 10,
           crossAxisSpacing: 10,
@@ -86,7 +89,12 @@ class TypeStep extends StatelessWidget {
 }
 
 class _TypeTile extends StatelessWidget {
-  const _TypeTile({required this.label, required this.icon, required this.selected, required this.onTap});
+  const _TypeTile({
+    required this.label,
+    required this.icon,
+    required this.selected,
+    required this.onTap,
+  });
 
   final String label;
   final IconData icon;
@@ -106,12 +114,19 @@ class _TypeTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected ? AppColors.primarySoft : AppColors.surface,
           borderRadius: BorderRadius.circular(AppRadius.lg),
-          border: Border.all(color: selected ? AppColors.primary : AppColors.border, width: selected ? 1.6 : 1),
+          border: Border.all(
+            color: selected ? AppColors.primary : AppColors.border,
+            width: selected ? 1.6 : 1,
+          ),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 26, color: selected ? AppColors.primary : AppColors.textSecondary),
+            Icon(
+              icon,
+              size: 26,
+              color: selected ? AppColors.primary : AppColors.textSecondary,
+            ),
             const SizedBox(height: 8),
             Text(
               label,
@@ -171,13 +186,18 @@ class _ProjectStepState extends State<ProjectStep> {
       items: c.projects ?? const [],
       emptyTitle: 'No project found',
       labelOf: (p) => p.name,
-      subtitleOf: (p) => [p.projectType, p.city].where((s) => s.isNotEmpty).join(' · '),
+      subtitleOf: (p) =>
+          [p.projectType, p.city].where((s) => s.isNotEmpty).join(' · '),
       isSelected: (p) => p.id == c.project?.id,
       leadingOf: (p, selected) => SelectionLeading(
         selected: selected,
         child: Padding(
           padding: const EdgeInsets.all(4),
-          child: AppNetworkImage(url: p.logo, fit: BoxFit.contain, fallbackIcon: Iconsax.buildings_2_copy),
+          child: AppNetworkImage(
+            url: p.logo,
+            fit: BoxFit.contain,
+            fallbackIcon: Iconsax.buildings_2_copy,
+          ),
         ),
       ),
     );
@@ -188,8 +208,13 @@ class _ProjectStepState extends State<ProjectStep> {
     final home = context.read<HomeController>();
     await home.ensureCities();
     if (!mounted) return;
-    final result = await showCityPicker(context, cities: home.cities, selected: c.city.isEmpty ? null : c.city);
-    if (result.picked && result.value != null) c.update(() => c.city = result.value!);
+    final result = await showCityPicker(
+      context,
+      cities: home.cities,
+      selected: c.city.isEmpty ? null : c.city,
+    );
+    if (result.picked && result.value != null)
+      c.update(() => c.city = result.value!);
   }
 
   @override
@@ -200,7 +225,10 @@ class _ProjectStepState extends State<ProjectStep> {
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.lg),
       children: [
-        const StepHeading(title: 'Which project is it in?', subtitle: 'We’ll pull in the project’s photos and layouts.'),
+        const StepHeading(
+          title: 'Which project is it in?',
+          subtitle: 'We’ll pull in the project’s photos and layouts.',
+        ),
         if (!c.otherBuilder)
           PickerField(
             label: 'Builder',
@@ -219,13 +247,19 @@ class _ProjectStepState extends State<ProjectStep> {
             textCapitalization: TextCapitalization.words,
             onChanged: (v) => c.update(() => c.builderOther = v),
           ),
-        CheckRow(label: 'My builder isn’t listed', value: c.otherBuilder, onChanged: c.setOtherBuilder),
+        CheckRow(
+          label: 'My builder isn’t listed',
+          value: c.otherBuilder,
+          onChanged: c.setOtherBuilder,
+        ),
         const SizedBox(height: AppSpacing.sm),
         if (!custom)
           PickerField(
             label: 'Project',
             value: c.project?.name,
-            placeholder: c.builder == null ? 'Select a builder first' : 'Select project',
+            placeholder: c.builder == null
+                ? 'Select a builder first'
+                : 'Select project',
             icon: Iconsax.building_copy,
             loading: c.builder != null && c.projects == null,
             onTap: c.builder == null ? null : _pickProject,
@@ -240,7 +274,11 @@ class _ProjectStepState extends State<ProjectStep> {
             onChanged: (v) => c.update(() => c.projectOther = v),
           ),
         if (!c.otherBuilder)
-          CheckRow(label: 'My project isn’t listed', value: c.otherProject, onChanged: c.setOtherProject),
+          CheckRow(
+            label: 'My project isn’t listed',
+            value: c.otherProject,
+            onChanged: c.setOtherProject,
+          ),
         if (custom) ...[
           const SizedBox(height: AppSpacing.sm),
           PickerField(
@@ -306,7 +344,10 @@ class _DetailsStepState extends State<DetailsStep> {
       return ListView(
         padding: const EdgeInsets.all(AppSpacing.lg),
         children: [
-          const StepHeading(title: 'Plot details', subtitle: 'Size, shape and which way it faces.'),
+          const StepHeading(
+            title: 'Plot details',
+            subtitle: 'Size, shape and which way it faces.',
+          ),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -354,9 +395,15 @@ class _DetailsStepState extends State<DetailsStep> {
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.lg),
       children: [
-        const StepHeading(title: 'Unit details', subtitle: 'Help buyers know exactly what they’re getting.'),
+        const StepHeading(
+          title: 'Unit details',
+          subtitle: 'Help buyers know exactly what they’re getting.',
+        ),
         if (configs.isNotEmpty) ...[
-          Text('Configuration', style: AppTextStyles.title.copyWith(fontSize: 15)),
+          Text(
+            'Configuration',
+            style: AppTextStyles.title.copyWith(fontSize: 15),
+          ),
           const SizedBox(height: 10),
           ChoiceChips<UnitConfiguration>(
             options: configs,
@@ -365,7 +412,10 @@ class _DetailsStepState extends State<DetailsStep> {
             onSelected: (u) => c.update(() => c.configuration = u),
           ),
           const SizedBox(height: 6),
-          Text('Not listed? Leave unselected and enter it below.', style: AppTextStyles.caption),
+          Text(
+            'Not listed? Leave unselected and enter it below.',
+            style: AppTextStyles.caption,
+          ),
           const SizedBox(height: AppSpacing.md),
         ],
         if (c.configuration == null)
@@ -379,7 +429,9 @@ class _DetailsStepState extends State<DetailsStep> {
                     label: 'BHK',
                     hintText: '3',
                     icon: Iconsax.home_2_copy,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     onChanged: (v) => c.update(() => c.bhkOther = v),
                   ),
                 ),
@@ -461,7 +513,10 @@ class PhotosStep extends StatelessWidget {
   const PhotosStep({super.key});
 
   Future<void> _addPhotos(PostPropertyController c) async {
-    final files = await FilePicker.pickFiles(type: FileType.image, compressionQuality: 70);
+    final files = await FilePicker.pickFiles(
+      type: FileType.image,
+      compressionQuality: 70,
+    );
     c.addCustomImages(files.map((f) => f.path).whereType<String>());
   }
 
@@ -473,7 +528,10 @@ class PhotosStep extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.lg),
       children: [
-        const StepHeading(title: 'Add photos', subtitle: 'Listings with photos get up to 5× more enquiries.'),
+        const StepHeading(
+          title: 'Add photos',
+          subtitle: 'Listings with photos get up to 5× more enquiries.',
+        ),
         Material(
           color: AppColors.primarySoft,
           borderRadius: BorderRadius.circular(AppRadius.xl),
@@ -484,14 +542,26 @@ class PhotosStep extends StatelessWidget {
               height: 110,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(AppRadius.xl),
-                border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
+                border: Border.all(
+                  color: AppColors.primary.withValues(alpha: 0.3),
+                ),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Iconsax.gallery_add_copy, color: AppColors.primary, size: 28),
+                  const Icon(
+                    Iconsax.gallery_add_copy,
+                    color: AppColors.primary,
+                    size: 28,
+                  ),
                   const SizedBox(height: 6),
-                  Text('Upload your photos', style: AppTextStyles.label.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600)),
+                  Text(
+                    'Upload your photos',
+                    style: AppTextStyles.label.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   Text('JPG or PNG', style: AppTextStyles.caption),
                 ],
               ),
@@ -514,8 +584,14 @@ class PhotosStep extends StatelessWidget {
         ],
         if (projectImages.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.lg),
-          Text('Project photos', style: AppTextStyles.title.copyWith(fontSize: 15)),
-          Text('Tap to include the builder’s photos.', style: AppTextStyles.caption),
+          Text(
+            'Project photos',
+            style: AppTextStyles.title.copyWith(fontSize: 15),
+          ),
+          Text(
+            'Tap to include the builder’s photos.',
+            style: AppTextStyles.caption,
+          ),
           const SizedBox(height: 10),
           _Grid(
             children: [
@@ -552,7 +628,12 @@ class _Grid extends StatelessWidget {
 }
 
 class _Thumb extends StatelessWidget {
-  const _Thumb({required this.image, required this.selected, required this.onTap, this.removable = false});
+  const _Thumb({
+    required this.image,
+    required this.selected,
+    required this.onTap,
+    this.removable = false,
+  });
 
   final Widget image;
   final bool selected;
@@ -566,13 +647,21 @@ class _Thumb extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          ClipRRect(borderRadius: BorderRadius.circular(AppRadius.md), child: image),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(AppRadius.md),
+            child: image,
+          ),
           AnimatedContainer(
             duration: const Duration(milliseconds: 150),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(AppRadius.md),
-              border: Border.all(color: selected ? AppColors.primary : Colors.transparent, width: 2.5),
-              color: selected ? Colors.transparent : Colors.white.withValues(alpha: 0.35),
+              border: Border.all(
+                color: selected ? AppColors.primary : Colors.transparent,
+                width: 2.5,
+              ),
+              color: selected
+                  ? Colors.transparent
+                  : Colors.white.withValues(alpha: 0.35),
             ),
           ),
           Positioned(
@@ -583,13 +672,17 @@ class _Thumb extends StatelessWidget {
               height: 22,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: removable ? Colors.black54 : (selected ? AppColors.primary : Colors.white),
+                color: removable
+                    ? Colors.black54
+                    : (selected ? AppColors.primary : Colors.white),
                 border: Border.all(color: Colors.white, width: 1.5),
               ),
               child: Icon(
                 removable ? Icons.close_rounded : Icons.check_rounded,
                 size: 14,
-                color: removable || selected ? Colors.white : Colors.transparent,
+                color: removable || selected
+                    ? Colors.white
+                    : Colors.transparent,
               ),
             ),
           ),
@@ -634,7 +727,9 @@ class _PriceStepState extends State<PriceStep> {
       children: [
         StepHeading(
           title: c.isRent ? 'Set the rent' : 'Set your price',
-          subtitle: c.isRent ? 'Monthly rent and one-time deposit.' : 'You can change it any time later.',
+          subtitle: c.isRent
+              ? 'Monthly rent and one-time deposit.'
+              : 'You can change it any time later.',
         ),
         AppTextField(
           controller: _price,
@@ -649,8 +744,13 @@ class _PriceStepState extends State<PriceStep> {
           Padding(
             padding: const EdgeInsets.only(top: 6, left: 4),
             child: Text(
-              c.isRent ? '${Formatters.price(amount)} per month' : Formatters.price(amount),
-              style: AppTextStyles.caption.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600),
+              c.isRent
+                  ? '${Formatters.price(amount)} per month'
+                  : Formatters.price(amount),
+              style: AppTextStyles.caption.copyWith(
+                color: AppColors.primary,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         if (c.isRent) ...[
@@ -738,7 +838,11 @@ class _PriceStepState extends State<PriceStep> {
 }
 
 class _SwitchRow extends StatelessWidget {
-  const _SwitchRow({required this.title, required this.value, required this.onChanged});
+  const _SwitchRow({
+    required this.title,
+    required this.value,
+    required this.onChanged,
+  });
 
   final String title;
   final bool value;
@@ -751,7 +855,11 @@ class _SwitchRow extends StatelessWidget {
       child: Row(
         children: [
           Expanded(child: Text(title, style: AppTextStyles.body)),
-          Switch.adaptive(value: value, activeTrackColor: AppColors.primary, onChanged: onChanged),
+          Switch.adaptive(
+            value: value,
+            activeTrackColor: AppColors.primary,
+            onChanged: onChanged,
+          ),
         ],
       ),
     );
@@ -771,23 +879,45 @@ class PostReviewStep extends StatelessWidget {
         ? '${c.plotArea} sq yd${c.plotDimensions.isEmpty ? '' : ' · ${c.plotDimensions}'}'
         : [
             c.configuration?.label ??
-                [if (c.bhkOther.isNotEmpty) '${c.bhkOther} BHK', if (c.sizeOther.isNotEmpty) '${c.sizeOther} sqft'].join(' · '),
+                [
+                  if (c.bhkOther.isNotEmpty) '${c.bhkOther} BHK',
+                  if (c.sizeOther.isNotEmpty) '${c.sizeOther} sqft',
+                ].join(' · '),
             'Unit ${c.unitNumber}${c.tower.isEmpty ? '' : ', Tower ${c.tower}'} · Floor ${c.floor}',
           ].join('\n');
 
     final rows = <(IconData, String, String)>[
-      (Iconsax.home_2_copy, 'Property', '${c.subtype} · ${c.isCommercial ? 'Commercial' : 'Residential'}'),
-      (Iconsax.building_copy, 'Project', '${c.projectLabel}\nby ${c.builderLabel}${c.city.isEmpty ? '' : ' · ${c.city}'}'),
+      (
+        Iconsax.home_2_copy,
+        'Property',
+        '${c.subtype} · ${c.isCommercial ? 'Commercial' : 'Residential'}',
+      ),
+      (
+        Iconsax.building_copy,
+        'Project',
+        '${c.projectLabel}\nby ${c.builderLabel}${c.city.isEmpty ? '' : ' · ${c.city}'}',
+      ),
       (Iconsax.maximize_4_copy, 'Unit', unit),
       if (c.facing != null || c.furnishing != null)
-        (Iconsax.routing_2_copy, 'More', [c.facing, c.furnishing].whereType<String>().join(' · ')),
-      (Iconsax.gallery_copy, 'Photos', '${c.customImages.length + c.selectedProjectImages.length} selected'),
+        (
+          Iconsax.routing_2_copy,
+          'More',
+          [c.facing, c.furnishing].whereType<String>().join(' · '),
+        ),
+      (
+        Iconsax.gallery_copy,
+        'Photos',
+        '${c.customImages.length + c.selectedProjectImages.length} selected',
+      ),
       (
         Iconsax.wallet_money_copy,
         c.isRent ? 'Rent' : 'Price',
         [
-          c.isRent ? '${Formatters.price(amount)}/mo' : Formatters.price(amount),
-          if (c.isRent && c.deposit.isNotEmpty) 'Deposit ${Formatters.price(num.tryParse(c.deposit))}',
+          c.isRent
+              ? '${Formatters.price(amount)}/mo'
+              : Formatters.price(amount),
+          if (c.isRent && c.deposit.isNotEmpty)
+            'Deposit ${Formatters.price(num.tryParse(c.deposit))}',
           if (c.negotiable) 'Negotiable',
         ].join(' · '),
       ),
@@ -796,7 +926,10 @@ class PostReviewStep extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.lg),
       children: [
-        const StepHeading(title: 'Review your listing', subtitle: 'Our team verifies every listing before it goes live.'),
+        const StepHeading(
+          title: 'Review your listing',
+          subtitle: 'Our team verifies every listing before it goes live.',
+        ),
         for (final (icon, title, text) in rows)
           Container(
             margin: const EdgeInsets.only(bottom: 10),
@@ -804,7 +937,9 @@ class PostReviewStep extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(AppRadius.xl),
-              border: Border.all(color: AppColors.border.withValues(alpha: 0.7)),
+              border: Border.all(
+                color: AppColors.border.withValues(alpha: 0.7),
+              ),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -812,7 +947,10 @@ class PostReviewStep extends StatelessWidget {
                 Container(
                   width: 36,
                   height: 36,
-                  decoration: BoxDecoration(color: AppColors.primarySoft, borderRadius: BorderRadius.circular(AppRadius.sm + 2)),
+                  decoration: BoxDecoration(
+                    color: AppColors.primarySoft,
+                    borderRadius: BorderRadius.circular(AppRadius.sm + 2),
+                  ),
                   child: Icon(icon, size: 17, color: AppColors.primary),
                 ),
                 const SizedBox(width: 12),
@@ -821,7 +959,13 @@ class PostReviewStep extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(title, style: AppTextStyles.caption),
-                      Text(text, style: AppTextStyles.label.copyWith(fontWeight: FontWeight.w600, height: 1.4)),
+                      Text(
+                        text,
+                        style: AppTextStyles.label.copyWith(
+                          fontWeight: FontWeight.w600,
+                          height: 1.4,
+                        ),
+                      ),
                     ],
                   ),
                 ),
