@@ -112,6 +112,7 @@ class MenuScreen extends StatelessWidget {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           children: cards,
+          padding: EdgeInsets.zero,
         ),
         const SizedBox(height: AppSpacing.md),
         const _LogoutTile(),
@@ -128,7 +129,9 @@ class _LogoutTile extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Log out?'),
-        content: const Text('You will need your mobile number and an OTP to log back in.'),
+        content: const Text(
+          'You will need your mobile number and an OTP to log back in.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
