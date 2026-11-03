@@ -16,6 +16,7 @@ class EmptyState extends StatelessWidget {
     this.lottie,
     this.actionLabel,
     this.onAction,
+    this.goldStyle = false,
   });
 
   final String title;
@@ -25,8 +26,12 @@ class EmptyState extends StatelessWidget {
   final String? actionLabel;
   final VoidCallback? onAction;
 
+  /// Ink text and a gold badge, for the black Refer tab.
+  final bool goldStyle;
+
   @override
   Widget build(BuildContext context) {
+    final accent = goldStyle ? AppColors.referGold : AppColors.primary;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl, vertical: AppSpacing.xl),
       child: Column(
@@ -39,26 +44,33 @@ class EmptyState extends StatelessWidget {
               width: 76,
               height: 76,
               decoration: BoxDecoration(
-                color: AppColors.primarySoft,
+                color: goldStyle ? AppColors.referDarkRaised : AppColors.primarySoft,
                 shape: BoxShape.circle,
+                border: goldStyle ? Border.all(color: AppColors.referRule) : null,
               ),
-              child: Icon(icon, size: 32, color: AppColors.primary),
+              child: Icon(icon, size: 32, color: accent),
             ),
           const SizedBox(height: AppSpacing.md),
-          Text(title, style: AppTextStyles.title, textAlign: TextAlign.center),
+          Text(
+            title,
+            style: AppTextStyles.title.copyWith(color: goldStyle ? AppColors.referInk : null),
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 6),
           Text(
             message,
             textAlign: TextAlign.center,
-            style: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
+            style: AppTextStyles.body.copyWith(
+              color: goldStyle ? AppColors.referMuted : AppColors.textSecondary,
+            ),
           ),
           if (actionLabel != null && onAction != null) ...[
             const SizedBox(height: AppSpacing.md),
             OutlinedButton(
               onPressed: onAction,
               style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.primary,
-                side: const BorderSide(color: AppColors.primary),
+                foregroundColor: accent,
+                side: BorderSide(color: accent),
                 shape: const StadiumBorder(),
                 padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
               ),

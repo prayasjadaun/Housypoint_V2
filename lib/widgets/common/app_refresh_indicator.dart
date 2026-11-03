@@ -16,18 +16,24 @@ class RefreshIndicatorWrapper extends StatelessWidget {
     required this.child,
     required this.onRefresh,
     this.edgeOffset = 0,
+    this.color,
+    this.backgroundColor,
   });
 
   final Widget child;
   final Future<void> Function() onRefresh;
   final double edgeOffset;
 
+  /// Override the brand green / surface (e.g. gold on the Refer tab).
+  final Color? color;
+  final Color? backgroundColor;
+
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator.adaptive(
       onRefresh: onRefresh,
-      backgroundColor: AppColors.surface,
-      color: AppColors.primary,
+      backgroundColor: backgroundColor ?? AppColors.surface,
+      color: color ?? AppColors.primary,
       strokeWidth: 2.5,
       displacement: 50,
       edgeOffset: edgeOffset,
@@ -39,9 +45,12 @@ class RefreshIndicatorWrapper extends StatelessWidget {
 /// Brand loading spinner: a green 3/4 arc turning on a faint track.
 /// Use it for page / section loading instead of CircularProgressIndicator.
 class AppSpinner extends StatefulWidget {
-  const AppSpinner({super.key, this.size = 28});
+  const AppSpinner({super.key, this.size = 28, this.color});
 
   final double size;
+
+  /// Defaults to the brand green.
+  final Color? color;
 
   @override
   State<AppSpinner> createState() => _AppSpinnerState();
@@ -63,15 +72,16 @@ class _AppSpinnerState extends State<AppSpinner> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     return SizedBox.square(
       dimension: widget.size,
-      child: CustomPaint(painter: _SpinnerPainter(_controller)),
+      child: CustomPaint(painter: _SpinnerPainter(_controller, widget.color ?? AppColors.primary)),
     );
   }
 }
 
 class _SpinnerPainter extends CustomPainter {
-  _SpinnerPainter(this.progress) : super(repaint: progress);
+  _SpinnerPainter(this.progress, this.color) : super(repaint: progress);
 
   final Animation<double> progress;
+  final Color color;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -83,7 +93,7 @@ class _SpinnerPainter extends CustomPainter {
       center,
       radius,
       Paint()
-        ..color = AppColors.primary.withValues(alpha: 0.15)
+        ..color = color.withValues(alpha: 0.15)
         ..strokeWidth = stroke
         ..style = PaintingStyle.stroke,
     );
@@ -94,7 +104,7 @@ class _SpinnerPainter extends CustomPainter {
       math.pi * 1.5, // 3/4 of a circle
       false,
       Paint()
-        ..color = AppColors.primary
+        ..color = color
         ..strokeWidth = stroke
         ..style = PaintingStyle.stroke
         ..strokeCap = StrokeCap.round,
@@ -102,5 +112,5 @@ class _SpinnerPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_SpinnerPainter oldDelegate) => false;
+  bool shouldRepaint(_SpinnerPainter oldDelegate) => oldDelegate.color != color;
 }

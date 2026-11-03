@@ -21,6 +21,7 @@ class ReferredUsersView extends StatelessWidget {
         icon: Iconsax.profile_2user_copy,
         title: 'No referrals yet',
         message: 'Friends who sign up with your code will be listed here.',
+        goldStyle: true,
       );
     }
     return Column(
@@ -30,18 +31,23 @@ class ReferredUsersView extends StatelessWidget {
             margin: const EdgeInsets.only(bottom: 8),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: AppColors.referDarkRaised,
               borderRadius: BorderRadius.circular(AppRadius.lg),
-              border: Border.all(color: AppColors.border.withValues(alpha: 0.7)),
+              border: Border.all(color: AppColors.referLine),
             ),
             child: Row(
               children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundColor: AppColors.primarySoft,
+                Container(
+                  width: 40,
+                  height: 40,
+                  alignment: Alignment.center,
+                  decoration: const BoxDecoration(
+                    gradient: AppColors.referGoldGradient,
+                    shape: BoxShape.circle,
+                  ),
                   child: Text(
                     u.name[0].toUpperCase(),
-                    style: AppTextStyles.label.copyWith(color: AppColors.primary, fontWeight: FontWeight.w700),
+                    style: AppTextStyles.label.copyWith(color: AppColors.referOnGold, fontWeight: FontWeight.w700),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -49,9 +55,12 @@ class ReferredUsersView extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(u.name, style: AppTextStyles.label.copyWith(fontWeight: FontWeight.w600)),
+                      Text(u.name, style: AppTextStyles.label.copyWith(fontWeight: FontWeight.w600, color: AppColors.referInk)),
                       if (u.joinedAt != null)
-                        Text('Joined ${formatDate(u.joinedAt!)}', style: AppTextStyles.caption),
+                        Text(
+                          'Joined ${formatDate(u.joinedAt!)}',
+                          style: AppTextStyles.caption.copyWith(color: AppColors.referMuted),
+                        ),
                     ],
                   ),
                 ),
@@ -59,12 +68,12 @@ class ReferredUsersView extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
-                      color: AppColors.success.withValues(alpha: 0.1),
+                      color: AppColors.referGreen.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(AppRadius.pill),
                     ),
                     child: Text(
                       'Active',
-                      style: AppTextStyles.caption.copyWith(color: AppColors.success, fontWeight: FontWeight.w600),
+                      style: AppTextStyles.caption.copyWith(color: AppColors.referGreen, fontWeight: FontWeight.w600),
                     ),
                   ),
               ],

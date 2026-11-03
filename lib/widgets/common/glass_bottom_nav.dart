@@ -24,9 +24,13 @@ class GlassNavItem {
 /// The selected tab grows to show its label; a tinted pill slides under it.
 /// Host Scaffold must set `extendBody: true` so content blurs behind it.
 class GlassBottomNav extends StatelessWidget {
-  const GlassBottomNav({super.key, required this.items});
+  const GlassBottomNav({super.key, required this.items, this.goldStyle = false});
 
   final List<GlassNavItem> items;
+
+  /// Takes on the Refer tab's black and gold look while it's open, so the
+  /// nav doesn't sit on it as a light bar.
+  final bool goldStyle;
 
   static const double _pillHeight = 60;
   static const _slide = Duration(milliseconds: 380);
@@ -73,7 +77,7 @@ class GlassBottomNav extends StatelessWidget {
           borderRadius: radius,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: dark ? 0.4 : 0.14),
+              color: Colors.black.withValues(alpha: dark || goldStyle ? 0.4 : 0.14),
               blurRadius: 24,
               offset: const Offset(0, 10),
             ),
@@ -92,7 +96,12 @@ class GlassBottomNav extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: dark
+                  colors: goldStyle
+                      ? [
+                          AppColors.referDarkRaised.withValues(alpha: 0.86),
+                          AppColors.referDark.withValues(alpha: 0.8),
+                        ]
+                      : dark
                       ? [
                           const Color(0xFF23272A).withValues(alpha: 0.72),
                           const Color(0xFF16191B).withValues(alpha: 0.66),
@@ -104,7 +113,9 @@ class GlassBottomNav extends StatelessWidget {
                 ),
                 border: Border.all(
                   width: 0.8,
-                  color: Colors.white.withValues(alpha: dark ? 0.1 : 0.6),
+                  color: goldStyle
+                      ? AppColors.referRule
+                      : Colors.white.withValues(alpha: dark ? 0.1 : 0.6),
                 ),
               ),
               child: LayoutBuilder(
@@ -167,6 +178,21 @@ class GlassBottomNav extends StatelessWidget {
 
   // Translucent brand-tinted pill — reads as glass on the blurred bar
   Widget _buildPill() {
+    if (goldStyle) {
+      return DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(_pillHeight / 2),
+          gradient: AppColors.referGoldGradient,
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.referGold.withValues(alpha: 0.35),
+              blurRadius: 12,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+      );
+    }
     final dark = AppColors.isDark;
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -187,9 +213,17 @@ class GlassBottomNav extends StatelessWidget {
 
   Widget _buildItem(GlassNavItem item) {
     // Brighter green on dark — primary is too low-contrast on the dark bar.
-    final selectedColor = AppColors.isDark ? AppColors.mainGreen : AppColors.primary;
+    final selectedColor = goldStyle
+        ? AppColors.referOnGold
+        : AppColors.isDark
+        ? AppColors.mainGreen
+        : AppColors.primary;
     // Unselected icons near-white on dark so they don't wash out to grey.
-    final idleColor = AppColors.isDark ? AppColors.textPrimary.withValues(alpha: 0.85) : AppColors.textSecondary;
+    final idleColor = goldStyle
+        ? AppColors.referMuted
+        : AppColors.isDark
+        ? AppColors.textPrimary.withValues(alpha: 0.85)
+        : AppColors.textSecondary;
     final color = item.selected ? selectedColor : idleColor;
 
     return GestureDetector(

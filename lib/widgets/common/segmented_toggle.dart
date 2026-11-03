@@ -14,6 +14,7 @@ class SegmentedToggle extends StatelessWidget {
     required this.onChanged,
     this.icons,
     this.height = 44,
+    this.goldStyle = false,
   });
 
   final List<String> labels;
@@ -26,6 +27,9 @@ class SegmentedToggle extends StatelessWidget {
   /// 44 by default; ~36 for a compact inline toggle.
   final double height;
 
+  /// Dark track with a gold pill — for the Refer tab.
+  final bool goldStyle;
+
   static const double _inset = 4;
 
   @override
@@ -36,9 +40,11 @@ class SegmentedToggle extends StatelessWidget {
       height: height,
       padding: const EdgeInsets.all(_inset),
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: goldStyle ? AppColors.referDarkRaised : AppColors.background,
         borderRadius: BorderRadius.circular(AppRadius.md + 2),
-        border: Border.all(color: AppColors.border.withValues(alpha: 0.6)),
+        border: Border.all(
+          color: goldStyle ? AppColors.referRule : AppColors.border.withValues(alpha: 0.6),
+        ),
       ),
       child: Stack(
         children: [
@@ -51,7 +57,8 @@ class SegmentedToggle extends StatelessWidget {
               heightFactor: 1,
               child: Container(
                 decoration: BoxDecoration(
-                  color: AppColors.surface,
+                  color: goldStyle ? null : AppColors.surface,
+                  gradient: goldStyle ? AppColors.referGoldGradient : null,
                   borderRadius: BorderRadius.circular(AppRadius.md - 1),
                   boxShadow: [
                     BoxShadow(
@@ -87,7 +94,9 @@ class SegmentedToggle extends StatelessWidget {
 
   Widget _label(int i) {
     final selected = i == selectedIndex;
-    final color = selected ? AppColors.primary : AppColors.textSecondary;
+    final color = goldStyle
+        ? (selected ? AppColors.referOnGold : AppColors.referMuted)
+        : (selected ? AppColors.primary : AppColors.textSecondary);
 
     return Center(
       child: Row(

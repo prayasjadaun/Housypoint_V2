@@ -10,6 +10,10 @@ import '../../../theme/app_radius.dart';
 import '../../../theme/app_spacing.dart';
 import '../../../theme/app_text_styles.dart';
 
+const _ink = AppColors.referInk;
+const _muted = AppColors.referMuted;
+const _gold = AppColors.referGold;
+
 /// Overview: tier + referral code, key numbers, share links, how it works.
 class ReferralOverview extends StatelessWidget {
   const ReferralOverview({super.key, required this.stats, this.pdiStats});
@@ -45,15 +49,15 @@ class ReferralOverview extends StatelessWidget {
         ],
         if (stats.links.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.lg),
-          Text('Share your links', style: AppTextStyles.title),
+          Text('Share your links', style: AppTextStyles.title.copyWith(color: _ink)),
           const SizedBox(height: 4),
-          Text('Anyone who uses these links is tagged to you.', style: AppTextStyles.caption),
+          Text('Anyone who uses these links is tagged to you.', style: AppTextStyles.caption.copyWith(color: _muted)),
           const SizedBox(height: 12),
           for (final entry in stats.links.entries)
             _LinkTile(label: entry.key, url: entry.value),
         ],
         const SizedBox(height: AppSpacing.lg),
-        Text('How it works', style: AppTextStyles.title),
+        Text('How it works', style: AppTextStyles.title.copyWith(color: _ink)),
         const SizedBox(height: 12),
         const _Step(number: 1, title: 'Share your code or link', text: 'Send it to friends, family or clients.'),
         const _Step(number: 2, title: 'They join Housy Point', text: 'They list, buy, rent or book an inspection.'),
@@ -76,12 +80,16 @@ class _CodeCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
+        color: AppColors.referDarkRaised,
         borderRadius: BorderRadius.circular(AppRadius.xl + 4),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppColors.primary, AppColors.primaryDark],
-        ),
+        border: Border.all(color: AppColors.referRule),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.32),
+            blurRadius: 28,
+            offset: const Offset(0, 12),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,18 +99,18 @@ class _CodeCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                  color: AppColors.gold,
+                  gradient: AppColors.referGoldGradient,
                   borderRadius: BorderRadius.circular(AppRadius.pill),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Iconsax.crown_1_copy, size: 14, color: AppColors.ink),
+                    const Icon(Iconsax.crown_1_copy, size: 14, color: AppColors.referOnGold),
                     const SizedBox(width: 5),
                     Text(
                       stats.tier,
                       style: AppTextStyles.caption.copyWith(
-                        color: AppColors.ink,
+                        color: AppColors.referOnGold,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -112,31 +120,41 @@ class _CodeCard extends StatelessWidget {
               const Spacer(),
               Text(
                 progress >= 1 ? 'Top tier reached' : '${(progress * 100).round()}% of tiers unlocked',
-                style: AppTextStyles.caption.copyWith(color: Colors.white.withValues(alpha: 0.8)),
+                style: AppTextStyles.caption.copyWith(color: _muted),
               ),
             ],
           ),
           const SizedBox(height: 10),
+          // Gold-gradient fill on a faint track, same as the Incentive Board.
           ClipRRect(
             borderRadius: BorderRadius.circular(3),
-            child: LinearProgressIndicator(
-              value: progress,
-              minHeight: 5,
-              color: AppColors.gold,
-              backgroundColor: Colors.white.withValues(alpha: 0.15),
+            child: SizedBox(
+              height: 5,
+              child: Stack(
+                children: [
+                  const Positioned.fill(child: ColoredBox(color: AppColors.referLine)),
+                  FractionallySizedBox(
+                    widthFactor: progress,
+                    heightFactor: 1,
+                    child: const DecoratedBox(
+                      decoration: BoxDecoration(gradient: AppColors.referGoldGradient),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           if (stats.nextTierHint.isNotEmpty) ...[
             const SizedBox(height: 8),
             Text(
               'Next — ${stats.nextTierHint}',
-              style: AppTextStyles.caption.copyWith(color: Colors.white.withValues(alpha: 0.75), fontSize: 11.5),
+              style: AppTextStyles.caption.copyWith(color: _muted, fontSize: 11.5),
             ),
           ],
           const SizedBox(height: 18),
           Text(
             'Your referral code',
-            style: AppTextStyles.caption.copyWith(color: Colors.white.withValues(alpha: 0.75)),
+            style: AppTextStyles.caption.copyWith(color: _muted),
           ),
           const SizedBox(height: 6),
           Row(
@@ -147,13 +165,13 @@ class _CodeCard extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 14),
                   alignment: Alignment.centerLeft,
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.1),
+                    color: AppColors.referDark,
                     borderRadius: BorderRadius.circular(AppRadius.md),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                    border: Border.all(color: AppColors.referRule),
                   ),
                   child: Text(
                     code.isEmpty ? '—' : code,
-                    style: AppTextStyles.title.copyWith(color: Colors.white, letterSpacing: 2),
+                    style: AppTextStyles.title.copyWith(color: _gold, letterSpacing: 2),
                   ),
                 ),
               ),
@@ -195,15 +213,23 @@ class _RoundButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: filled ? AppColors.gold : Colors.white.withValues(alpha: 0.12),
-      borderRadius: BorderRadius.circular(AppRadius.md),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        onTap: onTap,
-        child: SizedBox.square(
-          dimension: 48,
-          child: Icon(icon, size: 20, color: filled ? AppColors.ink : Colors.white),
+    final radius = BorderRadius.circular(AppRadius.md);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: filled ? AppColors.referGoldGradient : null,
+        color: filled ? null : AppColors.referDark,
+        borderRadius: radius,
+        border: filled ? null : Border.all(color: AppColors.referRule),
+      ),
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          borderRadius: radius,
+          onTap: onTap,
+          child: SizedBox.square(
+            dimension: 48,
+            child: Icon(icon, size: 20, color: filled ? AppColors.referOnGold : _gold),
+          ),
         ),
       ),
     );
@@ -222,9 +248,9 @@ class _StatTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: AppColors.referDarkRaised,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: AppColors.border.withValues(alpha: 0.7)),
+        border: Border.all(color: AppColors.referLine),
       ),
       child: Row(
         children: [
@@ -232,10 +258,11 @@ class _StatTile extends StatelessWidget {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: AppColors.primarySoft,
+              color: _gold.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(AppRadius.sm + 2),
+              border: Border.all(color: AppColors.referRule),
             ),
-            child: Icon(icon, size: 18, color: AppColors.primary),
+            child: Icon(icon, size: 18, color: _gold),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -243,12 +270,12 @@ class _StatTile extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(value, style: AppTextStyles.title.copyWith(fontSize: 16)),
+                Text(value, style: AppTextStyles.title.copyWith(fontSize: 16, color: _ink)),
                 Text(
                   label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.caption.copyWith(fontSize: 11),
+                  style: AppTextStyles.caption.copyWith(fontSize: 11, color: _muted),
                 ),
               ],
             ),
@@ -269,22 +296,23 @@ class _PdiCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.gold.withValues(alpha: 0.15),
+        color: _gold.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(color: AppColors.referRule),
       ),
       child: Row(
         children: [
-          const Icon(Iconsax.shield_tick_copy, color: AppColors.goldDark),
+          const Icon(Iconsax.shield_tick_copy, color: _gold),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               '${stats.bookings} inspection ${stats.bookings == 1 ? 'booking' : 'bookings'} via your link',
-              style: AppTextStyles.label.copyWith(fontWeight: FontWeight.w600),
+              style: AppTextStyles.label.copyWith(fontWeight: FontWeight.w600, color: _ink),
             ),
           ),
           Text(
             Formatters.price(stats.earnings).replaceAll('Price on request', '₹0'),
-            style: AppTextStyles.label.copyWith(color: AppColors.goldDark, fontWeight: FontWeight.w700),
+            style: AppTextStyles.label.copyWith(color: _gold, fontWeight: FontWeight.w700),
           ),
         ],
       ),
@@ -304,20 +332,20 @@ class _LinkTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.fromLTRB(12, 10, 6, 10),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: AppColors.referDarkRaised,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: AppColors.border.withValues(alpha: 0.7)),
+        border: Border.all(color: AppColors.referLine),
       ),
       child: Row(
         children: [
-          const Icon(Iconsax.link_2_copy, size: 18, color: AppColors.primary),
+          const Icon(Iconsax.link_2_copy, size: 18, color: _gold),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: AppTextStyles.label.copyWith(fontWeight: FontWeight.w600)),
-                Text(url, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.caption.copyWith(fontSize: 11)),
+                Text(label, style: AppTextStyles.label.copyWith(fontWeight: FontWeight.w600, color: _ink)),
+                Text(url, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.caption.copyWith(fontSize: 11, color: _muted)),
               ],
             ),
           ),
@@ -327,12 +355,12 @@ class _LinkTile extends StatelessWidget {
               await ShareHelper.copy(url);
               if (context.mounted) context.showSnackBar('Link copied');
             },
-            icon: Icon(Iconsax.copy_copy, size: 18, color: AppColors.textSecondary),
+            icon: const Icon(Iconsax.copy_copy, size: 18, color: _muted),
           ),
           IconButton(
             visualDensity: VisualDensity.compact,
             onPressed: () => ShareHelper.share(url),
-            icon: const Icon(Iconsax.share_copy, size: 18, color: AppColors.primary),
+            icon: const Icon(Iconsax.share_copy, size: 18, color: _gold),
           ),
         ],
       ),
@@ -360,14 +388,14 @@ class _Step extends StatelessWidget {
                 width: 28,
                 height: 28,
                 alignment: Alignment.center,
-                decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
+                decoration: const BoxDecoration(gradient: AppColors.referGoldGradient, shape: BoxShape.circle),
                 child: Text(
                   '$number',
-                  style: AppTextStyles.caption.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
+                  style: AppTextStyles.caption.copyWith(color: AppColors.referOnGold, fontWeight: FontWeight.w700),
                 ),
               ),
               if (!isLast)
-                Expanded(child: Container(width: 1.5, color: AppColors.primary.withValues(alpha: 0.2))),
+                const Expanded(child: SizedBox(width: 1.5, child: ColoredBox(color: AppColors.referRule))),
             ],
           ),
           const SizedBox(width: 12),
@@ -377,8 +405,8 @@ class _Step extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: AppTextStyles.label.copyWith(fontWeight: FontWeight.w600)),
-                  Text(text, style: AppTextStyles.caption),
+                  Text(title, style: AppTextStyles.label.copyWith(fontWeight: FontWeight.w600, color: _ink)),
+                  Text(text, style: AppTextStyles.caption.copyWith(color: _muted)),
                 ],
               ),
             ),

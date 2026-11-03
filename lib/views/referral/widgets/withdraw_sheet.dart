@@ -72,9 +72,10 @@ class _WithdrawSheetState extends State<_WithdrawSheet> {
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
       child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.surface,
+        decoration: const BoxDecoration(
+          color: AppColors.referDark,
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          border: Border(top: BorderSide(color: AppColors.referRule)),
         ),
         padding: EdgeInsets.fromLTRB(
           AppSpacing.lg,
@@ -93,20 +94,21 @@ class _WithdrawSheetState extends State<_WithdrawSheet> {
                   child: Container(
                     width: 40,
                     height: 4,
-                    decoration: BoxDecoration(color: AppColors.border, borderRadius: BorderRadius.circular(2)),
+                    decoration: BoxDecoration(color: AppColors.referRule, borderRadius: BorderRadius.circular(2)),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.md),
-                Text('Withdraw earnings', style: AppTextStyles.title),
+                Text('Withdraw earnings', style: AppTextStyles.title.copyWith(color: AppColors.referInk)),
                 Text(
                   'Available: ${Formatters.price(widget.available).replaceAll('Price on request', '₹0')}',
-                  style: AppTextStyles.caption,
+                  style: AppTextStyles.caption.copyWith(color: AppColors.referGold),
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 AppTextField(
                   controller: _amount,
                   label: 'Amount (₹)',
                   hintText: '1000',
+                  goldStyle: true,
                   icon: Iconsax.money_send_copy,
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
@@ -122,6 +124,7 @@ class _WithdrawSheetState extends State<_WithdrawSheet> {
                   controller: _name,
                   label: 'Account holder name',
                   hintText: 'As per bank records',
+                  goldStyle: true,
                   icon: Iconsax.user_copy,
                   textCapitalization: TextCapitalization.words,
                   validator: (v) => (v ?? '').trim().isEmpty ? 'Required' : null,
@@ -131,6 +134,7 @@ class _WithdrawSheetState extends State<_WithdrawSheet> {
                   controller: _account,
                   label: 'Account number',
                   hintText: '0000 0000 0000',
+                  goldStyle: true,
                   icon: Iconsax.card_copy,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -141,6 +145,7 @@ class _WithdrawSheetState extends State<_WithdrawSheet> {
                   controller: _ifsc,
                   label: 'IFSC code',
                   hintText: 'HDFC0001234',
+                  goldStyle: true,
                   icon: Iconsax.bank_copy,
                   textCapitalization: TextCapitalization.characters,
                   textInputAction: TextInputAction.done,
@@ -150,7 +155,18 @@ class _WithdrawSheetState extends State<_WithdrawSheet> {
                   onSubmitted: (_) => _submit(),
                 ),
                 const SizedBox(height: AppSpacing.lg),
-                AppButton(label: 'Request withdrawal', isLoading: _busy, onPressed: _submit),
+                // Gold button in place of the brand green, to match the tab.
+                Theme(
+                  data: Theme.of(context).copyWith(
+                    elevatedButtonTheme: ElevatedButtonThemeData(
+                      style: Theme.of(context).elevatedButtonTheme.style?.copyWith(
+                        backgroundColor: const WidgetStatePropertyAll(AppColors.referGold),
+                        foregroundColor: const WidgetStatePropertyAll(AppColors.referOnGold),
+                      ),
+                    ),
+                  ),
+                  child: AppButton(label: 'Request withdrawal', isLoading: _busy, onPressed: _submit),
+                ),
               ],
             ),
           ),

@@ -31,6 +31,7 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.showBorder = true,
     this.titleSpacing,
     this.toolbarHeight,
+    this.goldStyle = false,
   });
 
   final Widget? title;
@@ -42,6 +43,9 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool showBorder;
   final double? titleSpacing;
   final double? toolbarHeight;
+
+  /// Black and gold bar for the Refer tab.
+  final bool goldStyle;
 
   static Widget overlay({required GlassAppBar? appBar, required Widget body}) {
     // Same tree whether appBar is null or not, so toggling it never remounts
@@ -84,11 +88,15 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
         filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: AppColors.surface.withValues(alpha: 0.72),
+            color: goldStyle
+                ? AppColors.referDark.withValues(alpha: 0.78)
+                : AppColors.surface.withValues(alpha: 0.72),
             border: showBorder
                 ? Border(
                     bottom: BorderSide(
-                      color: Colors.black.withValues(alpha: 0.06),
+                      color: goldStyle
+                          ? AppColors.referRule
+                          : Colors.black.withValues(alpha: 0.06),
                     ),
                   )
                 : null,
@@ -102,13 +110,17 @@ class GlassAppBar extends StatelessWidget implements PreferredSizeWidget {
             automaticallyImplyLeading: automaticallyImplyLeading,
             titleSpacing: titleSpacing,
             toolbarHeight: toolbarHeight,
-            titleTextStyle: AppTextStyles.title,
-            foregroundColor: AppColors.textPrimary,
+            titleTextStyle: AppTextStyles.title.copyWith(
+              color: goldStyle ? AppColors.referInk : null,
+            ),
+            foregroundColor: goldStyle ? AppColors.referInk : AppColors.textPrimary,
             backgroundColor: Colors.transparent,
             surfaceTintColor: Colors.transparent,
             elevation: 0,
             scrolledUnderElevation: 0,
-            systemOverlayStyle: AppColors.isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
+            systemOverlayStyle: AppColors.isDark || goldStyle
+                ? SystemUiOverlayStyle.light
+                : SystemUiOverlayStyle.dark,
           ),
         ),
       ),

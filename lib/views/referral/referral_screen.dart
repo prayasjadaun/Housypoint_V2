@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../controllers/referral_controller.dart';
 import '../../theme/app_assets.dart';
+import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../widgets/common/app_refresh_indicator.dart';
 import '../../widgets/common/empty_state.dart';
@@ -44,7 +45,7 @@ class _ReferralScreenState extends State<ReferralScreen> {
       body = c.isLoading || c.error == null
           ? const Padding(
               padding: EdgeInsets.only(top: 120),
-              child: Center(child: AppSpinner()),
+              child: Center(child: AppSpinner(color: AppColors.referGold)),
             )
           : EmptyState(
               lottie: AppAssets.lottieServerError,
@@ -52,30 +53,55 @@ class _ReferralScreenState extends State<ReferralScreen> {
               message: c.error!,
               actionLabel: 'Try again',
               onAction: c.load,
+              goldStyle: true,
             );
     } else {
       body = switch (_tab) {
         0 => ReferralOverview(stats: stats, pdiStats: stats.pdi ?? c.pdiStats),
         1 => ReferredUsersView(users: c.referredUsers),
-        _ => EarningsView(stats: stats, earnings: c.earnings, withdrawals: c.withdrawals),
+        _ => EarningsView(
+          stats: stats,
+          earnings: c.earnings,
+          withdrawals: c.withdrawals,
+        ),
       };
     }
 
-    return RefreshIndicatorWrapper(
-      edgeOffset: top,
-      onRefresh: c.load,
-      child: ListView(
-        padding: EdgeInsets.fromLTRB(AppSpacing.md, top + AppSpacing.sm, AppSpacing.md, bottom + AppSpacing.lg),
-        children: [
-          SegmentedToggle(
-            labels: const ['Overview', 'Referrals', 'Earnings'],
-            icons: const [Iconsax.gift_copy, Iconsax.profile_2user_copy, Iconsax.wallet_money_copy],
-            selectedIndex: _tab,
-            onChanged: (i) => setState(() => _tab = i),
+    // Always black + gold (like HousyInspect's Incentive Board), whatever the
+    // app theme — fills behind the glass app bar and nav too.
+    return ColoredBox(
+      color: AppColors.referDark,
+      child: RefreshIndicatorWrapper(
+        edgeOffset: top,
+        onRefresh: c.load,
+        color: AppColors.referGold,
+        backgroundColor: AppColors.referDarkRaised,
+        child: ListView(
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.md,
+            top + AppSpacing.sm,
+            AppSpacing.md,
+            bottom + AppSpacing.lg,
           ),
-          const SizedBox(height: AppSpacing.md),
-          AnimatedSwitcher(duration: const Duration(milliseconds: 200), child: KeyedSubtree(key: ValueKey(_tab), child: body)),
-        ],
+          children: [
+            SegmentedToggle(
+              labels: const ['Overview', 'Referrals', 'Earnings'],
+              icons: const [
+                Iconsax.gift_copy,
+                Iconsax.profile_2user_copy,
+                Iconsax.wallet_money_copy,
+              ],
+              selectedIndex: _tab,
+              onChanged: (i) => setState(() => _tab = i),
+              goldStyle: true,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: KeyedSubtree(key: ValueKey(_tab), child: body),
+            ),
+          ],
+        ),
       ),
     );
   }

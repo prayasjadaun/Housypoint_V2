@@ -43,6 +43,29 @@ class AppColors {
   static const Color success = Color(0xFF16A34A);
   static const Color warning = Color(0xFFF59E0B);
 
+  // Refer & Earn — fixed black + gold look (same as HousyInspect's
+  // Incentive Board). Doesn't follow light/dark: the tab is always dark.
+  static const Color referDark = Color(0xFF0A0B0E);
+  static const Color referDarkRaised = Color(0xFF16181D);
+  static const Color referGold = Color(0xFFD4AF6A);
+  static const Color referInk = Color(0xFFF4EFE6);
+  static const Color referMuted = Color(0xFFA8A296);
+  static const Color referOnGold = Color(0xFF14110B);
+  static const Color referLine = Color(0x14FFFFFF);
+  static const Color referRule = Color(0x47D4AF6A);
+  static const Color referGreen = Color(0xFF4FD18B);
+  static const LinearGradient referGoldGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      Color(0xFFF3DCA6),
+      Color(0xFFD4AF6A),
+      Color(0xFFA9823F),
+      Color(0xFFE8CC8F),
+    ],
+    stops: [0, 0.38, 0.7, 1],
+  );
+
   // Menu card accents
   static const Color accentBlue = Color(0xFF3B82F6);
   static const Color accentAmber = Color(0xFFF59E0B);

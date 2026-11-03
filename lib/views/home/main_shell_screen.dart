@@ -122,13 +122,18 @@ class _MainShellScreenState extends State<MainShellScreen> {
         title: ListingsSearchField(),
       );
     }
+    final gold = tab == ShellTab.refer;
     return GlassAppBar(
       automaticallyImplyLeading: false,
       centerTitle: false,
       titleSpacing: 20,
+      goldStyle: gold,
       title: Text(
         ShellBottomNav.tabs[tab]!.label,
-        style: AppTextStyles.heading.copyWith(fontSize: 20),
+        style: AppTextStyles.heading.copyWith(
+          fontSize: 20,
+          color: gold ? AppColors.referGold : null,
+        ),
       ),
       actions: [
         if (listings != null) ...[
