@@ -37,6 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   lottie: ^3.6.1
   cached_network_image: ^4.0.3
+  adaptive_platform_ui: ^1.0.2
 
   # Device & platform
   country_picker: ^2.0.28
@@ -58,6 +59,7 @@ flutter:
   assets:
     - assets/logo/housypoint_logo.png
     - assets/lottie/
+    - assets/nav/
 
 # App icon — regenerate with `dart run flutter_launcher_icons`
 flutter_launcher_icons:

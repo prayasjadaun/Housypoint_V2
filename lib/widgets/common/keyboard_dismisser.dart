@@ -9,9 +9,9 @@ import '../../theme/app_text_styles.dart';
 
 /// App-wide keyboard behaviour, mounted once in `MaterialApp.builder`:
 ///
-/// - Tapping anywhere outside a text field closes the keyboard and removes
-///   focus. Buttons and other fields still win their own taps, because the
-///   innermost tap recognizer wins the gesture arena.
+/// - While the keyboard is open, tapping anywhere outside a text field
+///   closes it and removes focus. Buttons and other fields still win their
+///   own taps, because the innermost tap recognizer wins the gesture arena.
 /// - On iOS a slim toolbar (↑ ↓ Done) sits on top of the keyboard, since the
 ///   iOS number/phone pads have no return key. Android keyboards already
 ///   show Next/Done keys, so it's iOS only.
@@ -102,7 +102,9 @@ class _KeyboardDismisserState extends State<KeyboardDismisser> {
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
-      onTap: KeyboardDismisser.dismiss,
+      // Sirf keyboard khula ho tab recognizer — warna ye har arena join karta
+      // hai aur iOS 26 native tab bar ko tap late milta hai (tab nahi badalta)
+      onTap: keyboardOpen ? KeyboardDismisser.dismiss : null,
       child: Stack(
         children: [
           // Report the toolbar as part of the keyboard, so Scaffolds resize

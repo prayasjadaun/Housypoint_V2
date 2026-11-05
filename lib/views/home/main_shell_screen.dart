@@ -164,23 +164,28 @@ class _MainShellScreenState extends State<MainShellScreen> {
       ShellTab.menu: const MenuScreen(),
     };
 
-    return Scaffold(
-      extendBody: true,
-      body: GlassAppBar.overlay(
-        appBar: _appBar(current),
-        body: IndexedStack(
-          index: current.index,
-          children: [
-            for (final tab in ShellTab.values)
-              // Tabs build on first visit so their APIs don't all fire at
-              // launch; once built they keep state but pause animations.
-              _visited.contains(tab)
-                  ? TickerMode(enabled: tab == current, child: pages[tab]!)
-                  : const SizedBox.shrink(),
-          ],
+    final native = ShellBottomNav.useNative;
+    return ShellBottomNav.wrap(
+      context,
+      Scaffold(
+        extendBody: true,
+        body: GlassAppBar.overlay(
+          appBar: _appBar(current),
+          body: IndexedStack(
+            index: current.index,
+            children: [
+              for (final tab in ShellTab.values)
+                // Tabs build on first visit so their APIs don't all fire at
+                // launch; once built they keep state but pause animations.
+                _visited.contains(tab)
+                    ? TickerMode(enabled: tab == current, child: pages[tab]!)
+                    : const SizedBox.shrink(),
+            ],
+          ),
         ),
+        // iOS 26 par native bar wrap() deta hai — dono ek saath nahi
+        bottomNavigationBar: native ? null : const ShellBottomNav(),
       ),
-      bottomNavigationBar: const ShellBottomNav(),
     );
   }
 }

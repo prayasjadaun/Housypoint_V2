@@ -55,16 +55,18 @@ class ProfileScreen extends StatelessWidget {
     final user = context.watch<AuthController>().user;
     final top = PageScaffold.topInset(context);
 
-    return PageScaffold(
+    void switchTab(ShellTab tab) {
+      context.read<ShellController>().go(tab);
+      context.pop();
+    }
+
+    // Alag route = apna native bar (iOS 26); shell ka bar neeche offstage rehta hai
+    return ShellBottomNav.wrap(context, selected: ShellTab.menu, onTap: switchTab, PageScaffold(
       title: 'Profile',
       extendBody: true,
-      bottomBar: ShellBottomNav(
-        selected: ShellTab.menu,
-        onTap: (tab) {
-          context.read<ShellController>().go(tab);
-          context.pop();
-        },
-      ),
+      bottomBar: ShellBottomNav.useNative
+          ? null
+          : ShellBottomNav(selected: ShellTab.menu, onTap: switchTab),
       body: ListView(
         padding: EdgeInsets.fromLTRB(AppSpacing.md, top + AppSpacing.md, AppSpacing.md, GlassBottomNav.totalHeight(context) + AppSpacing.lg),
         children: [
@@ -150,7 +152,7 @@ class ProfileScreen extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ));
   }
 }
 

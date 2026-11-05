@@ -1,5 +1,7 @@
 import 'dart:ui' show ImageFilter;
 
+import 'package:adaptive_platform_ui/adaptive_platform_ui.dart'
+    show PlatformInfo;
 import 'package:flutter/material.dart';
 
 import '../../core/utils/app_haptics.dart';
@@ -11,6 +13,8 @@ class GlassNavItem {
     required this.label,
     required this.selected,
     required this.onTap,
+    this.nativeIconAsset,
+    this.nativeSelectedIconAsset,
   });
 
   /// Iconsax linear icon.
@@ -18,6 +22,11 @@ class GlassNavItem {
   final String label;
   final bool selected;
   final VoidCallback onTap;
+
+  // iOS 26 native tab bar sirf image icons dikha sakta hai (font/SVG nahi) —
+  // tool/render_nav_icons_test.dart se bane assets/nav/*.png
+  final String? nativeIconAsset;
+  final String? nativeSelectedIconAsset;
 }
 
 /// Floating frosted-glass pill nav (same as Inlobo's GlassBottomNav).
@@ -33,6 +42,9 @@ class GlassBottomNav extends StatelessWidget {
   final bool goldStyle;
 
   static const double _pillHeight = 60;
+
+  // iOS 26 native tab bar (NativeTabScaffold) ki height, home indicator ke upar
+  static const double nativeBarHeight = 50;
   static const _slide = Duration(milliseconds: 380);
   static const double _iconSize = 22;
   static const double _gap = 6;
@@ -61,7 +73,9 @@ class GlassBottomNav extends StatelessWidget {
 
   /// Space the nav takes from the screen bottom — lists add this as bottom padding.
   static double totalHeight(BuildContext context) =>
-      _pillHeight + _bottomMargin(context);
+      PlatformInfo.isIOS26OrHigher()
+      ? nativeBarHeight + MediaQuery.viewPaddingOf(context).bottom
+      : _pillHeight + _bottomMargin(context);
 
   @override
   Widget build(BuildContext context) {
