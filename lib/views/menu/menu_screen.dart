@@ -26,7 +26,7 @@ class MenuScreen extends StatelessWidget {
         subtitle: 'Book a PDI for your flat',
         icon: Iconsax.shield_tick_copy,
         color: AppColors.primary,
-        onTap: comingSoon,
+        onTap: () => context.push(AppRoutes.inspection),
       ),
       MenuCard(
         title: 'Expert\nConsultation',

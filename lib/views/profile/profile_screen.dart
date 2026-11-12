@@ -107,7 +107,7 @@ class ProfileScreen extends StatelessWidget {
                 title: 'My inspections',
                 subtitle: 'Home inspection bookings',
                 color: AppColors.accentBlue,
-                onTap: comingSoon,
+                onTap: () => context.push(AppRoutes.myInspections),
               ),
               SettingsTile(
                 icon: Iconsax.message_text_copy,

@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 import '../controllers/auth_controller.dart';
+import '../controllers/inspection_controller.dart';
+import '../repositories/master_data_repository.dart';
+import '../repositories/pdi_repository.dart';
+import '../repositories/project_repository.dart';
 import '../views/auth/login_screen.dart';
+import '../views/inspection/inspection_booking_screen.dart';
+import '../views/inspection/my_inspections_screen.dart';
 import '../views/auth/otp_screen.dart';
 import '../views/auth/register_screen.dart';
 import '../views/onboarding/onboarding_screen.dart';
@@ -72,6 +79,23 @@ GoRouter createRouter(AuthController auth) {
       GoRoute(
         path: AppRoutes.editProfile,
         builder: (_, _) => const EditProfileScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.inspection,
+        // extra: plan id to preselect.
+        builder: (context, state) => ChangeNotifierProvider(
+          create: (_) => InspectionController(
+            context.read<PdiRepository>(),
+            context.read<MasterDataRepository>(),
+            context.read<ProjectRepository>(),
+            initialPlanId: state.extra as int?,
+          ),
+          child: const InspectionBookingScreen(),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.myInspections,
+        builder: (_, _) => const MyInspectionsScreen(),
       ),
     ],
   );

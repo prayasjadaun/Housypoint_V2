@@ -10,6 +10,8 @@ class AppRoutes {
   static const String home = '/home';
   static const String profile = '/profile';
   static const String editProfile = '/profile/edit';
+  static const String inspection = '/inspection';
+  static const String myInspections = '/inspections';
 
   static const Set<String> authFlow = {login, otp};
 }

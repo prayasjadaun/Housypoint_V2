@@ -28,6 +28,17 @@ class AppColors {
   static const Color success = Color(0xFF16A34A);
   static const Color warning = Color(0xFFF59E0B);
 
+  /// Green for text/icons (develop: flips to bright green in dark mode).
+  static const Color primaryText = primaryDark;
+
+  // Refer & Earn — fixed black + gold look (from develop).
+  static const Color referDark = Color(0xFF0A0B0E);
+  static const Color referDarkRaised = Color(0xFF16181D);
+  static const Color referGold = Color(0xFFD4AF6A);
+  static const Color referInk = Color(0xFFF4EFE6);
+  static const Color referMuted = Color(0xFFA8A296);
+  static const Color referRule = Color(0x47D4AF6A);
+
   // Menu card accents
   static const Color accentBlue = Color(0xFF3B82F6);
   static const Color accentAmber = Color(0xFFF59E0B);
