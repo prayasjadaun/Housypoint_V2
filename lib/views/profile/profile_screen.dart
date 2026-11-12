@@ -100,7 +100,7 @@ class ProfileScreen extends StatelessWidget {
                 title: 'My listings',
                 subtitle: 'Properties you posted',
                 color: AppColors.accentViolet,
-                onTap: comingSoon,
+                onTap: () => context.push(AppRoutes.myListings),
               ),
               SettingsTile(
                 icon: Iconsax.calendar_tick_copy,

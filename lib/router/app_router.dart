@@ -22,6 +22,7 @@ import '../views/consultation/consultation_booking_screen.dart';
 import '../views/consultation/my_consultations_screen.dart';
 import '../views/onboarding/onboarding_screen.dart';
 import '../views/profile/edit_profile_screen.dart';
+import '../views/profile/my_listings_screen.dart';
 import '../views/profile/profile_screen.dart';
 import '../views/shell/main_shell_screen.dart';
 import '../views/splash/splash_screen.dart';
@@ -87,6 +88,10 @@ GoRouter createRouter(AuthController auth) {
       GoRoute(
         path: AppRoutes.editProfile,
         builder: (_, _) => const EditProfileScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.myListings,
+        builder: (_, _) => const MyListingsScreen(),
       ),
       GoRoute(
         path: AppRoutes.inspection,

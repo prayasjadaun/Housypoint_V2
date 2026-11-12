@@ -64,7 +64,7 @@ class MenuScreen extends StatelessWidget {
         subtitle: 'Properties you posted',
         icon: Iconsax.document_text_copy,
         color: AppColors.accentViolet,
-        onTap: comingSoon,
+        onTap: () => context.push(AppRoutes.myListings),
       ),
       MenuCard(
         title: 'My\nBookings',
