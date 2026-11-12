@@ -15,8 +15,13 @@ class AppAssets {
   static const String lottieNoResults = 'assets/lottie/empty.json';
   static const String lottieBuilding = 'assets/lottie/building.json';
 
-  // City landmark photos (credits: assets/CITY_IMAGE_CREDITS.md)
+  // City landmark photos — same artwork as V1 (assets/cityImages)
   static const _cityImages = {
+    'ahmedabad': 'assets/cities/ahmedabad.jpg',
+    'chennai': 'assets/cities/chennai.jpg',
+    'jaipur': 'assets/cities/jaipur.jpg',
+    'kolkata': 'assets/cities/kolkata.jpg',
+    'lucknow': 'assets/cities/lucknow.jpg',
     'gurgaon': 'assets/cities/gurgaon.jpg',
     'gurugram': 'assets/cities/gurgaon.jpg',
     'new delhi': 'assets/cities/new_delhi.jpg',
