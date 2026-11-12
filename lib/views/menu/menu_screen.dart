@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import '../../core/config/feature_flags.dart';
 import '../../router/app_routes.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
@@ -23,7 +24,8 @@ class MenuScreen extends StatelessWidget {
         [
           MenuCard(title: 'Home\nInspection', subtitle: 'Book a PDI for your flat', icon: Iconsax.shield_tick_copy, color: AppColors.primary, onTap: () => go(AppRoutes.inspection)),
           MenuCard(title: 'Expert\nConsultation', subtitle: 'Legal, tax & property advice', icon: Iconsax.messages_2_copy, color: AppColors.accentAmber, onTap: () => go(AppRoutes.consultation)),
-          MenuCard(title: 'Home Loan', subtitle: 'EMI calculator & banks', icon: Iconsax.money_recive_copy, color: AppColors.accentEmerald, onTap: () => go(AppRoutes.homeLoan)),
+          if (FeatureFlags.homeLoanEnabled)
+            MenuCard(title: 'Home Loan', subtitle: 'EMI calculator & banks', icon: Iconsax.money_recive_copy, color: AppColors.accentEmerald, onTap: () => go(AppRoutes.homeLoan)),
           MenuCard(title: 'Compare\nProjects', subtitle: 'Side-by-side comparison', icon: Iconsax.chart_2_copy, color: AppColors.accentIndigo, onTap: () => go(AppRoutes.compare)),
         ],
       ),
