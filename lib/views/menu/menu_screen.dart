@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import 'package:provider/provider.dart';
-
-import '../../controllers/shell_controller.dart';
 import '../../core/config/feature_flags.dart';
 import '../../core/extensions/context_extensions.dart';
 import '../../router/app_routes.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
+import '../../theme/app_text_styles.dart';
 import '../../widgets/common/glass_bottom_nav.dart';
 import 'widgets/menu_card.dart';
 
@@ -19,80 +17,42 @@ class MenuScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final padding = MediaQuery.paddingOf(context);
+    void go(String route) => context.push(route);
+    // TODO: Search, Sell, Rent out and Buy go to their routes once ported.
     void comingSoon() => context.showSnackBar('Coming soon');
 
-    final cards = [
-      MenuCard(
-        title: 'Home\nInspection',
-        subtitle: 'Book a PDI for your flat',
-        icon: Iconsax.shield_tick_copy,
-        color: AppColors.primary,
-        onTap: () => context.push(AppRoutes.inspection),
+    final sections = <(String, List<MenuCard>)>[
+      (
+        'Services',
+        [
+          MenuCard(title: 'Home\nInspection', subtitle: 'Book a PDI for your flat', icon: Iconsax.shield_tick_copy, color: AppColors.primary, onTap: () => go(AppRoutes.inspection)),
+          MenuCard(title: 'Expert\nConsultation', subtitle: 'Legal, tax & property advice', icon: Iconsax.messages_2_copy, color: AppColors.accentAmber, onTap: () => go(AppRoutes.consultation)),
+          if (FeatureFlags.homeLoanEnabled)
+            MenuCard(title: 'Home Loan', subtitle: 'EMI calculator & banks', icon: Iconsax.money_recive_copy, color: AppColors.accentEmerald, onTap: () => go(AppRoutes.homeLoan)),
+          MenuCard(title: 'Compare\nProjects', subtitle: 'Side-by-side comparison', icon: Iconsax.chart_2_copy, color: AppColors.accentIndigo, onTap: () => go(AppRoutes.compare)),
+        ],
       ),
-      MenuCard(
-        title: 'Expert\nConsultation',
-        subtitle: 'Legal, tax & property advice',
-        icon: Iconsax.messages_2_copy,
-        color: AppColors.accentAmber,
-        onTap: () => context.push(AppRoutes.consultation),
+      (
+        'Explore',
+        [
+          MenuCard(title: 'Builders', subtitle: 'Top developers & projects', icon: Iconsax.buildings_2_copy, color: AppColors.accentSky, onTap: () => go(AppRoutes.builders)),
+          MenuCard(title: 'Search', subtitle: 'Projects, builders, areas', icon: Iconsax.search_normal_1_copy, color: AppColors.accentViolet, onTap: comingSoon),
+        ],
       ),
-      MenuCard(
-        title: 'Compare\nProjects',
-        subtitle: 'Side-by-side comparison',
-        icon: Iconsax.chart_2_copy,
-        color: AppColors.accentIndigo,
-        onTap: () => context.push(AppRoutes.compare),
+      (
+        'Post',
+        [
+          MenuCard(title: 'Sell\nProperty', subtitle: 'Zero brokerage', icon: Iconsax.key_copy, color: AppColors.primary, onTap: comingSoon),
+          MenuCard(title: 'Rent Out\nProperty', subtitle: 'Find good tenants', icon: Iconsax.home_hashtag_copy, color: AppColors.accentSky, onTap: comingSoon),
+          MenuCard(title: 'Buy a\nProperty', subtitle: 'Share your requirement', icon: Iconsax.search_status_copy, color: AppColors.goldDark, onTap: comingSoon),
+          MenuCard(title: 'My\nListings', subtitle: 'Properties you posted', icon: Iconsax.document_text_copy, color: AppColors.accentViolet, onTap: () => go(AppRoutes.myListings)),
+        ],
       ),
-      MenuCard(
-        title: 'Builders',
-        subtitle: 'Top developers & projects',
-        icon: Iconsax.buildings_2_copy,
-        color: AppColors.accentSky,
-        onTap: () => context.push(AppRoutes.builders),
-      ),
-      // Hidden on iOS (App Store review) — see FeatureFlags.
-      if (FeatureFlags.homeLoanEnabled)
-        MenuCard(
-          title: 'Home Loan',
-          subtitle: 'EMI calculator & banks',
-          icon: Iconsax.money_recive_copy,
-          color: AppColors.accentEmerald,
-          onTap: () => context.push(AppRoutes.homeLoan),
-        ),
-      MenuCard(
-        title: 'My\nListings',
-        subtitle: 'Properties you posted',
-        icon: Iconsax.document_text_copy,
-        color: AppColors.accentViolet,
-        onTap: () => context.push(AppRoutes.myListings),
-      ),
-      MenuCard(
-        title: 'My\nBookings',
-        subtitle: 'Inspections & consultations',
-        icon: Iconsax.calendar_tick_copy,
-        color: AppColors.accentBlue,
-        onTap: comingSoon,
-      ),
-      MenuCard(
-        title: 'Refer &\nEarn',
-        subtitle: 'Invite friends, earn rewards',
-        icon: Iconsax.gift_copy,
-        color: AppColors.accentRose,
-        onTap: () => context.read<ShellController>().go(ShellTab.refer),
-      ),
-      MenuCard(
-        title: 'Support',
-        subtitle: 'Call, WhatsApp or email us',
-        icon: Iconsax.headphone_copy,
-        color: AppColors.goldDark,
-        onTap: comingSoon,
-      ),
-      MenuCard(
-        title: 'Profile',
-        subtitle: 'Account, support & settings',
-        icon: Iconsax.user_octagon_copy,
-        color: AppColors.accentEmerald,
-        onTap: () => context.push(AppRoutes.profile),
+      (
+        'My account',
+        [
+          MenuCard(title: 'Profile', subtitle: 'Account, support & settings', icon: Iconsax.user_copy, color: AppColors.accentBlue, onTap: () => go(AppRoutes.profile)),
+        ],
       ),
     ];
 
@@ -104,16 +64,30 @@ class MenuScreen extends StatelessWidget {
         GlassBottomNav.totalHeight(context) + AppSpacing.lg,
       ),
       children: [
-        GridView.count(
-          crossAxisCount: 2,
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
-          childAspectRatio: 1.2,
-          shrinkWrap: true,
-          padding: EdgeInsets.zero,
-          physics: const NeverScrollableScrollPhysics(),
-          children: cards,
-        ),
+        for (final (title, cards) in sections) ...[
+          Padding(
+            padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
+            child: Text(
+              title.toUpperCase(),
+              style: AppTextStyles.caption.copyWith(
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.8,
+                color: AppColors.textTertiary,
+              ),
+            ),
+          ),
+          GridView.count(
+            crossAxisCount: 2,
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
+            childAspectRatio: 1.25,
+            shrinkWrap: true,
+            padding: EdgeInsets.zero,
+            physics: const NeverScrollableScrollPhysics(),
+            children: cards,
+          ),
+          const SizedBox(height: AppSpacing.lg),
+        ],
       ],
     );
   }
