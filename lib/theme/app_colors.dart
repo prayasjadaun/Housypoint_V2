@@ -28,6 +28,12 @@ class AppColors {
   static const Color success = Color(0xFF16A34A);
   static const Color warning = Color(0xFFF59E0B);
 
+  /// Dark mode flag (develop: set by ThemeController). Light-only for now.
+  static bool isDark = false;
+
+  /// Fixed near-black — for always-dark cards and text on gold.
+  static const Color ink = Color(0xFF111827);
+
   /// Green for text/icons (develop: flips to bright green in dark mode).
   static const Color primaryText = primaryDark;
 

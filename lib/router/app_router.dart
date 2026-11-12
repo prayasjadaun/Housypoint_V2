@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../controllers/auth_controller.dart';
+import '../controllers/home_controller.dart';
 import '../controllers/inspection_controller.dart';
 import '../repositories/master_data_repository.dart';
 import '../repositories/pdi_repository.dart';
@@ -12,6 +13,7 @@ import '../views/inspection/inspection_booking_screen.dart';
 import '../views/inspection/my_inspections_screen.dart';
 import '../views/auth/otp_screen.dart';
 import '../views/auth/register_screen.dart';
+import '../views/compare/compare_projects_screen.dart';
 import '../views/consultation/consultation_booking_screen.dart';
 import '../views/consultation/my_consultations_screen.dart';
 import '../views/onboarding/onboarding_screen.dart';
@@ -90,6 +92,7 @@ GoRouter createRouter(AuthController auth) {
             context.read<PdiRepository>(),
             context.read<MasterDataRepository>(),
             context.read<ProjectRepository>(),
+            city: context.read<HomeController>().selectedCity,
             initialPlanId: state.extra as int?,
           ),
           child: const InspectionBookingScreen(),
@@ -108,6 +111,10 @@ GoRouter createRouter(AuthController auth) {
       GoRoute(
         path: AppRoutes.myConsultations,
         builder: (_, _) => const MyConsultationsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.compare,
+        builder: (_, _) => const CompareProjectsScreen(),
       ),
     ],
   );

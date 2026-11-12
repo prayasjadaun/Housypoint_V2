@@ -12,4 +12,6 @@ class AppAssets {
   static const String lottieConfetti = 'assets/lottie/confetti_effect.json';
   static const String lottieGift = 'assets/lottie/ref_gift.json';
   static const String lottieEmpty = 'assets/lottie/zero_notification.json';
+  static const String lottieNoResults = 'assets/lottie/empty.json';
+  static const String lottieBuilding = 'assets/lottie/building.json';
 }

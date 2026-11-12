@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'app.dart';
 import 'config/app_config.dart';
 import 'controllers/auth_controller.dart';
+import 'controllers/home_controller.dart';
 import 'controllers/shell_controller.dart';
 import 'core/network/dio_client.dart';
 import 'core/storage/app_prefs.dart';
@@ -16,6 +17,7 @@ import 'firebase/notification_service.dart';
 import 'firebase/remote_config_service.dart';
 import 'repositories/auth_repository.dart';
 import 'repositories/consultation_repository.dart';
+import 'repositories/listing_repository.dart';
 import 'repositories/master_data_repository.dart';
 import 'repositories/pdi_repository.dart';
 import 'repositories/project_repository.dart';
@@ -46,8 +48,17 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: authController),
+        ChangeNotifierProvider(
+          create: (_) => HomeController(
+            MasterDataRepository(dio),
+            ListingRepository(dio),
+            ProjectRepository(dio),
+            PdiRepository(dio),
+          ),
+        ),
         ChangeNotifierProvider(create: (_) => ShellController()),
         // Repositories that screens use directly
+        Provider.value(value: ListingRepository(dio)),
         Provider.value(value: ProjectRepository(dio)),
         Provider.value(value: MasterDataRepository(dio)),
         Provider.value(value: PdiRepository(dio)),

@@ -3,13 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:provider/provider.dart';
 
+import '../../../controllers/home_controller.dart';
 import '../../../controllers/inspection_controller.dart';
 import '../../../core/extensions/context_extensions.dart';
 import '../../../core/utils/formatters.dart';
-import '../../../models/master/city_model.dart';
 import '../../../models/pdi/pdi_models.dart';
 import '../../../models/project/project_model.dart';
-import '../../../repositories/master_data_repository.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_radius.dart';
 import '../../../theme/app_spacing.dart';
@@ -59,16 +58,10 @@ class LocationStep extends StatelessWidget {
           placeholder: 'Search all cities',
           icon: Iconsax.search_normal_1_copy,
           onTap: () async {
-            final master = context.read<MasterDataRepository>();
-            List<CityModel> cities;
-            try {
-              cities = await master.getCities();
-            } catch (_) {
-              if (context.mounted) context.showSnackBar('Could not load cities.', isError: true);
-              return;
-            }
+            final home = context.read<HomeController>();
+            await home.ensureCities();
             if (!context.mounted) return;
-            final result = await showCityPicker(context, cities: cities, selected: c.city);
+            final result = await showCityPicker(context, cities: home.cities, selected: c.city);
             if (result.picked && result.value != null) c.setCity(result.value!);
           },
         ),

@@ -40,7 +40,7 @@ class MenuScreen extends StatelessWidget {
         subtitle: 'Side-by-side comparison',
         icon: Iconsax.chart_2_copy,
         color: AppColors.accentIndigo,
-        onTap: comingSoon,
+        onTap: () => context.push(AppRoutes.compare),
       ),
       MenuCard(
         title: 'Builders',
