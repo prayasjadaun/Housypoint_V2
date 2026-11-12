@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
@@ -8,10 +10,19 @@ import '../../../theme/app_colors.dart';
 import '../../../theme/app_radius.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/common/app_network_image.dart';
+import 'property_video.dart';
+
+/// Plays a bundled placeholder video on every card that has no `video_url`
+/// yet. Set to `false` once the backend sends real property videos.
+const bool kDemoPropertyVideos = true;
+const String _demoVideoUrl = 'assets/video/sample-5s.mp4';
 
 /// Full-bleed listing card: the photo fills the card, details sit on a
 /// dark fade at the bottom. Used in carousels and lists.
-class PropertyCard extends StatelessWidget {
+///
+/// When the listing has a video, a button in the top-right corner flips the
+/// card over to a video player (see [PropertyVideoFace]).
+class PropertyCard extends StatefulWidget {
   const PropertyCard({
     super.key,
     required this.listing,
@@ -36,8 +47,84 @@ class PropertyCard extends StatelessWidget {
   final double? height;
 
   @override
+  State<PropertyCard> createState() => _PropertyCardState();
+}
+
+class _PropertyCardState extends State<PropertyCard> with SingleTickerProviderStateMixin {
+  late final AnimationController _flip = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 600),
+  );
+
+  ListingModel get listing => widget.listing;
+
+  String get _videoUrl =>
+      listing.videoUrl.isNotEmpty ? listing.videoUrl : (kDemoPropertyVideos ? _demoVideoUrl : '');
+
+  @override
+  void dispose() {
+    _flip.dispose();
+    super.dispose();
+  }
+
+  void _toggleFlip() {
+    AppHaptics.tap();
+    if (_flip.status == AnimationStatus.forward || _flip.status == AnimationStatus.completed) {
+      _flip.reverse();
+    } else {
+      _flip.forward();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final radius = BorderRadius.circular(AppRadius.xl + 4);
+    final hasVideo = _videoUrl.isNotEmpty;
+    final front = _buildFront(radius, hasVideo);
+
+    final Widget card = !hasVideo
+        ? front
+        : AnimatedBuilder(
+            animation: _flip,
+            builder: (context, _) {
+              final angle = Curves.easeInOutCubic.transform(_flip.value) * math.pi;
+              final showBack = angle > math.pi / 2;
+              // A slight dip in scale mid-turn makes the flip feel physical.
+              final scale = 1 - 0.06 * math.sin(angle);
+              return Transform(
+                alignment: Alignment.center,
+                transform: Matrix4.identity()
+                  ..setEntry(3, 2, 0.0012)
+                  ..rotateY(angle)
+                  ..scaleByDouble(scale, scale, 1, 1),
+                child: showBack
+                    // Counter-rotate so the back face isn't mirrored
+                    ? Transform(
+                        alignment: Alignment.center,
+                        transform: Matrix4.rotationY(math.pi),
+                        child: Material(
+                          color: AppColors.ink,
+                          borderRadius: radius,
+                          clipBehavior: Clip.antiAlias,
+                          child: PropertyVideoFace(
+                            videoUrl: _videoUrl,
+                            posterUrl: listing.coverImage,
+                            title: listing.title,
+                            onFlipBack: _toggleFlip,
+                          ),
+                        ),
+                      )
+                    : front,
+              );
+            },
+          );
+
+    return widget.height == null ? card : SizedBox(height: widget.height, child: card);
+  }
+
+  Widget _buildFront(BorderRadius radius, bool hasVideo) {
+    final onSave = widget.onSave;
+    final badge = widget.badge;
     final facts = [
       if (listing.areaLabel.isNotEmpty) (Iconsax.maximize_4_copy, listing.areaLabel),
       if (listing.floor.isNotEmpty) (Iconsax.layer_copy, 'Floor ${listing.floor}'),
@@ -45,14 +132,14 @@ class PropertyCard extends StatelessWidget {
     ];
     final subtitle = [listing.projectName, listing.builderName].where((s) => s.isNotEmpty).join(' · ');
 
-    final card = Material(
+    return Material(
       color: AppColors.ink,
       borderRadius: radius,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () {
           AppHaptics.tap();
-          onTap();
+          widget.onTap();
         },
         child: Stack(
           fit: StackFit.expand,
@@ -72,7 +159,7 @@ class PropertyCard extends StatelessWidget {
             Positioned(
               top: 12,
               left: 12,
-              right: 60,
+              right: 12 + (onSave != null ? 48 : 0) + (hasVideo ? 46 : 0),
               child: Wrap(
                 spacing: 6,
                 runSpacing: 6,
@@ -87,8 +174,19 @@ class PropertyCard extends StatelessWidget {
                 ],
               ),
             ),
-            if (onSave != null)
-              Positioned(top: 10, right: 10, child: _SaveButton(saved: isSaved, onTap: onSave!)),
+            if (onSave != null || hasVideo)
+              Positioned(
+                top: 10,
+                right: 10,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (hasVideo) _FlipToVideoButton(onTap: _toggleFlip),
+                    if (onSave != null && hasVideo) const SizedBox(width: 8),
+                    if (onSave != null) _SaveButton(saved: widget.isSaved, onTap: onSave),
+                  ],
+                ),
+              ),
             Positioned(
               left: 14,
               right: 14,
@@ -181,8 +279,29 @@ class PropertyCard extends StatelessWidget {
         ),
       ),
     );
+  }
+}
 
-    return height == null ? card : SizedBox(height: height, child: card);
+/// Gold-ringed play button that hints there's a video on the other side.
+class _FlipToVideoButton extends StatelessWidget {
+  const _FlipToVideoButton({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white.withValues(alpha: 0.18),
+      shape: const CircleBorder(side: BorderSide(color: AppColors.gold, width: 1.4)),
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: onTap,
+        child: const SizedBox.square(
+          dimension: 38,
+          child: Icon(Iconsax.video_play_copy, size: 18, color: AppColors.gold),
+        ),
+      ),
+    );
   }
 }
 

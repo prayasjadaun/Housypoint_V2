@@ -11,6 +11,7 @@ class ListingModel {
     required this.subtype,
     required this.price,
     required this.images,
+    this.videoUrl = '',
     this.projectId,
     this.projectName = '',
     this.projectLogo = '',
@@ -52,6 +53,9 @@ class ListingModel {
   /// Asking price (sale) or monthly rent (rental).
   final double price;
   final List<String> images;
+
+  /// Walkthrough video; empty until the API sends one.
+  final String videoUrl;
 
   final int? projectId;
   final String projectName;
@@ -121,6 +125,7 @@ class ListingModel {
     subtype: subtype,
     price: price,
     images: images,
+    videoUrl: videoUrl,
     projectId: projectId,
     projectName: projectName,
     projectLogo: projectLogo,
@@ -167,6 +172,11 @@ class ListingModel {
 
     String str(Object? v) => v?.toString().trim() ?? '';
 
+    final videos = json['video_urls'] as List? ?? const [];
+    final videoUrl = str(json['video_url']).isNotEmpty
+        ? str(json['video_url'])
+        : videos.whereType<String>().firstWhere((u) => u.isNotEmpty, orElse: () => '');
+
     return ListingModel(
       id: json['id'] as int,
       isRental: rental,
@@ -174,6 +184,7 @@ class ListingModel {
       subtype: str(isCommercial ? json['commercial_subtype'] : json['residential_subtype']),
       price: _toDouble(rental ? json['rent_price'] : json['asking_price']) ?? 0,
       images: images,
+      videoUrl: videoUrl,
       projectId: project?['id'] as int?,
       projectName: str(project?['name']).isNotEmpty
           ? str(project?['name'])
