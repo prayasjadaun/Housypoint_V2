@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 
 import '../core/network/api_exception.dart';
-import '../core/storage/app_prefs.dart';
 import '../firebase/firebase_setup.dart';
 import '../firebase/notification_service.dart';
 import '../models/auth/user_model.dart';
@@ -35,11 +34,15 @@ class AuthController extends ChangeNotifier {
 
   String get fullPhone => '$countryCode$phoneNumber';
 
-  /// First launch — show onboarding before login.
-  bool get needsOnboarding => !AppPrefs.onboardingSeen;
+  /// Onboarding shows on every app launch while logged out. Kept in memory
+  /// only, so a logout mid-session goes straight to login, but the next
+  /// cold start shows onboarding again.
+  bool _onboardingDone = false;
 
-  Future<void> completeOnboarding() async {
-    await AppPrefs.setOnboardingSeen();
+  bool get needsOnboarding => !_onboardingDone;
+
+  void completeOnboarding() {
+    _onboardingDone = true;
     notifyListeners();
   }
 

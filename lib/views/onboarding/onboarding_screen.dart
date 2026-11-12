@@ -26,8 +26,8 @@ class _OnboardingPage {
   final List<OnboardingChip> chips;
 }
 
-/// First-launch intro (shown once, before login). Finishing or skipping
-/// marks it seen; the router then moves on to login.
+/// Intro shown on every app launch while logged out. Finishing or skipping
+/// marks it done for this session; the router then moves on to login.
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
 
