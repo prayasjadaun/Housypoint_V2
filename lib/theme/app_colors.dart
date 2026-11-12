@@ -43,7 +43,21 @@ class AppColors {
   static const Color referGold = Color(0xFFD4AF6A);
   static const Color referInk = Color(0xFFF4EFE6);
   static const Color referMuted = Color(0xFFA8A296);
+  static const Color referOnGold = Color(0xFF14110B);
+  static const Color referLine = Color(0x14FFFFFF);
   static const Color referRule = Color(0x47D4AF6A);
+  static const Color referGreen = Color(0xFF4FD18B);
+  static const LinearGradient referGoldGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      Color(0xFFF3DCA6),
+      Color(0xFFD4AF6A),
+      Color(0xFFA9823F),
+      Color(0xFFE8CC8F),
+    ],
+    stops: [0, 0.38, 0.7, 1],
+  );
 
   // Menu card accents
   static const Color accentBlue = Color(0xFF3B82F6);

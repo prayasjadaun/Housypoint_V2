@@ -47,7 +47,7 @@ class MenuScreen extends StatelessWidget {
         subtitle: 'Top developers & projects',
         icon: Iconsax.buildings_2_copy,
         color: AppColors.accentSky,
-        onTap: comingSoon,
+        onTap: () => context.push(AppRoutes.builders),
       ),
       MenuCard(
         title: 'Home Loan',

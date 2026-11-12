@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../controllers/auth_controller.dart';
 import '../controllers/home_controller.dart';
 import '../controllers/inspection_controller.dart';
+import '../models/master/builder_model.dart';
 import '../repositories/master_data_repository.dart';
 import '../repositories/pdi_repository.dart';
 import '../repositories/project_repository.dart';
@@ -13,6 +14,8 @@ import '../views/inspection/inspection_booking_screen.dart';
 import '../views/inspection/my_inspections_screen.dart';
 import '../views/auth/otp_screen.dart';
 import '../views/auth/register_screen.dart';
+import '../views/builders/builder_detail_screen.dart';
+import '../views/builders/builders_screen.dart';
 import '../views/compare/compare_projects_screen.dart';
 import '../views/consultation/consultation_booking_screen.dart';
 import '../views/consultation/my_consultations_screen.dart';
@@ -115,6 +118,17 @@ GoRouter createRouter(AuthController auth) {
       GoRoute(
         path: AppRoutes.compare,
         builder: (_, _) => const CompareProjectsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.builders,
+        builder: (_, _) => const BuildersScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.builder,
+        builder: (_, state) => BuilderDetailScreen(
+          id: int.parse(state.pathParameters['id']!),
+          initial: state.extra is BuilderModel ? state.extra as BuilderModel : null,
+        ),
       ),
     ],
   );

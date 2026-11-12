@@ -21,12 +21,13 @@ import 'widgets/home_footer.dart';
 import 'widgets/inspection_plans.dart';
 import 'widgets/promo_banners.dart';
 import 'widgets/services_section.dart';
+import 'widgets/trusted_builders_section.dart';
 
 /// Home tab: animated skyline hero, then the home sections.
 ///
 /// Ported from develop one feature at a time — sections whose feature isn't
-/// on this branch yet (filter card, hot deals, new launches, post property,
-/// trusted builders) are left out for now.
+/// on this branch yet (filter card, hot deals, new launches, post property)
+/// are left out for now.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -93,6 +94,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 CompareBanner(onTap: () => context.push(AppRoutes.compare)),
               ],
             ),
+          ),
+          const SizedBox(height: _gap),
+          TrustedBuildersSection(
+            onViewAll: () => context.push(AppRoutes.builders),
+            onTapBuilder: (b) =>
+                context.push(AppRoutes.builderPath(b.id), extra: b),
           ),
           const SizedBox(height: AppSpacing.xxl),
           const HomeFooter(),
