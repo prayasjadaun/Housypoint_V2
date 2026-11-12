@@ -59,6 +59,7 @@ flutter:
 
   assets:
     - assets/logo/housypoint_logo.png
+    - assets/adBanner/
     - assets/lottie/
     - assets/nav/
     - assets/video/

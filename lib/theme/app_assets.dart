@@ -14,4 +14,9 @@ class AppAssets {
   static const String lottieEmpty = 'assets/lottie/zero_notification.json';
   static const String lottieNoResults = 'assets/lottie/empty.json';
   static const String lottieBuilding = 'assets/lottie/building.json';
+
+  // Home ad banners (local placeholders until the ads API is wired)
+  static const String adHousypoint = 'assets/adBanner/housypoint.png';
+  static const String adInlobo = 'assets/adBanner/inlobo.png';
+  static const String adInspection = 'assets/adBanner/inspection.png';
 }

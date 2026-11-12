@@ -16,6 +16,7 @@ import '../../theme/app_spacing.dart';
 import '../../theme/app_text_styles.dart';
 import '../../widgets/common/app_refresh_indicator.dart';
 import '../../widgets/common/glass_bottom_nav.dart';
+import 'widgets/ad_banners_section.dart';
 import 'widgets/home_footer.dart';
 import 'widgets/hot_deals_section.dart';
 import 'widgets/inspection_plans.dart';
@@ -100,6 +101,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: _gap),
           ServicesSection(onSelect: _openService),
+          const SizedBox(height: _gap),
+          const AdBannersSection(),
           const SizedBox(height: _gap),
           const HotDealsSection(),
           const SizedBox(height: _gap),
