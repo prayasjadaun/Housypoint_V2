@@ -12,6 +12,8 @@ import '../views/inspection/inspection_booking_screen.dart';
 import '../views/inspection/my_inspections_screen.dart';
 import '../views/auth/otp_screen.dart';
 import '../views/auth/register_screen.dart';
+import '../views/consultation/consultation_booking_screen.dart';
+import '../views/consultation/my_consultations_screen.dart';
 import '../views/onboarding/onboarding_screen.dart';
 import '../views/profile/edit_profile_screen.dart';
 import '../views/profile/profile_screen.dart';
@@ -96,6 +98,16 @@ GoRouter createRouter(AuthController auth) {
       GoRoute(
         path: AppRoutes.myInspections,
         builder: (_, _) => const MyInspectionsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.consultation,
+        builder: (_, state) => ConsultationBookingScreen(
+          initialService: state.uri.queryParameters['service'],
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.myConsultations,
+        builder: (_, _) => const MyConsultationsScreen(),
       ),
     ],
   );

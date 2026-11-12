@@ -114,7 +114,7 @@ class ProfileScreen extends StatelessWidget {
                 title: 'My consultations',
                 subtitle: 'Expert calls you booked',
                 color: AppColors.accentAmber,
-                onTap: comingSoon,
+                onTap: () => context.push(AppRoutes.myConsultations),
               ),
               SettingsTile(
                 icon: Iconsax.heart_copy,

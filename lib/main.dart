@@ -15,6 +15,7 @@ import 'firebase/firebase_setup.dart';
 import 'firebase/notification_service.dart';
 import 'firebase/remote_config_service.dart';
 import 'repositories/auth_repository.dart';
+import 'repositories/consultation_repository.dart';
 import 'repositories/master_data_repository.dart';
 import 'repositories/pdi_repository.dart';
 import 'repositories/project_repository.dart';
@@ -50,6 +51,7 @@ Future<void> main() async {
         Provider.value(value: ProjectRepository(dio)),
         Provider.value(value: MasterDataRepository(dio)),
         Provider.value(value: PdiRepository(dio)),
+        Provider.value(value: ConsultationRepository(dio)),
       ],
       child: const App(),
     ),

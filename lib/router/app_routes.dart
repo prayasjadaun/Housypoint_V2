@@ -12,6 +12,9 @@ class AppRoutes {
   static const String editProfile = '/profile/edit';
   static const String inspection = '/inspection';
   static const String myInspections = '/inspections';
+  static const String consultation = '/consultation';
+  static String consultationFor(String service) => '/consultation?service=$service';
+  static const String myConsultations = '/consultations';
 
   static const Set<String> authFlow = {login, otp};
 }

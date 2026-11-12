@@ -30,10 +30,10 @@ class MenuScreen extends StatelessWidget {
       ),
       MenuCard(
         title: 'Expert\nConsultation',
-        subtitle: 'Talk to a property expert',
+        subtitle: 'Legal, tax & property advice',
         icon: Iconsax.messages_2_copy,
         color: AppColors.accentAmber,
-        onTap: comingSoon,
+        onTap: () => context.push(AppRoutes.consultation),
       ),
       MenuCard(
         title: 'Compare\nProjects',
