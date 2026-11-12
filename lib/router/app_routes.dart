@@ -16,6 +16,7 @@ class AppRoutes {
   static String consultationFor(String service) => '/consultation?service=$service';
   static const String myConsultations = '/consultations';
   static const String compare = '/compare';
+  static const String homeLoan = '/home-loan';
   static const String builders = '/builders';
   static const String builder = '/builders/:id';
   static String builderPath(int id) => '/builders/$id';

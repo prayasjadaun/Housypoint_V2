@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
+import '../../../core/config/feature_flags.dart';
 import '../../../core/utils/app_haptics.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_radius.dart';
@@ -24,6 +25,11 @@ class ServicesSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final services = [
+      for (final s in _services)
+        if (s.$1 != 'loan' || FeatureFlags.homeLoanEnabled) s,
+    ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -36,9 +42,9 @@ class ServicesSection extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           child: Row(
             children: [
-              for (var i = 0; i < _services.length; i++) ...[
+              for (var i = 0; i < services.length; i++) ...[
                 if (i > 0) const SizedBox(width: 10),
-                Expanded(child: _ServiceTile(data: _services[i], onTap: onSelect)),
+                Expanded(child: _ServiceTile(data: services[i], onTap: onSelect)),
               ],
             ],
           ),

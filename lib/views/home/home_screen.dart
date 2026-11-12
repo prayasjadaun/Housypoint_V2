@@ -39,15 +39,12 @@ class _HomeScreenState extends State<HomeScreen> {
   /// Vertical space between home sections.
   static const double _gap = 28;
 
-  void _openService(String key) {
-    // TODO: 'loan' => AppRoutes.homeLoan once Home Loan is ported.
-    if (key == 'loan') return context.showSnackBar('Coming soon');
-    context.push(switch (key) {
-      'inspection' => AppRoutes.inspection,
-      'tax' => AppRoutes.consultationFor('taxation'),
-      _ => AppRoutes.consultationFor('legal'),
-    });
-  }
+  void _openService(String key) => context.push(switch (key) {
+    'inspection' => AppRoutes.inspection,
+    'loan' => AppRoutes.homeLoan,
+    'tax' => AppRoutes.consultationFor('taxation'),
+    _ => AppRoutes.consultationFor('legal'),
+  });
 
   @override
   void initState() {

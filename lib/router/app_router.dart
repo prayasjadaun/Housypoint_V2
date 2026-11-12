@@ -12,6 +12,7 @@ import '../repositories/project_repository.dart';
 import '../views/auth/login_screen.dart';
 import '../views/inspection/inspection_booking_screen.dart';
 import '../views/inspection/my_inspections_screen.dart';
+import '../views/loan/home_loan_screen.dart';
 import '../views/auth/otp_screen.dart';
 import '../views/auth/register_screen.dart';
 import '../views/builders/builder_detail_screen.dart';
@@ -118,6 +119,10 @@ GoRouter createRouter(AuthController auth) {
       GoRoute(
         path: AppRoutes.compare,
         builder: (_, _) => const CompareProjectsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.homeLoan,
+        builder: (_, _) => const HomeLoanScreen(),
       ),
       GoRoute(
         path: AppRoutes.builders,

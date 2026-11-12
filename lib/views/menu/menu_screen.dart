@@ -4,6 +4,7 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../../controllers/shell_controller.dart';
+import '../../core/config/feature_flags.dart';
 import '../../core/extensions/context_extensions.dart';
 import '../../router/app_routes.dart';
 import '../../theme/app_colors.dart';
@@ -49,13 +50,15 @@ class MenuScreen extends StatelessWidget {
         color: AppColors.accentSky,
         onTap: () => context.push(AppRoutes.builders),
       ),
-      MenuCard(
-        title: 'Home Loan',
-        subtitle: 'Rates & EMI calculator',
-        icon: Iconsax.money_recive_copy,
-        color: AppColors.accentEmerald,
-        onTap: comingSoon,
-      ),
+      // Hidden on iOS (App Store review) — see FeatureFlags.
+      if (FeatureFlags.homeLoanEnabled)
+        MenuCard(
+          title: 'Home Loan',
+          subtitle: 'EMI calculator & banks',
+          icon: Iconsax.money_recive_copy,
+          color: AppColors.accentEmerald,
+          onTap: () => context.push(AppRoutes.homeLoan),
+        ),
       MenuCard(
         title: 'My\nListings',
         subtitle: 'Properties you posted',
