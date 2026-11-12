@@ -10,8 +10,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 const _size = 78.0;
-// Line icons ki line har taraf se kitne px patli (78px icon, line ~5px)
-const _thinBy = 1.5;
+// Line icons ki line har taraf se kitne px moti (78px icon) — Iconsax linear
+// native bar me bahut patla dikhta tha
+const _thickenBy = 0.35;
 const _hires = 8.0;
 
 void main() {
@@ -62,17 +63,15 @@ void main() {
           );
           // Filled icons nahi, warna unke andar ke cut-outs mote ho jaate
           if (e.key.endsWith('_filled')) return fill.paint(canvas, at);
-          // Line native bar me moti lagti hai — glyph ke kinare par stroke se
-          // erase karo, har jagah barabar patli hoti hai
-          canvas.saveLayer(null, Paint());
+          // Glyph ke kinare par stroke — line har jagah barabar moti hoti hai
           fill.paint(canvas, at);
           glyph(
             Paint()
+              ..color = Colors.black
               ..style = PaintingStyle.stroke
-              ..strokeWidth = _thinBy * 2
-              ..blendMode = BlendMode.dstOut,
+              ..strokeWidth = _thickenBy * 2
+              ..strokeJoin = StrokeJoin.round,
           ).paint(canvas, at);
-          canvas.restore();
         });
       }
     });
