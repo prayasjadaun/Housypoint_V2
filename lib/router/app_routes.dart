@@ -8,6 +8,7 @@ class AppRoutes {
   static const String otp = '/otp';
   static const String register = '/register';
   static const String home = '/home';
+  static const String editProfile = '/profile/edit';
 
   static const Set<String> authFlow = {login, otp};
 }

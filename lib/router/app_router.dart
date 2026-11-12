@@ -6,6 +6,7 @@ import '../views/auth/login_screen.dart';
 import '../views/auth/otp_screen.dart';
 import '../views/auth/register_screen.dart';
 import '../views/onboarding/onboarding_screen.dart';
+import '../views/profile/edit_profile_screen.dart';
 import '../views/shell/main_shell_screen.dart';
 import '../views/splash/splash_screen.dart';
 import 'app_routes.dart';
@@ -62,6 +63,10 @@ GoRouter createRouter(AuthController auth) {
       GoRoute(
         path: AppRoutes.home,
         builder: (_, _) => const MainShellScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.editProfile,
+        builder: (_, _) => const EditProfileScreen(),
       ),
     ],
   );

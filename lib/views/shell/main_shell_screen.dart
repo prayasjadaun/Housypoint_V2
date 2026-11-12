@@ -95,7 +95,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
             const ListingsScreen(),
             const SavedScreen(),
             const ReferralScreen(),
-            const ProfileScreen(),
+            ProfileScreen(onTabChangeRequest: _select),
             MenuScreen(onTabChangeRequest: _select),
           ],
         ),
