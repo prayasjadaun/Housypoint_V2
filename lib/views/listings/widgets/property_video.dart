@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
@@ -8,7 +10,128 @@ import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/common/app_network_image.dart';
 
-/// Back face of [PropertyCard]: the listing's video with the cover photo as
+/// Plays a bundled placeholder video on every card that has no `video_url`
+/// yet. Set to `false` once the backend sends real property videos.
+const bool kDemoPropertyVideos = true;
+const String _demoVideoUrl = 'assets/video/sample-5s.mp4';
+
+/// Card that flips over (3D, around the Y axis) from [frontBuilder] to a
+/// [PropertyVideoFace]. The front gets a `flip` callback to wire to its
+/// own button; it's null when there's no video, and the card never flips.
+class VideoFlipCard extends StatefulWidget {
+  const VideoFlipCard({
+    super.key,
+    required this.videoUrl,
+    required this.posterUrl,
+    required this.title,
+    required this.borderRadius,
+    required this.frontBuilder,
+  });
+
+  /// Empty falls back to the demo video while [kDemoPropertyVideos] is on.
+  final String videoUrl;
+  final String posterUrl;
+  final String title;
+  final BorderRadius borderRadius;
+  final Widget Function(BuildContext context, VoidCallback? flip) frontBuilder;
+
+  @override
+  State<VideoFlipCard> createState() => _VideoFlipCardState();
+}
+
+class _VideoFlipCardState extends State<VideoFlipCard> with SingleTickerProviderStateMixin {
+  late final AnimationController _flip = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 600),
+  );
+
+  String get _videoUrl => widget.videoUrl.isNotEmpty
+      ? widget.videoUrl
+      : (kDemoPropertyVideos ? _demoVideoUrl : '');
+
+  @override
+  void dispose() {
+    _flip.dispose();
+    super.dispose();
+  }
+
+  void _toggle() {
+    AppHaptics.tap();
+    if (_flip.status == AnimationStatus.forward || _flip.status == AnimationStatus.completed) {
+      _flip.reverse();
+    } else {
+      _flip.forward();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final videoUrl = _videoUrl;
+    if (videoUrl.isEmpty) return widget.frontBuilder(context, null);
+
+    final front = widget.frontBuilder(context, _toggle);
+    return AnimatedBuilder(
+      animation: _flip,
+      builder: (context, _) {
+        final angle = Curves.easeInOutCubic.transform(_flip.value) * math.pi;
+        final showBack = angle > math.pi / 2;
+        // A slight dip in scale mid-turn makes the flip feel physical.
+        final scale = 1 - 0.06 * math.sin(angle);
+        return Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.identity()
+            ..setEntry(3, 2, 0.0012)
+            ..rotateY(angle)
+            ..scaleByDouble(scale, scale, 1, 1),
+          child: showBack
+              // Counter-rotate so the back face isn't mirrored
+              ? Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.rotationY(math.pi),
+                  child: Material(
+                    color: AppColors.ink,
+                    borderRadius: widget.borderRadius,
+                    clipBehavior: Clip.antiAlias,
+                    child: PropertyVideoFace(
+                      videoUrl: videoUrl,
+                      posterUrl: widget.posterUrl,
+                      title: widget.title,
+                      onFlipBack: _toggle,
+                    ),
+                  ),
+                )
+              : front,
+        );
+      },
+    );
+  }
+}
+
+/// Gold-ringed play button for a card's front that flips it to the video.
+class FlipToVideoButton extends StatelessWidget {
+  const FlipToVideoButton({super.key, required this.onTap, this.size = 38});
+
+  final VoidCallback onTap;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white.withValues(alpha: 0.18),
+      shape: const CircleBorder(side: BorderSide(color: AppColors.gold, width: 1.4)),
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: onTap,
+        child: SizedBox.square(
+          dimension: size,
+          child: Icon(Iconsax.video_play_copy, size: size * 0.47, color: AppColors.gold),
+        ),
+      ),
+    );
+  }
+}
+
+/// Back face of [VideoFlipCard]: the listing's video with the cover photo as
 /// a poster, a centre play button, a scrub bar and a full-screen button.
 ///
 /// The controller is created when this face is built (i.e. once the card has

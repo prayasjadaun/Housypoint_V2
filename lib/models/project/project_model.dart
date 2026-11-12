@@ -14,6 +14,7 @@ class ProjectSummary {
     this.status = '',
     this.isNewLaunch = false,
     this.location = '',
+    this.videoUrl = '',
   });
 
   final int id;
@@ -28,6 +29,9 @@ class ProjectSummary {
   final String status;
   final bool isNewLaunch;
   final String location;
+
+  /// Walkthrough video; empty until the API sends one.
+  final String videoUrl;
 
   factory ProjectSummary.fromJson(Map<String, dynamic> json) {
     String str(Object? v) => v?.toString().trim() ?? '';
@@ -51,6 +55,11 @@ class ProjectSummary {
       status: str(json['project_status']),
       isNewLaunch: json['new_launch'] == true,
       location: str(json['location']),
+      videoUrl: str(json['video_url']).isNotEmpty
+          ? str(json['video_url'])
+          : (json['video_urls'] as List? ?? const [])
+                .whereType<String>()
+                .firstWhere((u) => u.isNotEmpty, orElse: () => ''),
     );
   }
 }

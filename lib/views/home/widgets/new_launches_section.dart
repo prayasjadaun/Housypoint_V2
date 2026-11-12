@@ -14,6 +14,7 @@ import '../../../theme/app_text_styles.dart';
 import '../../../widgets/common/app_network_image.dart';
 import '../../../widgets/common/section_header.dart';
 import '../../../widgets/common/skeleton_box.dart';
+import '../../listings/widgets/property_video.dart';
 
 /// "New launches" — fresh projects in the selected city (API ref C5).
 class NewLaunchesSection extends StatelessWidget {
@@ -56,6 +57,7 @@ class NewLaunchesSection extends StatelessWidget {
 }
 
 /// Full-bleed project card: photo fills the card, details on a dark fade.
+/// The top-right play button flips it over to the project video.
 class LaunchCard extends StatelessWidget {
   const LaunchCard({super.key, required this.project});
 
@@ -68,150 +70,172 @@ class LaunchCard extends StatelessWidget {
       project.city,
     ].where((s) => s.isNotEmpty).join(' · ');
 
+    final radius = BorderRadius.circular(AppRadius.xl + 4);
     return SizedBox(
       width: 230,
-      child: Material(
-        color: AppColors.ink,
-        borderRadius: BorderRadius.circular(AppRadius.xl + 4),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: () {
-            AppHaptics.tap();
-            context.push(AppRoutes.projectPath(project.id));
-          },
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              AppNetworkImage(url: project.image),
-              const DecoratedBox(
+      child: VideoFlipCard(
+        videoUrl: project.videoUrl,
+        posterUrl: project.image,
+        title: project.name,
+        borderRadius: radius,
+        frontBuilder: (context, flip) =>
+            _buildFront(context, radius, place, flip),
+      ),
+    );
+  }
+
+  Widget _buildFront(
+    BuildContext context,
+    BorderRadius radius,
+    String place,
+    VoidCallback? flip,
+  ) {
+    return Material(
+      color: AppColors.ink,
+      borderRadius: radius,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () {
+          AppHaptics.tap();
+          context.push(AppRoutes.projectPath(project.id));
+        },
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            AppNetworkImage(url: project.image),
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  stops: [0, 0.25, 0.5, 1],
+                  colors: [
+                    Color(0x40000000),
+                    Colors.transparent,
+                    Color(0x1A000000),
+                    Color(0xE6000000),
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+              top: 12,
+              left: 12,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    stops: [0, 0.25, 0.5, 1],
-                    colors: [
-                      Color(0x40000000),
-                      Colors.transparent,
-                      Color(0x1A000000),
-                      Color(0xE6000000),
-                    ],
-                  ),
+                  color: AppColors.gold,
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
                 ),
-              ),
-              Positioned(
-                top: 12,
-                left: 12,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 5,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.gold,
-                    borderRadius: BorderRadius.circular(AppRadius.pill),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Iconsax.flash_1_copy,
-                        size: 12,
-                        color: AppColors.ink,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'New launch',
-                        style: AppTextStyles.caption.copyWith(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.ink,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              if (project.builderLogo.isNotEmpty)
-                Positioned(
-                  top: 10,
-                  right: 10,
-                  child: Container(
-                    width: 42,
-                    height: 42,
-                    padding: const EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      // Always white — builder logos are made for a light background.
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(AppRadius.md),
-                    ),
-                    child: AppNetworkImage(
-                      url: project.builderLogo,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                ),
-              Positioned(
-                left: 14,
-                right: 14,
-                bottom: 14,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    Icon(Iconsax.flash_1_copy, size: 12, color: AppColors.ink),
+                    const SizedBox(width: 4),
                     Text(
-                      project.name,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.title.copyWith(
-                        color: Colors.white,
-                        height: 1.25,
+                      'New launch',
+                      style: AppTextStyles.caption.copyWith(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.ink,
                       ),
-                    ),
-                    if (place.isNotEmpty)
-                      Text(
-                        place,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTextStyles.caption.copyWith(
-                          color: Colors.white.withValues(alpha: 0.78),
-                        ),
-                      ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Text(
-                          project.priceRange.isEmpty
-                              ? 'Price on request'
-                              : '₹${project.priceRange}',
-                          style: AppTextStyles.body.copyWith(
-                            color: AppColors.gold,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const Spacer(),
-                        Container(
-                          width: 30,
-                          height: 30,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.18),
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.3),
-                            ),
-                          ),
-                          child: const Icon(
-                            Iconsax.arrow_right_3_copy,
-                            size: 15,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
                     ),
                   ],
                 ),
               ),
-            ],
-          ),
+            ),
+            if (flip != null || project.builderLogo.isNotEmpty)
+              Positioned(
+                top: 10,
+                right: 10,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (flip != null) FlipToVideoButton(onTap: flip, size: 36),
+                    if (flip != null && project.builderLogo.isNotEmpty)
+                      const SizedBox(width: 8),
+                    if (project.builderLogo.isNotEmpty)
+                      Container(
+                        width: 42,
+                        height: 42,
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          // Always white — builder logos are made for a light background.
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(AppRadius.md),
+                        ),
+                        child: AppNetworkImage(
+                          url: project.builderLogo,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            Positioned(
+              left: 14,
+              right: 14,
+              bottom: 14,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    project.name,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.title.copyWith(
+                      color: Colors.white,
+                      height: 1.25,
+                    ),
+                  ),
+                  if (place.isNotEmpty)
+                    Text(
+                      place,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.caption.copyWith(
+                        color: Colors.white.withValues(alpha: 0.78),
+                      ),
+                    ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Text(
+                        project.priceRange.isEmpty
+                            ? 'Price on request'
+                            : '₹${project.priceRange}',
+                        style: AppTextStyles.body.copyWith(
+                          color: AppColors.gold,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const Spacer(),
+                      Container(
+                        width: 30,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.18),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.3),
+                          ),
+                        ),
+                        child: const Icon(
+                          Iconsax.arrow_right_3_copy,
+                          size: 15,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
