@@ -33,20 +33,18 @@ class PostPropertySection extends StatelessWidget {
                 children: [
                   Expanded(
                     child: _PostCard(
-                      icon: Iconsax.key_copy,
+                      icon: Iconsax.tag_copy,
                       title: 'Sell',
                       subtitle: 'Get the best price',
-                      color: AppColors.primary,
                       onTap: () => onSelect('sell'),
                     ),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: _PostCard(
-                      icon: Iconsax.home_hashtag_copy,
+                      icon: Iconsax.key_copy,
                       title: 'Rent out',
                       subtitle: 'Find good tenants',
-                      color: AppColors.accentSky,
                       onTap: () => onSelect('rent'),
                     ),
                   ),
@@ -67,37 +65,31 @@ class _PostCard extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.subtitle,
-    required this.color,
     required this.onTap,
   });
 
   final IconData icon;
   final String title;
   final String subtitle;
-  final Color color;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final radius = BorderRadius.circular(AppRadius.xl);
     return Material(
-      color: Colors.transparent,
+      color: AppColors.surface,
+      borderRadius: radius,
       child: InkWell(
         borderRadius: radius,
         onTap: () {
           AppHaptics.tap();
           onTap();
         },
-        child: Ink(
+        child: Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             borderRadius: radius,
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [AppColors.surface, Color.alphaBlend(color.withValues(alpha: 0.1), AppColors.surface)],
-            ),
-            border: Border.all(color: color.withValues(alpha: 0.12)),
+            border: Border.all(color: AppColors.border.withValues(alpha: 0.7)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,14 +100,19 @@ class _PostCard extends StatelessWidget {
                     width: 38,
                     height: 38,
                     decoration: BoxDecoration(
-                      color: color.withValues(alpha: 0.12),
+                      border: Border.all(
+                        color: AppColors.border.withValues(alpha: 0.7),
+                      ),
                       borderRadius: BorderRadius.circular(AppRadius.md),
                     ),
-                    child: Icon(icon, size: 19, color: color),
+                    child: Icon(icon, size: 19, color: AppColors.textPrimary),
                   ),
                   const Spacer(),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.success.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(AppRadius.pill),
@@ -171,10 +168,16 @@ class _BuyBanner extends StatelessWidget {
                 width: 38,
                 height: 38,
                 decoration: BoxDecoration(
-                  color: AppColors.gold.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(AppRadius.md),
+                  border: Border.all(
+                    color: AppColors.border.withValues(alpha: 0.7),
+                  ),
                 ),
-                child: const Icon(Iconsax.search_status_copy, size: 19, color: AppColors.goldDark),
+                child: Icon(
+                  Iconsax.search_normal_1_copy,
+                  size: 19,
+                  color: AppColors.textPrimary,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -183,7 +186,9 @@ class _BuyBanner extends StatelessWidget {
                   children: [
                     Text(
                       'Looking to buy?',
-                      style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600),
+                      style: AppTextStyles.body.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     Text(
                       'Tell us what you need — we’ll find matching homes',
@@ -192,7 +197,11 @@ class _BuyBanner extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(Iconsax.arrow_right_3_copy, size: 18, color: AppColors.textTertiary),
+              Icon(
+                Iconsax.arrow_right_3_copy,
+                size: 18,
+                color: AppColors.textTertiary,
+              ),
             ],
           ),
         ),

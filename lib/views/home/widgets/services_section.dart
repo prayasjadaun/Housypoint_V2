@@ -17,10 +17,10 @@ class ServicesSection extends StatelessWidget {
   final ValueChanged<String> onSelect;
 
   static const _services = [
-    ('inspection', 'Home\nInspection', Iconsax.shield_tick_copy, AppColors.primary),
-    ('loan', 'Home\nLoan', Iconsax.money_recive_copy, AppColors.accentEmerald),
-    ('legal', 'Legal\nAdvice', Iconsax.judge_copy, AppColors.accentIndigo),
-    ('tax', 'Tax\nPlanning', Iconsax.receipt_2_copy, AppColors.accentAmber),
+    ('inspection', 'Home\nInspection', Iconsax.clipboard_tick_copy),
+    ('loan', 'Home\nLoan', Iconsax.bank_copy),
+    ('legal', 'Legal\nAdvice', Iconsax.document_text_copy),
+    ('tax', 'Tax\nPlanning', Iconsax.calculator_copy),
   ];
 
   @override
@@ -44,7 +44,9 @@ class ServicesSection extends StatelessWidget {
             children: [
               for (var i = 0; i < services.length; i++) ...[
                 if (i > 0) const SizedBox(width: 10),
-                Expanded(child: _ServiceTile(data: services[i], onTap: onSelect)),
+                Expanded(
+                  child: _ServiceTile(data: services[i], onTap: onSelect),
+                ),
               ],
             ],
           ),
@@ -57,12 +59,12 @@ class ServicesSection extends StatelessWidget {
 class _ServiceTile extends StatelessWidget {
   const _ServiceTile({required this.data, required this.onTap});
 
-  final (String, String, IconData, Color) data;
+  final (String, String, IconData) data;
   final ValueChanged<String> onTap;
 
   @override
   Widget build(BuildContext context) {
-    final (key, label, icon, color) = data;
+    final (key, label, icon) = data;
     final radius = BorderRadius.circular(AppRadius.lg);
 
     return Material(
@@ -86,10 +88,12 @@ class _ServiceTile extends StatelessWidget {
                 width: 42,
                 height: 42,
                 decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(AppRadius.md),
+                  border: Border.all(
+                    color: AppColors.border.withValues(alpha: 0.7),
+                  ),
                 ),
-                child: Icon(icon, size: 21, color: color),
+                child: Icon(icon, size: 21, color: AppColors.textPrimary),
               ),
               const SizedBox(height: 8),
               Text(
