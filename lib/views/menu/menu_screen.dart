@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:provider/provider.dart';
 
-import '../../controllers/auth_controller.dart';
+import '../../controllers/shell_controller.dart';
 import '../../core/extensions/context_extensions.dart';
+import '../../router/app_routes.dart';
 import '../../theme/app_colors.dart';
-import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
-import '../../theme/app_text_styles.dart';
 import '../../widgets/common/glass_bottom_nav.dart';
 import 'widgets/menu_card.dart';
 
-/// 6th bottom-nav tab — every feature that doesn't have its own tab.
+/// Last bottom-nav tab — every feature that doesn't have its own tab.
 class MenuScreen extends StatelessWidget {
-  const MenuScreen({super.key, required this.onTabChangeRequest});
-
-  /// Switches the shell's bottom-nav tab (e.g. Refer, Profile).
-  final ValueChanged<int> onTabChangeRequest;
+  const MenuScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +75,7 @@ class MenuScreen extends StatelessWidget {
         subtitle: 'Invite friends, earn rewards',
         icon: Iconsax.gift_copy,
         color: AppColors.accentRose,
-        onTap: () => onTabChangeRequest(3),
+        onTap: () => context.read<ShellController>().go(ShellTab.refer),
       ),
       MenuCard(
         title: 'Support',
@@ -89,10 +86,10 @@ class MenuScreen extends StatelessWidget {
       ),
       MenuCard(
         title: 'Profile',
-        subtitle: 'Account & settings',
+        subtitle: 'Account, support & settings',
         icon: Iconsax.user_octagon_copy,
         color: AppColors.accentEmerald,
-        onTap: () => onTabChangeRequest(4),
+        onTap: () => context.push(AppRoutes.profile),
       ),
     ];
 
@@ -110,71 +107,11 @@ class MenuScreen extends StatelessWidget {
           crossAxisSpacing: 12,
           childAspectRatio: 1.2,
           shrinkWrap: true,
+          padding: EdgeInsets.zero,
           physics: const NeverScrollableScrollPhysics(),
           children: cards,
-          padding: EdgeInsets.zero,
         ),
-        const SizedBox(height: AppSpacing.md),
-        const _LogoutTile(),
       ],
-    );
-  }
-}
-
-class _LogoutTile extends StatelessWidget {
-  const _LogoutTile();
-
-  Future<void> _confirm(BuildContext context) async {
-    final yes = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Log out?'),
-        content: const Text(
-          'You will need your mobile number and an OTP to log back in.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Log out'),
-          ),
-        ],
-      ),
-    );
-    if (yes == true && context.mounted) {
-      await context.read<AuthController>().logout();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: AppColors.surface,
-      borderRadius: BorderRadius.circular(AppRadius.lg),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        onTap: () => _confirm(context),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: Row(
-            children: [
-              const Icon(Iconsax.logout_copy, color: AppColors.error, size: 22),
-              const SizedBox(width: 12),
-              Text(
-                'Log out',
-                style: AppTextStyles.body.copyWith(
-                  color: AppColors.error,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'app.dart';
 import 'config/app_config.dart';
 import 'controllers/auth_controller.dart';
+import 'controllers/shell_controller.dart';
 import 'core/network/dio_client.dart';
 import 'core/storage/app_prefs.dart';
 import 'core/storage/secure_storage_service.dart';
@@ -41,6 +42,7 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: authController),
+        ChangeNotifierProvider(create: (_) => ShellController()),
       ],
       child: const App(),
     ),
