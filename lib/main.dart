@@ -8,6 +8,7 @@ import 'app.dart';
 import 'config/app_config.dart';
 import 'controllers/auth_controller.dart';
 import 'controllers/home_controller.dart';
+import 'controllers/referral_controller.dart';
 import 'controllers/shell_controller.dart';
 import 'core/network/dio_client.dart';
 import 'core/storage/app_prefs.dart';
@@ -23,6 +24,7 @@ import 'repositories/master_data_repository.dart';
 import 'repositories/my_listings_repository.dart';
 import 'repositories/pdi_repository.dart';
 import 'repositories/project_repository.dart';
+import 'repositories/referral_repository.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -59,6 +61,7 @@ Future<void> main() async {
           ),
         ),
         ChangeNotifierProvider(create: (_) => ShellController()),
+        ChangeNotifierProvider(create: (_) => ReferralController(ReferralRepository(dio))),
         // Repositories that screens use directly
         Provider.value(value: ListingRepository(dio)),
         Provider.value(value: ProjectRepository(dio)),

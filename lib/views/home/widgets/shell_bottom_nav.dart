@@ -34,6 +34,7 @@ class ShellBottomNav extends StatelessWidget {
     final current = selected ?? shell.tab;
 
     return GlassBottomNav(
+      goldStyle: current == ShellTab.refer,
       items: [
         for (final tab in ShellTab.values)
           GlassNavItem(

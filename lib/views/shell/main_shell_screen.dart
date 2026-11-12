@@ -50,11 +50,19 @@ class MainShellScreen extends StatelessWidget {
         ],
       );
     }
+    final gold = tab == ShellTab.refer;
     return GlassAppBar(
       automaticallyImplyLeading: false,
       centerTitle: false,
       titleSpacing: 20,
-      title: Text(ShellBottomNav.tabs[tab]!.label, style: AppTextStyles.heading.copyWith(fontSize: 20)),
+      goldStyle: gold,
+      title: Text(
+        ShellBottomNav.tabs[tab]!.label,
+        style: AppTextStyles.heading.copyWith(
+          fontSize: 20,
+          color: gold ? AppColors.referGold : null,
+        ),
+      ),
     );
   }
 

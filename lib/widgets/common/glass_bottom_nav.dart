@@ -11,6 +11,8 @@ class GlassNavItem {
     required this.label,
     required this.selected,
     required this.onTap,
+    this.nativeIconAsset,
+    this.nativeSelectedIconAsset,
   });
 
   /// Iconsax linear icon.
@@ -18,17 +20,29 @@ class GlassNavItem {
   final String label;
   final bool selected;
   final VoidCallback onTap;
+
+  // iOS 26 native tab bar sirf image icons dikha sakta hai (font/SVG nahi) —
+  // tool/render_nav_icons_test.dart se bane assets/nav/*.png
+  final String? nativeIconAsset;
+  final String? nativeSelectedIconAsset;
 }
 
 /// Floating frosted-glass pill nav (same as Inlobo's GlassBottomNav).
 /// The selected tab grows to show its label; a tinted pill slides under it.
 /// Host Scaffold must set `extendBody: true` so content blurs behind it.
 class GlassBottomNav extends StatelessWidget {
-  const GlassBottomNav({super.key, required this.items});
+  const GlassBottomNav({super.key, required this.items, this.goldStyle = false});
 
   final List<GlassNavItem> items;
 
+  /// Takes on the Refer tab's black and gold look while it's open, so the
+  /// nav doesn't sit on it as a light bar.
+  final bool goldStyle;
+
   static const double _pillHeight = 60;
+
+  // iOS 26 native tab bar (NativeTabScaffold) ki height, home indicator ke upar
+  static const double nativeBarHeight = 50;
   static const _slide = Duration(milliseconds: 380);
   static const double _iconSize = 22;
   static const double _gap = 6;
@@ -57,11 +71,13 @@ class GlassBottomNav extends StatelessWidget {
 
   /// Space the nav takes from the screen bottom — lists add this as bottom padding.
   static double totalHeight(BuildContext context) =>
+      // develop: iOS 26+ uses nativeBarHeight (native tab bar, not on this branch yet).
       _pillHeight + _bottomMargin(context);
 
   @override
   Widget build(BuildContext context) {
     final selectedIndex = items.indexWhere((i) => i.selected);
+    final dark = AppColors.isDark;
     final radius = BorderRadius.circular(_pillHeight / 2);
 
     return Padding(
@@ -72,7 +88,7 @@ class GlassBottomNav extends StatelessWidget {
           borderRadius: radius,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.14),
+              color: Colors.black.withValues(alpha: dark || goldStyle ? 0.4 : 0.14),
               blurRadius: 24,
               offset: const Offset(0, 10),
             ),
@@ -91,14 +107,26 @@ class GlassBottomNav extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [
-                    const Color(0xFFF4F6F8).withValues(alpha: 0.55),
-                    const Color(0xFFE9EDF1).withValues(alpha: 0.45),
-                  ],
+                  colors: goldStyle
+                      ? [
+                          AppColors.referDarkRaised.withValues(alpha: 0.86),
+                          AppColors.referDark.withValues(alpha: 0.8),
+                        ]
+                      : dark
+                      ? [
+                          const Color(0xFF23272A).withValues(alpha: 0.72),
+                          const Color(0xFF16191B).withValues(alpha: 0.66),
+                        ]
+                      : [
+                          const Color(0xFFF4F6F8).withValues(alpha: 0.55),
+                          const Color(0xFFE9EDF1).withValues(alpha: 0.45),
+                        ],
                 ),
                 border: Border.all(
                   width: 0.8,
-                  color: Colors.white.withValues(alpha: 0.6),
+                  color: goldStyle
+                      ? AppColors.referRule
+                      : Colors.white.withValues(alpha: dark ? 0.1 : 0.6),
                 ),
               ),
               child: LayoutBuilder(
@@ -161,20 +189,53 @@ class GlassBottomNav extends StatelessWidget {
 
   // Translucent brand-tinted pill — reads as glass on the blurred bar
   Widget _buildPill() {
+    if (goldStyle) {
+      return DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(_pillHeight / 2),
+          gradient: AppColors.referGoldGradient,
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.referGold.withValues(alpha: 0.35),
+              blurRadius: 12,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+      );
+    }
+    final dark = AppColors.isDark;
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(_pillHeight / 2),
-        color: Color.alphaBlend(
-          AppColors.primary.withValues(alpha: 0.10),
-          Colors.white.withValues(alpha: 0.45),
+        color: dark
+            ? AppColors.mainGreen.withValues(alpha: 0.16)
+            : Color.alphaBlend(
+                AppColors.primary.withValues(alpha: 0.10),
+                Colors.white.withValues(alpha: 0.45),
+              ),
+        border: Border.all(
+          width: 0.8,
+          color: dark ? AppColors.mainGreen.withValues(alpha: 0.28) : Colors.white.withValues(alpha: 0.7),
         ),
-        border: Border.all(width: 0.8, color: Colors.white.withValues(alpha: 0.7)),
       ),
     );
   }
 
   Widget _buildItem(GlassNavItem item) {
-    final color = item.selected ? AppColors.primary : AppColors.textSecondary;
+    // Brighter green on dark — primary is too low-contrast on the dark bar.
+    final selectedColor = goldStyle
+        ? AppColors.referOnGold
+        : AppColors.isDark
+        ? AppColors.mainGreen
+        : AppColors.primary;
+    // Unselected icons near-white on dark so they don't wash out to grey.
+    final idleColor = goldStyle
+        ? AppColors.referMuted
+        : AppColors.isDark
+        ? AppColors.textPrimary.withValues(alpha: 0.85)
+        : AppColors.textSecondary;
+    final color = item.selected ? selectedColor : idleColor;
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,

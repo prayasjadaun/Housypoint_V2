@@ -3,6 +3,7 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../../../controllers/auth_controller.dart';
+import '../../../controllers/referral_controller.dart';
 import '../../../controllers/shell_controller.dart';
 import '../../../core/utils/app_haptics.dart';
 import '../../../theme/app_colors.dart';
@@ -88,8 +89,8 @@ class LogoutTile extends StatelessWidget {
         builder: (_) => const PopScope(canPop: false, child: _LoggingOutDialog()),
       ).whenComplete(() => dialogOpen = false);
 
-      // TODO: clear Saved / Referral state here once those controllers
-      // land on this branch (see develop).
+      // TODO: clear Saved state here once SavedController lands (see develop).
+      context.read<ReferralController>().clear();
       context.read<ShellController>().reset();
       await context.read<AuthController>().logout();
 
