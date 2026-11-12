@@ -89,7 +89,7 @@ class SettingsTile extends StatelessWidget {
               width: 38,
               height: 38,
               decoration: BoxDecoration(
-                color: tint.withValues(alpha: 0.1),
+                border: Border.all(color: tint.withValues(alpha: 0.3)),
                 borderRadius: BorderRadius.circular(AppRadius.sm + 2),
               ),
               child: Icon(icon, size: 19, color: tint),
@@ -106,12 +106,17 @@ class SettingsTile extends StatelessWidget {
                       color: danger ? AppColors.error : AppColors.textPrimary,
                     ),
                   ),
-                  if (subtitle != null) Text(subtitle!, style: AppTextStyles.caption),
+                  if (subtitle != null)
+                    Text(subtitle!, style: AppTextStyles.caption),
                 ],
               ),
             ),
             trailing ??
-                Icon(Iconsax.arrow_right_3_copy, size: 18, color: AppColors.textTertiary),
+                Icon(
+                  Iconsax.arrow_right_3_copy,
+                  size: 18,
+                  color: AppColors.textTertiary,
+                ),
           ],
         ),
       ),

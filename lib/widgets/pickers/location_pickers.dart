@@ -39,6 +39,7 @@ Future<PickResult<String>> showCityPicker(
       _allCities,
       for (final name in _popularCityNames) ...cities.where((c) => c.name == name),
     ],
+    popularColumns: 3,
     popularLabel: 'Popular cities',
     allLabel: 'All cities',
     emptyTitle: 'No city found',

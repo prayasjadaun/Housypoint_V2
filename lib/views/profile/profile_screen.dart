@@ -126,12 +126,12 @@ class ProfileScreen extends StatelessWidget {
             title: 'Support',
             children: [
               SettingsTile(icon: Iconsax.headphone_copy, title: 'Help & support', subtitle: 'Call, WhatsApp or email us', color: AppColors.accentBlue, onTap: () => context.push(AppRoutes.support)),
-              SettingsTile(icon: Iconsax.star_1_copy, title: 'Rate Housy Point', subtitle: 'Tell us how we’re doing', color: AppColors.accentAmber, onTap: () => Launcher.url(AppConfig.playStoreUrl)),
+              SettingsTile(icon: Iconsax.star_1_copy, title: 'Rate Housy Point', subtitle: 'Tell us how we’re doing', color: AppColors.accentAmber, onTap: () => Launcher.url(AppConfig.rateUrl)),
               SettingsTile(
                 icon: Iconsax.share_copy,
                 title: 'Share the app',
                 color: AppColors.accentEmerald,
-                onTap: () => ShareHelper.share('Find verified homes, book inspections and more on Housy Point: ${AppConfig.playStoreUrl}'),
+                onTap: () => ShareHelper.share('Find verified homes, book inspections and more on Housy Point: ${AppConfig.storeUrl}'),
               ),
             ],
           ),

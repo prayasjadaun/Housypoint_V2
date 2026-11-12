@@ -10,7 +10,8 @@ import '../../theme/app_text_styles.dart';
 /// Searchable picker sheet used for country, city and builder selection.
 ///
 /// Resolves to the tapped item, or null when dismissed. Items in [popular]
-/// are pinned on top while the search box is empty.
+/// are pinned on top while the search box is empty — as a list, or as a grid
+/// of small cards when [popularColumns] is set.
 Future<T?> showSelectionSheet<T>(
   BuildContext context, {
   required String title,
@@ -21,6 +22,7 @@ Future<T?> showSelectionSheet<T>(
   required bool Function(T item) isSelected,
   required Widget Function(T item, bool selected) leadingOf,
   List<T> popular = const [],
+  int? popularColumns,
   String popularLabel = 'Popular',
   String allLabel = 'All',
   String Function(T item)? subtitleOf,
@@ -39,6 +41,7 @@ Future<T?> showSelectionSheet<T>(
       searchHint: searchHint,
       items: items,
       popular: popular,
+      popularColumns: popularColumns,
       popularLabel: popularLabel,
       allLabel: allLabel,
       labelOf: labelOf,
@@ -54,7 +57,11 @@ Future<T?> showSelectionSheet<T>(
 
 /// Rounded square that holds a leading icon/flag/logo in sheet rows.
 class SelectionLeading extends StatelessWidget {
-  const SelectionLeading({super.key, required this.child, this.selected = false});
+  const SelectionLeading({
+    super.key,
+    required this.child,
+    this.selected = false,
+  });
 
   final Widget child;
   final bool selected;
@@ -89,6 +96,7 @@ class _SelectionSheet<T> extends StatefulWidget {
     required this.isSelected,
     required this.leadingOf,
     required this.emptyTitle,
+    this.popularColumns,
     this.subtitleOf,
     this.trailingOf,
     this.matches,
@@ -99,6 +107,7 @@ class _SelectionSheet<T> extends StatefulWidget {
   final String searchHint;
   final List<T> items;
   final List<T> popular;
+  final int? popularColumns;
   final String popularLabel;
   final String allLabel;
   final String Function(T) labelOf;
@@ -126,7 +135,8 @@ class _SelectionSheetState<T> extends State<_SelectionSheet<T>> {
   List<T> get _results {
     final q = _query.trim().toLowerCase();
     if (q.isEmpty) return widget.items;
-    final matches = widget.matches ??
+    final matches =
+        widget.matches ??
         (T item, String q) => widget.labelOf(item).toLowerCase().contains(q);
     return widget.items.where((item) => matches(item, q)).toList();
   }
@@ -239,7 +249,10 @@ class _SelectionSheetState<T> extends State<_SelectionSheet<T>> {
                       children: [
                         if (showSections) ...[
                           _SectionLabel(widget.popularLabel),
-                          for (final item in widget.popular) _tile(item),
+                          if (widget.popularColumns case final columns?)
+                            _popularGrid(columns)
+                          else
+                            for (final item in widget.popular) _tile(item),
                           const SizedBox(height: AppSpacing.sm),
                           _SectionLabel(widget.allLabel),
                         ],
@@ -248,6 +261,70 @@ class _SelectionSheetState<T> extends State<_SelectionSheet<T>> {
                     ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _popularGrid(int columns) {
+    const gap = 8.0;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final width = (constraints.maxWidth - gap * (columns - 1)) / columns;
+          return Wrap(
+            spacing: gap,
+            runSpacing: gap,
+            children: [
+              for (final item in widget.popular)
+                SizedBox(width: width, child: _card(item)),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  /// Small square-ish card for a popular item — icon on top, name below.
+  Widget _card(T item) {
+    final selected = widget.isSelected(item);
+    final radius = BorderRadius.circular(AppRadius.md);
+
+    return Material(
+      color: selected ? AppColors.primarySoft : AppColors.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: radius,
+        side: BorderSide(
+          color: selected
+              ? AppColors.primary.withValues(alpha: 0.5)
+              : AppColors.border.withValues(alpha: 0.7),
+        ),
+      ),
+      child: InkWell(
+        borderRadius: radius,
+        onTap: () => _select(item),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(6, 12, 6, 10),
+          child: Column(
+            children: [
+              widget.leadingOf(item, selected),
+              const SizedBox(height: 8),
+              Text(
+                widget.labelOf(item),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: AppTextStyles.caption.copyWith(
+                  fontSize: 12.5,
+                  color: selected
+                      ? AppColors.primaryText
+                      : AppColors.textPrimary,
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -282,7 +359,9 @@ class _SelectionSheetState<T> extends State<_SelectionSheet<T>> {
                         overflow: TextOverflow.ellipsis,
                         style: AppTextStyles.body.copyWith(
                           fontSize: 15,
-                          fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+                          fontWeight: selected
+                              ? FontWeight.w600
+                              : FontWeight.w500,
                         ),
                       ),
                       if (subtitle.isNotEmpty)
@@ -300,7 +379,9 @@ class _SelectionSheetState<T> extends State<_SelectionSheet<T>> {
                   Text(
                     trailing,
                     style: AppTextStyles.label.copyWith(
-                      color: selected ? AppColors.primary : AppColors.textSecondary,
+                      color: selected
+                          ? AppColors.primary
+                          : AppColors.textSecondary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
