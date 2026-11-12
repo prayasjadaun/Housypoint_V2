@@ -3,6 +3,7 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 import '../../models/master/builder_model.dart';
 import '../../models/master/city_model.dart';
+import '../../theme/app_assets.dart';
 import '../../theme/app_colors.dart';
 import '../common/selection_sheet.dart';
 
@@ -18,7 +19,17 @@ const _popularCityNames = [
   'Pune',
   'Hyderabad',
   'Dubai',
+  'Abu Dhabi',
 ];
+
+/// Real country outside India. API ki placeholder entries ("Default Country")
+/// aur bina country wali cities India tab me hi rehti hain.
+bool _isOverseas(CityModel c) {
+  final country = c.country.trim().toLowerCase();
+  return country.isNotEmpty &&
+      country != 'india' &&
+      country != 'default country';
+}
 
 /// Result of a picker: [picked] is false when the sheet was dismissed;
 /// otherwise [value] is the choice (null = "All").
@@ -37,23 +48,50 @@ Future<PickResult<String>> showCityPicker(
     items: [_allCities, ...cities],
     popular: [
       _allCities,
-      for (final name in _popularCityNames) ...cities.where((c) => c.name == name),
+      for (final name in _popularCityNames)
+        ...cities.where((c) => c.name == name),
     ],
     popularColumns: 3,
+    imageOf: (c) => AppAssets.cityImage(c.name),
+    // "All cities" dono tabs me
+    tabs: [
+      SelectionTab(
+        label: 'India',
+        icon: Iconsax.location_copy,
+        test: (c) => c.id == 0 || !_isOverseas(c),
+      ),
+      SelectionTab(
+        label: 'Overseas',
+        icon: Iconsax.global_copy,
+        test: (c) => c.id == 0 || _isOverseas(c),
+      ),
+    ],
     popularLabel: 'Popular cities',
     allLabel: 'All cities',
     emptyTitle: 'No city found',
     labelOf: (c) => c.name,
     subtitleOf: (c) => c.id == 0 ? 'Everywhere on Housy Point' : c.region,
     isSelected: (c) => c.id == 0 ? selected == null : c.name == selected,
-    leadingOf: (c, isSelected) => SelectionLeading(
-      selected: isSelected,
-      child: Icon(
-        c.id == 0 ? Iconsax.global_copy : Iconsax.location_copy,
-        size: 20,
-        color: isSelected ? AppColors.primary : AppColors.textSecondary,
-      ),
-    ),
+    leadingOf: (c, isSelected) {
+      final image = AppAssets.cityImage(c.name);
+      return SelectionLeading(
+        selected: isSelected,
+        // Photo wali cities list me bhi chhota thumbnail dikhati hain
+        child: image != null
+            ? Image.asset(
+                image,
+                width: 40,
+                height: 40,
+                fit: BoxFit.cover,
+                cacheWidth: 120,
+              )
+            : Icon(
+                c.id == 0 ? Iconsax.global_copy : Iconsax.location_copy,
+                size: 20,
+                color: isSelected ? AppColors.primary : AppColors.textSecondary,
+              ),
+      );
+    },
   );
   if (city == null) return (picked: false, value: null);
   return (picked: true, value: city.id == 0 ? null : city.name);
