@@ -324,16 +324,14 @@ class _NotchArrowButtonState extends State<_NotchArrowButton> {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: AppColors.primarySoft,
-            border: Border.all(
-              color: AppColors.primary.withValues(alpha: 0.18),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.12),
-                blurRadius: 10,
-                offset: const Offset(0, 3),
-              ),
-            ],
+            border: Border.all(color: AppColors.primary.withValues(alpha: 0.8)),
+            // boxShadow: [
+            //   BoxShadow(
+            //     color: AppColors.primary.withValues(alpha: 0.12),
+            //     blurRadius: 10,
+            //     offset: const Offset(0, 3),
+            //   ),
+            // ],
           ),
           child: Icon(
             Iconsax.arrow_right_3_copy,

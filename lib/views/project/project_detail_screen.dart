@@ -357,6 +357,7 @@ class _Header extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  SizedBox(height: 12),
                   Text(
                     p.name,
                     style: AppTextStyles.heading.copyWith(fontSize: 20),
