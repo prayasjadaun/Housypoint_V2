@@ -1,3 +1,4 @@
+import 'package:adaptive_platform_ui/adaptive_platform_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
@@ -83,48 +84,20 @@ class _HotDealsSectionState extends State<HotDealsSection> {
           ),
         ),
         const SizedBox(height: 12),
-        SizedBox(
-          height: 34,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-            itemCount: _tabs.length,
-            separatorBuilder: (_, _) => const SizedBox(width: 8),
-            itemBuilder: (_, i) {
-              final (key, label) = _tabs[i];
-              final count = deals?.tab(key).length;
-              final selected = key == _tab;
-              return GestureDetector(
-                onTap: () {
-                  AppHaptics.selection();
-                  setState(() => _tab = key);
-                },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: selected ? AppColors.textPrimary : AppColors.surface,
-                    borderRadius: BorderRadius.circular(AppRadius.pill),
-                    border: Border.all(
-                      color: selected
-                          ? AppColors.textPrimary
-                          : AppColors.border,
-                    ),
-                  ),
-                  child: Text(
-                    count == null ? label : '$label · $count',
-                    style: AppTextStyles.caption.copyWith(
-                      color: selected
-                          ? AppColors.surface
-                          : AppColors.textPrimary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
+        _DealTabs(
+          labels: [
+            for (final (key, label) in _tabs)
+              switch (deals?.tab(key).length) {
+                null => label,
+                final n => '$label · $n',
+              },
+          ],
+          selectedIndex: _tabs.indexWhere((t) => t.$1 == _tab),
+          onChanged: (i) {
+            if (_tabs[i].$1 == _tab) return;
+            AppHaptics.selection();
+            setState(() => _tab = _tabs[i].$1);
+          },
         ),
         const SizedBox(height: 14),
         SizedBox(
@@ -185,6 +158,113 @@ class _HotDealsSectionState extends State<HotDealsSection> {
                 ),
         ),
       ],
+    );
+  }
+}
+
+/// Deal tabs — package ka [AdaptiveSegmentedControl]. iOS 26+ par native
+/// UISegmentedControl (Liquid Glass, sliding glass thumb — nav bar jaisa),
+/// iOS <26 par CupertinoSlidingSegmentedControl, Android par SegmentedButton.
+class _DealTabs extends StatelessWidget {
+  const _DealTabs({
+    required this.labels,
+    required this.selectedIndex,
+    required this.onChanged,
+  });
+
+  final List<String> labels;
+  final int selectedIndex;
+  final ValueChanged<int> onChanged;
+
+  static const double _height = 36;
+
+  // Native segments barabar width ke hote hain — sabse lambe label jitne.
+  double _segmentWidth(BuildContext context) {
+    var widest = 0.0;
+    for (final l in labels) {
+      final w = (TextPainter(
+        text: TextSpan(
+          text: l,
+          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+        ),
+        maxLines: 1,
+        textDirection: TextDirection.ltr,
+        textScaler: MediaQuery.textScalerOf(context),
+      )..layout()).width;
+      if (w > widest) widest = w;
+    }
+    return widest + 28;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final mq = MediaQuery.of(context);
+    final dark = AppColors.isDark;
+    final native = PlatformInfo.isIOS26OrHigher();
+
+    return LayoutBuilder(
+      builder: (context, c) {
+        final available = c.maxWidth - AppSpacing.md * 2;
+        final needed = _segmentWidth(context) * labels.length;
+        final width = needed > available ? needed : available;
+
+        final control = MediaQuery(
+          // Nav bar ki tarah app ka light/dark follow karwao
+          data: mq.copyWith(
+            platformBrightness: dark ? Brightness.dark : Brightness.light,
+          ),
+          child: AdaptiveSegmentedControl(
+            // Native control labels baad me update nahi karta — counts
+            // aane par naya bane
+            key: ValueKey(labels.join('|')),
+            labels: labels,
+            selectedIndex: selectedIndex,
+            onValueChanged: onChanged,
+            height: _height,
+            // iOS 26: tint mat do — selectedSegmentTintColor thumb ko solid
+            // bhar deta hai aur native white glass thumb chala jaata hai.
+            color: native ? null : AppColors.primary,
+            textColor: dark ? Colors.white : Colors.black,
+            selectedTextColor: native ? AppColors.primary : Colors.white,
+          ),
+        );
+
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
+          ),
+          child: SizedBox(
+            width: width,
+            height: _height,
+            child: native
+                // Native UiKitView horizontal drag/pan khud pakad leta hai, to
+                // scroll view tak gesture nahi pahunchta — row fixed lagti hai.
+                // Native view ko touch se alag karo; tap Flutter me pakdo aur
+                // selectedIndex bhejo — glass thumb natively slide karta hai.
+                ? Stack(
+                    children: [
+                      Positioned.fill(child: IgnorePointer(child: control)),
+                      Positioned.fill(
+                        child: Row(
+                          children: [
+                            for (var i = 0; i < labels.length; i++)
+                              Expanded(
+                                child: GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  onTap: () => onChanged(i),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
+                : control,
+          ),
+        );
+      },
     );
   }
 }
