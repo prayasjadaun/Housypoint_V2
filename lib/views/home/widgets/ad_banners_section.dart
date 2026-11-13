@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:ui' show lerpDouble;
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
@@ -99,25 +99,14 @@ class _AdBannersSectionState extends State<AdBannersSection> {
           builder: (context, constraints) {
             final cardWidth = constraints.maxWidth * _viewport - 2 * _halfGap;
 
-            // Banners alag shape ke hain — height swipe ke saath ek card se
-            // agle card tak smoothly badalti hai
-            return AnimatedBuilder(
-              animation: _controller,
-              builder: (context, child) {
-                final page =
-                    _controller.hasClients &&
-                        _controller.position.haveDimensions
-                    ? _controller.page!
-                    : _index.toDouble();
-                final lo = page.floor().clamp(0, ads.length - 1);
-                final hi = page.ceil().clamp(0, ads.length - 1);
-                final height = lerpDouble(
-                  cardWidth / ads[lo].aspectRatio,
-                  cardWidth / ads[hi].aspectRatio,
-                  page - page.floor(),
-                )!;
-                return SizedBox(height: height, child: child);
-              },
+            // Banners alag shape ke hain. Section ki height sabse lambe banner
+            // jitni fix hai — har slide par neeche ka content upar-neeche
+            // nahi kudta; chhote banners beech me (vertically) rehte hain
+            final tallest = ads
+                .map((a) => cardWidth / a.aspectRatio)
+                .reduce(math.max);
+            return SizedBox(
+              height: tallest,
               child: NotificationListener<ScrollNotification>(
                 onNotification: _onScroll,
                 child: PageView.builder(
