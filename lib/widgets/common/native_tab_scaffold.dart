@@ -17,12 +17,18 @@ class NativeTabScaffold extends StatefulWidget {
     required this.items,
     required this.selectedIndex,
     required this.body,
+    this.goldStyle = false,
   });
 
   final List<GlassNavItem> items;
   // Native bar me hamesha ek tab selected rehta hai
   final int selectedIndex;
   final Widget body;
+
+  /// Refer tab khula ho tab — wo page hamesha black + gold hai, to bar ko
+  /// light mode me bhi dark rakho (warna icons black aur labels white —
+  /// glass labels khud flip karta hai, tinted icons nahi).
+  final bool goldStyle;
 
   @override
   State<NativeTabScaffold> createState() => _NativeTabScaffoldState();
@@ -40,7 +46,7 @@ class _NativeTabScaffoldState extends State<NativeTabScaffold> {
   @override
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context);
-    final dark = AppColors.isDark;
+    final dark = AppColors.isDark || widget.goldStyle;
     final bottom = mq.viewPadding.bottom + GlassBottomNav.nativeBarHeight;
     return MediaQuery(
       // Bar system brightness padhta hai; app ka apna light/dark follow karwao
@@ -69,7 +75,9 @@ class _NativeTabScaffoldState extends State<NativeTabScaffold> {
               ),
           ],
           selectedIndex: widget.selectedIndex,
-          selectedItemColor: AppColors.primary,
+          selectedItemColor: widget.goldStyle
+              ? AppColors.referGold
+              : AppColors.primary,
           unselectedItemColor: dark ? Colors.white : Colors.black,
           onTap: _onTap,
         ),

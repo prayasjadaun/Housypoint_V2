@@ -53,6 +53,7 @@ class ShellBottomNav extends StatelessWidget {
     return NativeTabScaffold(
       items: _items(context, current, onTap),
       selectedIndex: current.index,
+      goldStyle: current == ShellTab.refer,
       body: scaffold,
     );
   }
