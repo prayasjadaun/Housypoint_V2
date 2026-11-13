@@ -1119,6 +1119,25 @@ class _MapActions extends StatelessWidget {
   }
 }
 
+/// "All nearby places" card — nearest first, category icon + proximity bar.
+/// Project detail screen bhi yahi use karta hai.
+class NearbyPlacesList extends StatelessWidget {
+  const NearbyPlacesList({super.key, required this.project});
+
+  final ProjectDetail project;
+
+  /// Kitni jagah dikhengi (naam wali landmarks) — header subtitle ke liye.
+  static int countOf(ProjectDetail project) =>
+      project.landmarks.where((l) => l.name.isNotEmpty).length;
+
+  @override
+  Widget build(BuildContext context) {
+    final places = _Place.sorted(project.landmarks);
+    if (places.isEmpty) return const SizedBox.shrink();
+    return _PlacesList(project: project, places: places);
+  }
+}
+
 class _PlacesList extends StatelessWidget {
   const _PlacesList({required this.project, required this.places});
 

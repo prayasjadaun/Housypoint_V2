@@ -25,6 +25,7 @@ import '../../widgets/common/image_gallery_viewer.dart';
 import '../../widgets/common/section_header.dart';
 import '../../widgets/icons/amenity_icon.dart';
 import '../listings/widgets/property_card.dart';
+import 'project_location_screen.dart' show NearbyPlacesList;
 
 /// A builder project — `GET /api/projects/{id}/` plus the listings
 /// available in it.
@@ -229,25 +230,26 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                         child: _AmenitiesGrid(amenities: project.amenities),
                       ),
                     ],
-                    if (project.landmarks.isNotEmpty) ...[
+                    if (NearbyPlacesList.countOf(project) > 0) ...[
                       const SizedBox(height: AppSpacing.lg),
-                      const SectionHeader(
+                      SectionHeader(
                         title: 'Nearby',
-                        padding: EdgeInsets.symmetric(
+                        subtitle: () {
+                          final n = NearbyPlacesList.countOf(project);
+                          return '$n ${n == 1 ? 'place' : 'places'} · nearest first';
+                        }(),
+                        padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.lg,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 12),
+                      // Location screen wali hi list (category icon,
+                      // proximity bar, distance pill, tap = Google Maps)
                       Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.lg,
                         ),
-                        child: Column(
-                          children: [
-                            for (final l in project.landmarks)
-                              _LandmarkRow(landmark: l),
-                          ],
-                        ),
+                        child: NearbyPlacesList(project: project),
                       ),
                     ],
                     if (project.masterLayout.isNotEmpty) ...[
@@ -743,48 +745,6 @@ class _AmenitiesGrid extends StatelessWidget {
           ],
         );
       },
-    );
-  }
-}
-
-class _LandmarkRow extends StatelessWidget {
-  const _LandmarkRow({required this.landmark});
-
-  final Landmark landmark;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        children: [
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              color: AppColors.surfaceMuted,
-              borderRadius: BorderRadius.circular(AppRadius.sm + 2),
-              border: Border.all(
-                color: AppColors.border.withValues(alpha: 0.7),
-              ),
-            ),
-            child: const Icon(
-              Iconsax.location_tick_copy,
-              size: 17,
-              color: AppColors.primary,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(child: Text(landmark.name, style: AppTextStyles.body)),
-          Text(
-            landmark.distance,
-            style: AppTextStyles.label.copyWith(
-              color: AppColors.textSecondary,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
