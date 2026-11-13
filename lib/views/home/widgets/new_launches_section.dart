@@ -71,34 +71,57 @@ class LaunchCard extends StatelessWidget {
     ].where((s) => s.isNotEmpty).join(' · ');
 
     final radius = BorderRadius.circular(AppRadius.xl + 4);
+    void open() {
+      AppHaptics.tap();
+      context.push(AppRoutes.projectPath(project.id));
+    }
+
     return SizedBox(
       width: 230,
-      child: VideoFlipCard(
-        videoUrl: project.videoUrl,
-        posterUrl: project.image,
-        title: project.name,
-        borderRadius: radius,
-        frontBuilder: (context, flip) =>
-            _buildFront(context, radius, place, flip),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Bottom-right corner me curved notch — usme arrow button baithta hai
+          ClipPath(
+            clipper: const _NotchedCardClipper(
+              radius: AppRadius.xl + 4,
+              notch: _notchSize,
+            ),
+            child: VideoFlipCard(
+              videoUrl: project.videoUrl,
+              posterUrl: project.image,
+              title: project.name,
+              borderRadius: radius,
+              frontBuilder: (context, flip) =>
+                  _buildFront(context, radius, place, flip, open),
+            ),
+          ),
+          Positioned(
+            right: (_notchSize - _buttonSize) / 2,
+            bottom: (_notchSize - _buttonSize) / 2,
+            child: _NotchArrowButton(size: _buttonSize, onTap: open),
+          ),
+        ],
       ),
     );
   }
+
+  static const double _notchSize = 60;
+  static const double _buttonSize = 48;
 
   Widget _buildFront(
     BuildContext context,
     BorderRadius radius,
     String place,
     VoidCallback? flip,
+    VoidCallback open,
   ) {
     return Material(
       color: AppColors.ink,
       borderRadius: radius,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () {
-          AppHaptics.tap();
-          context.push(AppRoutes.projectPath(project.id));
-        },
+        onTap: open,
         child: Stack(
           fit: StackFit.expand,
           children: [
@@ -177,7 +200,8 @@ class LaunchCard extends StatelessWidget {
               ),
             Positioned(
               left: 14,
-              right: 14,
+              // Notch ke liye jagah chhodo
+              right: _notchSize + 4,
               bottom: 14,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -202,40 +226,120 @@ class LaunchCard extends StatelessWidget {
                       ),
                     ),
                   const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Text(
-                        project.priceRange.isEmpty
-                            ? 'Price on request'
-                            : '₹${project.priceRange}',
-                        style: AppTextStyles.body.copyWith(
-                          color: AppColors.gold,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const Spacer(),
-                      Container(
-                        width: 30,
-                        height: 30,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.18),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.3),
-                          ),
-                        ),
-                        child: const Icon(
-                          Iconsax.arrow_right_3_copy,
-                          size: 15,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
+                  Text(
+                    project.priceRange.isEmpty
+                        ? 'Price on request'
+                        : '₹${project.priceRange}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.body.copyWith(
+                      color: AppColors.gold,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ],
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Rounded card jiske bottom-right corner se ek gol notch kata hai (andar se
+/// circular, edges par smooth fillet) — button us notch me baithta hai.
+class _NotchedCardClipper extends CustomClipper<Path> {
+  const _NotchedCardClipper({required this.radius, required this.notch});
+
+  final double radius;
+  final double notch;
+
+  @override
+  Path getClip(Size size) {
+    final w = size.width, h = size.height;
+    final r = radius;
+    final s = notch;
+    final inner =
+        s / 2; // notch ka andar wala curve — button ke saath concentric
+    const fillet = 16.0; // notch jahan card edge se milta hai
+    const k = 0.7071; // conic weight = circular arc
+
+    return Path()
+      ..moveTo(r, 0)
+      ..lineTo(w - r, 0)
+      ..conicTo(w, 0, w, r, k)
+      ..lineTo(w, h - s - fillet)
+      ..conicTo(w, h - s, w - fillet, h - s, k)
+      ..lineTo(w - s + inner, h - s)
+      ..conicTo(w - s, h - s, w - s, h - s + inner, k)
+      ..lineTo(w - s, h - fillet)
+      ..conicTo(w - s, h, w - s - fillet, h, k)
+      ..lineTo(r, h)
+      ..conicTo(0, h, 0, h - r, k)
+      ..lineTo(0, r)
+      ..conicTo(0, 0, r, 0, k)
+      ..close();
+  }
+
+  @override
+  bool shouldReclip(_NotchedCardClipper old) =>
+      old.radius != radius || old.notch != notch;
+}
+
+/// Notch me baitha gol arrow button — soft green tint + green arrow (pehle
+/// jaisa), bas halka border, soft shadow aur press par chhota sa scale.
+class _NotchArrowButton extends StatefulWidget {
+  const _NotchArrowButton({required this.size, required this.onTap});
+
+  final double size;
+  final VoidCallback onTap;
+
+  @override
+  State<_NotchArrowButton> createState() => _NotchArrowButtonState();
+}
+
+class _NotchArrowButtonState extends State<_NotchArrowButton> {
+  bool _pressed = false;
+
+  void _setPressed(bool v) {
+    if (_pressed != v) setState(() => _pressed = v);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTapDown: (_) => _setPressed(true),
+      onTapUp: (_) => _setPressed(false),
+      onTapCancel: () => _setPressed(false),
+      onTap: widget.onTap,
+      child: AnimatedScale(
+        scale: _pressed ? 0.92 : 1,
+        duration: const Duration(milliseconds: 140),
+        curve: Curves.easeOut,
+        child: Container(
+          width: widget.size,
+          height: widget.size,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: AppColors.primarySoft,
+            border: Border.all(
+              color: AppColors.primary.withValues(alpha: 0.18),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.12),
+                blurRadius: 10,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Icon(
+            Iconsax.arrow_right_3_copy,
+            size: 20,
+            color: AppColors.primaryText,
+          ),
         ),
       ),
     );
