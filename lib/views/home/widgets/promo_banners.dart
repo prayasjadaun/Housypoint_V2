@@ -8,7 +8,8 @@ import '../../../theme/app_colors.dart';
 import '../../../theme/app_radius.dart';
 import '../../../theme/app_text_styles.dart';
 
-/// Refer & Earn — gold card with the gift animation.
+/// Refer & Earn — Refer tab ki gold theme. Dark mode me Refer screen jaisa
+/// black + gold card; light mode me halka cream card, gold accents wahi.
 class ReferBanner extends StatelessWidget {
   const ReferBanner({super.key, required this.onTap});
 
@@ -16,34 +17,86 @@ class ReferBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dark = AppColors.isDark;
+    // Light: white par gold ka halka sa wash
+    final lightTop = Color.alphaBlend(
+      AppColors.referGold.withValues(alpha: 0.06),
+      AppColors.surface,
+    );
+    final lightBottom = Color.alphaBlend(
+      AppColors.referGold.withValues(alpha: 0.16),
+      AppColors.surface,
+    );
+    final eyebrow = dark ? AppColors.referGold : AppColors.goldDark;
+    final titleColor = dark ? AppColors.referInk : AppColors.textPrimary;
+    final bodyColor = dark ? AppColors.referMuted : AppColors.textSecondary;
+
     return _BannerShell(
       onTap: onTap,
-      gradient: const [Color(0xFFFFF6E3), Color(0xFFF6DFA9)],
+      gradient: dark
+          ? const [AppColors.referDarkRaised, AppColors.referDark]
+          : [lightTop, lightBottom],
+      borderColor: AppColors.referRule,
+      boxShadow: [
+        BoxShadow(
+          color: dark
+              ? Colors.black.withValues(alpha: 0.28)
+              : AppColors.referGold.withValues(alpha: 0.14),
+          blurRadius: dark ? 24 : 16,
+          offset: Offset(0, dark ? 10 : 6),
+        ),
+      ],
       child: Row(
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const _Eyebrow(text: 'REFER & EARN', color: AppColors.goldDark),
-                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    Icon(Iconsax.crown_1_copy, size: 13, color: eyebrow),
+                    const SizedBox(width: 5),
+                    _Eyebrow(text: 'REFER & EARN', color: eyebrow),
+                  ],
+                ),
+                const SizedBox(height: 8),
                 Text(
                   'Invite friends,\nearn on every deal',
-                  style: AppTextStyles.title.copyWith(color: AppColors.ink, height: 1.3),
+                  style: AppTextStyles.title.copyWith(
+                    color: titleColor,
+                    height: 1.3,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'Rewards when they buy, sell or book an inspection.',
-                  style: AppTextStyles.caption.copyWith(color: AppColors.ink.withValues(alpha: 0.65)),
+                  style: AppTextStyles.caption.copyWith(
+                    color: bodyColor,
+                  ),
                 ),
-                const SizedBox(height: 12),
-                _CtaPill(label: 'Start earning', color: AppColors.ink),
+                const SizedBox(height: 14),
+                const _CtaPill(
+                  label: 'Start earning',
+                  gradient: AppColors.referGoldGradient,
+                  textColor: AppColors.referOnGold,
+                ),
               ],
             ),
           ),
-          SizedBox(
-            width: 110,
-            height: 110,
+          const SizedBox(width: 8),
+          // Gift ke peeche halka gold glow
+          Container(
+            width: 104,
+            height: 104,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  AppColors.referGold.withValues(alpha: 0.22),
+                  AppColors.referGold.withValues(alpha: 0),
+                ],
+              ),
+            ),
             child: Lottie.asset(AppAssets.lottieGift, fit: BoxFit.contain),
           ),
         ],
@@ -52,64 +105,115 @@ class ReferBanner extends StatelessWidget {
   }
 }
 
-/// Home inspection (PDI) — dark green card.
+/// Home inspection (PDI) — clean white card (dark mode: surface); green
+/// sirf ticks aur icon me. Neeche plans strip se ek ticket ki tarah judta hai.
 class InspectionBanner extends StatelessWidget {
-  const InspectionBanner({super.key, required this.onTap, this.attached = false});
+  const InspectionBanner({
+    super.key,
+    required this.onTap,
+    this.attached = false,
+  });
 
   final VoidCallback onTap;
 
   /// Square bottom corners, for the plan panel joined underneath.
   final bool attached;
 
-  static const _points = ['Civil & finishing', 'Plumbing & electrical', 'Detailed report'];
+  static const _points = [
+    'Civil & finishing',
+    'Plumbing & electrical',
+    'Detailed report',
+  ];
 
   @override
   Widget build(BuildContext context) {
     return _BannerShell(
       onTap: onTap,
       squareBottom: attached,
-      gradient: const [AppColors.primary, AppColors.primaryDark],
+      gradient: [AppColors.surface, AppColors.surface],
+      // Plans strip jaisi hi soft shadow, taaki dono ek card lagein
+      boxShadow: const [
+        BoxShadow(
+          color: Color(0x0F0B3B20),
+          blurRadius: 16,
+          offset: Offset(0, 6),
+        ),
+      ],
       child: Row(
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const _Eyebrow(text: 'HOME INSPECTION', color: AppColors.gold),
+                _Eyebrow(
+                  text: 'HOME INSPECTION',
+                  color: AppColors.textSecondary,
+                ),
                 const SizedBox(height: 6),
                 Text(
                   'We check what\nbuilders miss',
-                  style: AppTextStyles.title.copyWith(color: Colors.white, height: 1.3),
+                  style: AppTextStyles.title.copyWith(height: 1.3),
                 ),
                 const SizedBox(height: 10),
                 for (final p in _points)
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
+                    padding: const EdgeInsets.only(bottom: 5),
                     child: Row(
                       children: [
-                        const Icon(Iconsax.tick_circle_copy, size: 14, color: AppColors.gold),
-                        const SizedBox(width: 6),
+                        Icon(
+                          Iconsax.tick_circle,
+                          size: 15,
+                          color: AppColors.primaryText,
+                        ),
+                        const SizedBox(width: 7),
                         Text(
                           p,
-                          style: AppTextStyles.caption.copyWith(color: Colors.white.withValues(alpha: 0.85)),
+                          style: AppTextStyles.caption.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                         ),
                       ],
                     ),
                   ),
-                const SizedBox(height: 8),
-                _CtaPill(label: 'Book inspection', color: AppColors.gold, textColor: AppColors.ink),
+                const SizedBox(height: 10),
+                _CtaPill(
+                  label: 'Book inspection',
+                  color: AppColors.textPrimary,
+                  textColor: AppColors.surface,
+                ),
               ],
             ),
           ),
+          const SizedBox(width: 12),
           Container(
-            width: 96,
-            height: 96,
+            width: 92,
+            height: 92,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.white.withValues(alpha: 0.08),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+              color: AppColors.primarySoft,
             ),
-            child: const Icon(Iconsax.shield_tick_copy, size: 44, color: Colors.white),
+            child: Center(
+              child: Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.surface,
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x140B3B20),
+                      blurRadius: 10,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Iconsax.shield_tick,
+                  size: 30,
+                  color: AppColors.primaryText,
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -123,20 +227,20 @@ class CompareBanner extends StatelessWidget {
 
   final VoidCallback onTap;
 
-  /// Indigo that stays readable on the dark card.
-  static Color get accent => AppColors.isDark ? const Color(0xFFA5B4FC) : AppColors.accentIndigo;
+  /// Neutral — black on light, white on dark (no brand colour here).
+  static Color get accent => AppColors.textPrimary;
 
   @override
   Widget build(BuildContext context) {
     return _BannerShell(
       onTap: onTap,
-      gradient: AppColors.isDark
-          ? const [Color(0xFF1E2142), Color(0xFF292E5E)]
-          : const [Color(0xFFEEF2FF), Color(0xFFE0E7FF)],
+      // Plain white card (dark mode: surface) with a hairline border
+      gradient: [AppColors.surface, AppColors.surface],
+      borderColor: AppColors.border,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _Eyebrow(text: 'PROJECT COMPARISON', color: accent),
+          _Eyebrow(text: 'PROJECT COMPARISON', color: AppColors.textSecondary),
           const SizedBox(height: 6),
           Text('Compare & pick the right home', style: AppTextStyles.title),
           Text(
@@ -152,13 +256,16 @@ class CompareBanner extends StatelessWidget {
                 width: 34,
                 height: 34,
                 alignment: Alignment.center,
-                decoration: const BoxDecoration(
-                  color: AppColors.accentIndigo,
+                decoration: BoxDecoration(
+                  color: AppColors.textPrimary,
                   shape: BoxShape.circle,
                 ),
                 child: Text(
                   'VS',
-                  style: AppTextStyles.caption.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.surface,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
               const Expanded(child: _CompareSlot(label: 'Project B')),
@@ -180,16 +287,19 @@ class _CompareSlot extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
       decoration: BoxDecoration(
-        color: AppColors.isDark ? Colors.white.withValues(alpha: 0.07) : AppColors.surface,
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: AppColors.isDark ? Border.all(color: Colors.white.withValues(alpha: 0.1)) : null,
+        border: Border.all(color: AppColors.border),
       ),
       child: Row(
         children: [
           Icon(Iconsax.buildings_2_copy, size: 18, color: CompareBanner.accent),
           const SizedBox(width: 8),
           Expanded(
-            child: Text(label, style: AppTextStyles.label.copyWith(fontWeight: FontWeight.w600)),
+            child: Text(
+              label,
+              style: AppTextStyles.label.copyWith(fontWeight: FontWeight.w600),
+            ),
           ),
           Icon(Iconsax.add_copy, size: 16, color: AppColors.textTertiary),
         ],
@@ -204,12 +314,20 @@ class _BannerShell extends StatelessWidget {
     required this.gradient,
     required this.child,
     this.squareBottom = false,
+    this.borderColor,
+    this.boxShadow,
   });
 
   final VoidCallback onTap;
   final List<Color> gradient;
   final Widget child;
   final bool squareBottom;
+
+  /// Optional hairline border (for light/plain cards).
+  final Color? borderColor;
+
+  /// Optional drop shadow.
+  final List<BoxShadow>? boxShadow;
 
   @override
   Widget build(BuildContext context) {
@@ -234,6 +352,9 @@ class _BannerShell extends StatelessWidget {
               end: Alignment.bottomRight,
               colors: gradient,
             ),
+            border: borderColor == null
+                ? null
+                : Border.all(color: borderColor!),
           ),
           child: child,
         ),
@@ -263,23 +384,36 @@ class _Eyebrow extends StatelessWidget {
 }
 
 class _CtaPill extends StatelessWidget {
-  const _CtaPill({required this.label, required this.color, this.textColor = Colors.white});
+  const _CtaPill({
+    required this.label,
+    this.color,
+    this.gradient,
+    this.textColor = Colors.white,
+  });
 
   final String label;
-  final Color color;
+  final Color? color;
+  final Gradient? gradient;
   final Color textColor;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(AppRadius.pill)),
+      decoration: BoxDecoration(
+        color: color,
+        gradient: gradient,
+        borderRadius: BorderRadius.circular(AppRadius.pill),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             label,
-            style: AppTextStyles.caption.copyWith(color: textColor, fontWeight: FontWeight.w600),
+            style: AppTextStyles.caption.copyWith(
+              color: textColor,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           const SizedBox(width: 4),
           Icon(Iconsax.arrow_right_3_copy, size: 14, color: textColor),
