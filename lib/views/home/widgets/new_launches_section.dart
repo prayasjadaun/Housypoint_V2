@@ -77,7 +77,7 @@ class LaunchCard extends StatelessWidget {
     }
 
     return SizedBox(
-      width: 230,
+      width: 260,
       child: Stack(
         fit: StackFit.expand,
         children: [

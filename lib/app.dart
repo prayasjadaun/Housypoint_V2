@@ -7,6 +7,7 @@ import 'controllers/auth_controller.dart';
 import 'controllers/theme_controller.dart';
 import 'router/app_router.dart';
 import 'theme/app_theme.dart';
+import 'widgets/common/app_scrollbar.dart';
 import 'widgets/common/connectivity_banner.dart';
 import 'widgets/common/keyboard_dismisser.dart';
 import 'widgets/common/theme_switch_overlay.dart';
@@ -56,6 +57,8 @@ class _AppState extends State<App> {
       theme: AppTheme.current,
       // ThemeSwitchOverlay draws the reveal; skip the default 200ms lerp.
       themeAnimationDuration: Duration.zero,
+      // Har screen ki vertical list par custom scrollbar
+      scrollBehavior: const AppScrollBehavior(),
       builder: (context, child) => RepaintBoundary(
         key: ThemeSwitchOverlay.rootBoundaryKey,
         child: KeyboardDismisser(

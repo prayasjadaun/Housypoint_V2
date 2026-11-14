@@ -14,6 +14,7 @@ import '../../router/app_routes.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../widgets/common/app_logo.dart';
+import '../../widgets/common/app_scrollbar.dart';
 import '../../widgets/common/glass_app_bar.dart';
 import 'home_screen.dart';
 import 'widgets/shell_bottom_nav.dart';
@@ -178,7 +179,25 @@ class _MainShellScreenState extends State<MainShellScreen> {
                 // Tabs build on first visit so their APIs don't all fire at
                 // launch; once built they keep state but pause animations.
                 _visited.contains(tab)
-                    ? TickerMode(enabled: tab == current, child: pages[tab]!)
+                    ? TickerMode(
+                        enabled: tab == current,
+                        // Nav par khule tab ko tap → shell.scrollToTop(tab).
+                        // Tab ki main list PrimaryScrollController se isi
+                        // controller par attach hoti hai. Scrollbar global
+                        // AppScrollBehavior (app.dart) se aata hai.
+                        child: PrimaryScrollController(
+                          controller: shell.scrollControllers[tab]!,
+                          child: tab == ShellTab.refer
+                              // Refer page black + gold — thumb bhi gold
+                              ? ScrollConfiguration(
+                                  behavior: const AppScrollBehavior(
+                                    color: AppColors.referGold,
+                                  ),
+                                  child: pages[tab]!,
+                                )
+                              : pages[tab]!,
+                        ),
+                      )
                     : const SizedBox.shrink(),
             ],
           ),

@@ -153,6 +153,10 @@ class _Hero extends StatelessWidget {
 
     return DecoratedBox(
       decoration: const BoxDecoration(
+        borderRadius: BorderRadius.vertical(
+          bottom: Radius.circular(AppRadius.xl),
+          top: Radius.circular(AppRadius.xl),
+        ),
         gradient: RadialGradient(
           center: Alignment(0.6, -0.4),
           radius: 1.3,

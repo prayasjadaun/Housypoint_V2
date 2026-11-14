@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
@@ -19,8 +21,19 @@ import 'size_options.dart';
 
 /// The home "USP filter" (V1 layout, V2 styling): owner strip, city and
 /// builder pickers, four deal tabs and listing counts per size.
-class PropertyFilterCard extends StatelessWidget {
+class PropertyFilterCard extends StatefulWidget {
   const PropertyFilterCard({super.key});
+
+  @override
+  State<PropertyFilterCard> createState() => _PropertyFilterCardState();
+}
+
+/// Counts section Home par aate hi (app open ya tab switch) [_peek] tak
+/// dikhta hai, phir band ho jaata hai — card chhota rehta hai. Neeche ki
+/// "Tap a count…" line hamesha dikhti hai; us par tap se counts khulte/band
+/// hote hain, aur deal tab (Resale/Rent…) badalne par bhi khul jaate hain.
+class _PropertyFilterCardState extends State<PropertyFilterCard> {
+  static const _peek = Duration(seconds: 2);
 
   static const _tabs = [
     ('Resale', DealType.sale, PropertyCategory.residential),
@@ -67,10 +80,73 @@ class PropertyFilterCard extends StatelessWidget {
     if (result.picked) home.selectBuilder(result.value);
   }
 
+  late final ShellController _shell;
+  ShellTab? _lastTab;
+  bool _showCounts = true;
+
+  /// Counts aane ke baad auto-hide ka timer chalana baaki hai
+  bool _autoHidePending = true;
+  Timer? _hideTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _shell = context.read<ShellController>()..addListener(_onShellChanged);
+    _lastTab = _shell.tab;
+  }
+
+  @override
+  void dispose() {
+    _shell.removeListener(_onShellChanged);
+    _hideTimer?.cancel();
+    super.dispose();
+  }
+
+  // Doosre tab se Home par wapas → counts phir se 2s ke liye
+  void _onShellChanged() {
+    final tab = _shell.tab;
+    final arrived = tab == ShellTab.home && _lastTab != ShellTab.home;
+    _lastTab = tab;
+    if (!arrived) return;
+    _hideTimer?.cancel();
+    _hideTimer = null;
+    setState(() {
+      _showCounts = true;
+      _autoHidePending = true;
+    });
+  }
+
+  // Timer counts load hone ke baad chalta hai — warna 2s sirf skeleton dikhe
+  void _maybeStartAutoHide(HomeController home) {
+    if (!_autoHidePending || _hideTimer != null || home.counts == null) return;
+    _hideTimer = Timer(_peek, () {
+      if (!mounted) return;
+      setState(() {
+        _showCounts = false;
+        _autoHidePending = false;
+        _hideTimer = null;
+      });
+    });
+  }
+
+  // User ne khud counts khole/band kiye — ab auto-hide nahi
+  void _setCounts(bool show) {
+    _hideTimer?.cancel();
+    _hideTimer = null;
+    setState(() {
+      _showCounts = show;
+      _autoHidePending = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final home = context.watch<HomeController>();
     final radius = BorderRadius.circular(AppRadius.xl + 4);
+    _maybeStartAutoHide(home);
+    // Error + retry kabhi chhupao mat
+    final showCounts =
+        _showCounts || (home.countsError != null && home.counts == null);
 
     return Container(
       clipBehavior: Clip.antiAlias,
@@ -91,8 +167,11 @@ class PropertyFilterCard extends StatelessWidget {
           const _OwnerStrip(),
           // Pickers sit on a soft band, like V1
           Container(
-            color: AppColors.background,
-            padding: const EdgeInsets.all(12),
+            color: AppColors.isDark
+                ? AppColors.background
+                : const Color(0xFFF1F3F6),
+            // Shadow/glow ke liye thodi zyada jagah
+            padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
             child: Row(
               children: [
                 Expanded(
@@ -103,7 +182,7 @@ class PropertyFilterCard extends StatelessWidget {
                     onTap: () => _pickCity(context, home),
                   ),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 12),
                 Expanded(
                   child: _PickerCard(
                     icon: Iconsax.buildings_2_copy,
@@ -136,6 +215,7 @@ class PropertyFilterCard extends StatelessWidget {
                   onTap: () {
                     home.setCategory(category);
                     home.setDeal(deal);
+                    _setCounts(true);
                   },
                 );
               },
@@ -151,30 +231,50 @@ class PropertyFilterCard extends StatelessWidget {
             duration: const Duration(milliseconds: 250),
             curve: Curves.easeOutCubic,
             alignment: Alignment.topCenter,
-            child: _Counts(
-              key: ValueKey(home.category),
-              home: home,
-              onTap: (key) => _openListings(context, home, key),
-            ),
+            child: showCounts
+                ? _Counts(
+                    key: ValueKey(home.category),
+                    home: home,
+                    onTap: (key) => _openListings(context, home, key),
+                  )
+                : const SizedBox(width: double.infinity, height: 12),
           ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 14),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(
-                  Iconsax.finger_cricle_copy,
-                  size: 16,
-                  color: AppColors.primary,
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  'Tap a count to see listings',
-                  style: AppTextStyles.caption.copyWith(
+          // Hamesha dikhta hai; tap → counts khol/band
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              AppHaptics.selection();
+              _setCounts(!showCounts);
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 14),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Iconsax.finger_cricle_copy,
+                    size: 16,
                     color: AppColors.primary,
                   ),
-                ),
-              ],
+                  const SizedBox(width: 6),
+                  Text(
+                    'Tap a count to see listings',
+                    style: AppTextStyles.caption.copyWith(
+                      color: AppColors.primary,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  AnimatedRotation(
+                    turns: showCounts ? 0.5 : 0,
+                    duration: const Duration(milliseconds: 250),
+                    child: const Icon(
+                      Iconsax.arrow_down_1_copy,
+                      size: 14,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -248,8 +348,9 @@ class _OwnerStrip extends StatelessWidget {
   }
 }
 
-/// White dropdown card (city / builder) on the grey band.
-class _PickerCard extends StatelessWidget {
+/// Soft raised (neumorphic) dropdown card — city / builder — on the grey
+/// band: light glow top-left, soft shadow bottom-right, tinted icon disc.
+class _PickerCard extends StatefulWidget {
   const _PickerCard({
     required this.icon,
     required this.caption,
@@ -263,69 +364,124 @@ class _PickerCard extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
+  State<_PickerCard> createState() => _PickerCardState();
+}
+
+class _PickerCardState extends State<_PickerCard> {
+  bool _pressed = false;
+
+  void _setPressed(bool v) {
+    if (_pressed != v) setState(() => _pressed = v);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final radius = BorderRadius.circular(AppRadius.lg);
-    return Material(
-      color: AppColors.surface,
-      borderRadius: radius,
-      child: InkWell(
-        borderRadius: radius,
-        onTap: onTap,
-        child: Ink(
+    final dark = AppColors.isDark;
+    final radius = BorderRadius.circular(18);
+
+    // Card band se thoda halka; dark me surface
+    final fill = dark ? AppColors.surface : const Color(0xFFF9FAFB);
+    final shadows = dark
+        ? [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: _pressed ? 0.2 : 0.35),
+              blurRadius: _pressed ? 6 : 14,
+              offset: Offset(0, _pressed ? 2 : 6),
+            ),
+          ]
+        : [
+            // Upar-left roshni
+            BoxShadow(
+              color: Colors.white.withValues(alpha: 0.9),
+              blurRadius: _pressed ? 4 : 10,
+              offset: Offset(_pressed ? -1 : -4, _pressed ? -1 : -4),
+            ),
+            // Neeche-right narm shadow
+            BoxShadow(
+              color: const Color(0xFF9AA5B1).withValues(
+                alpha: _pressed ? 0.14 : 0.22,
+              ),
+              blurRadius: _pressed ? 6 : 14,
+              offset: Offset(_pressed ? 1 : 4, _pressed ? 2 : 6),
+            ),
+          ];
+
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTapDown: (_) => _setPressed(true),
+      onTapUp: (_) => _setPressed(false),
+      onTapCancel: () => _setPressed(false),
+      onTap: widget.onTap,
+      child: AnimatedScale(
+        scale: _pressed ? 0.98 : 1,
+        duration: const Duration(milliseconds: 120),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 160),
+          padding: const EdgeInsets.fromLTRB(8, 7, 10, 7),
           decoration: BoxDecoration(
+            color: fill,
             borderRadius: radius,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
+            border: Border.all(
+              color: dark
+                  ? Colors.white.withValues(alpha: 0.06)
+                  : Colors.white,
+              width: 1.2,
+            ),
+            boxShadow: shadows,
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                  color: dark
+                      ? AppColors.mainGreen.withValues(alpha: 0.12)
+                      : AppColors.mainGreen.withValues(alpha: 0.08),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  widget.icon,
+                  size: 16,
+                  color: dark ? AppColors.mainGreen : AppColors.primary,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.caption,
+                      style: AppTextStyles.caption.copyWith(
+                        fontSize: 10.5,
+                        height: 1.2,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    const SizedBox(height: 1),
+                    Text(
+                      widget.value,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.title.copyWith(
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w700,
+                        height: 1.25,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 4),
+              Icon(
+                Iconsax.arrow_down_1_copy,
+                size: 16,
+                color: AppColors.textSecondary,
               ),
             ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-            child: Row(
-              children: [
-                Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: AppColors.primarySoft,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(icon, size: 16, color: AppColors.primary),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        caption,
-                        style: AppTextStyles.caption.copyWith(
-                          fontSize: 10.5,
-                          height: 1.2,
-                        ),
-                      ),
-                      Text(
-                        value,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTextStyles.label.copyWith(
-                          fontWeight: FontWeight.w700,
-                          height: 1.3,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Icon(
-                  Iconsax.arrow_down_1_copy,
-                  size: 14,
-                  color: AppColors.textSecondary,
-                ),
-              ],
-            ),
           ),
         ),
       ),

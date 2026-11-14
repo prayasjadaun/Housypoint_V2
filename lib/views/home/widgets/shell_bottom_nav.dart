@@ -71,7 +71,7 @@ class ShellBottomNav extends StatelessWidget {
           icon: tabs[tab]!.icon,
           label: tabs[tab]!.label,
           selected: tab == current,
-          onTap: () => onTap != null ? onTap(tab) : shell.go(tab),
+          onTap: () => onTap != null ? onTap(tab) : shell.tap(tab),
           nativeIconAsset: 'assets/nav/${tabs[tab]!.asset}.png',
           nativeSelectedIconAsset: 'assets/nav/${tabs[tab]!.asset}_filled.png',
         ),
