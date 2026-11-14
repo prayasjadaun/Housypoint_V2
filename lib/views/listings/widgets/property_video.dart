@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:video_player/video_player.dart';
@@ -26,6 +27,7 @@ class VideoFlipCard extends StatefulWidget {
     required this.title,
     required this.borderRadius,
     required this.frontBuilder,
+    this.onFlipChanged,
   });
 
   /// Empty falls back to the demo video while [kDemoPropertyVideos] is on.
@@ -34,6 +36,10 @@ class VideoFlipCard extends StatefulWidget {
   final String title;
   final BorderRadius borderRadius;
   final Widget Function(BuildContext context, VoidCallback? flip) frontBuilder;
+
+  /// true jab video side khulna shuru ho, false jab wapas mudna shuru ho —
+  /// host apne overlays (jaise notch button) chhupa/dikha sake.
+  final ValueChanged<bool>? onFlipChanged;
 
   @override
   State<VideoFlipCard> createState() => _VideoFlipCardState();
@@ -113,6 +119,7 @@ class _VideoFlipCardState extends State<VideoFlipCard>
       _open.add(this);
       _watchScroll();
       _flip.forward();
+      _notifyFlip(true);
     }
   }
 
@@ -126,6 +133,22 @@ class _VideoFlipCardState extends State<VideoFlipCard>
       _flip.reverse();
     } else {
       _flip.value = 0;
+    }
+    _notifyFlip(false);
+  }
+
+  // Close didChangeDependencies (build ke beech) se bhi aata hai — tab
+  // parent ka setState fail hoga, isliye frame ke baad batao
+  void _notifyFlip(bool flipped) {
+    final cb = widget.onFlipChanged;
+    if (cb == null) return;
+    if (SchedulerBinding.instance.schedulerPhase ==
+        SchedulerPhase.persistentCallbacks) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (mounted) cb(_isOpen);
+      });
+    } else {
+      cb(flipped);
     }
   }
 

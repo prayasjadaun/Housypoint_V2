@@ -58,10 +58,20 @@ class NewLaunchesSection extends StatelessWidget {
 
 /// Full-bleed project card: photo fills the card, details on a dark fade.
 /// The top-right play button flips it over to the project video.
-class LaunchCard extends StatelessWidget {
+class LaunchCard extends StatefulWidget {
   const LaunchCard({super.key, required this.project});
 
   final ProjectSummary project;
+
+  @override
+  State<LaunchCard> createState() => _LaunchCardState();
+}
+
+class _LaunchCardState extends State<LaunchCard> {
+  /// Video side khuli hai — tab notch aur arrow button nahi, poora card
+  bool _flipped = false;
+
+  ProjectSummary get project => widget.project;
 
   @override
   Widget build(BuildContext context) {
@@ -82,16 +92,23 @@ class LaunchCard extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           // Bottom-right corner me curved notch — usme arrow button baithta hai
+          // Flip par sirf clipper badalta hai (ClipPath wahi) — warna
+          // VideoFlipCard ka state (aur chalta video) reset ho jaata
           ClipPath(
-            clipper: const _NotchedCardClipper(
-              radius: AppRadius.xl + 4,
-              notch: _notchSize,
-            ),
+            clipper: _flipped
+                ? const _RoundedCardClipper(radius: AppRadius.xl + 4)
+                : const _NotchedCardClipper(
+                    radius: AppRadius.xl + 4,
+                    notch: _notchSize,
+                  ),
             child: VideoFlipCard(
               videoUrl: project.videoUrl,
               posterUrl: project.image,
               title: project.name,
               borderRadius: radius,
+              onFlipChanged: (v) {
+                if (mounted && v != _flipped) setState(() => _flipped = v);
+              },
               frontBuilder: (context, flip) =>
                   _buildFront(context, radius, place, flip, open),
             ),
@@ -99,7 +116,19 @@ class LaunchCard extends StatelessWidget {
           Positioned(
             right: (_notchSize - _buttonSize) / 2,
             bottom: (_notchSize - _buttonSize) / 2,
-            child: _NotchArrowButton(size: _buttonSize, onTap: open),
+            child: IgnorePointer(
+              ignoring: _flipped,
+              child: AnimatedScale(
+                scale: _flipped ? 0.6 : 1,
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeOutCubic,
+                child: AnimatedOpacity(
+                  opacity: _flipped ? 0 : 1,
+                  duration: const Duration(milliseconds: 180),
+                  child: _NotchArrowButton(size: _buttonSize, onTap: open),
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -245,6 +274,22 @@ class LaunchCard extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Plain rounded card — video side ke liye, jab notch nahi chahiye.
+class _RoundedCardClipper extends CustomClipper<Path> {
+  const _RoundedCardClipper({required this.radius});
+
+  final double radius;
+
+  @override
+  Path getClip(Size size) => Path()
+    ..addRRect(
+      RRect.fromRectAndRadius(Offset.zero & size, Radius.circular(radius)),
+    );
+
+  @override
+  bool shouldReclip(_RoundedCardClipper old) => old.radius != radius;
 }
 
 /// Rounded card jiske bottom-right corner se ek gol notch kata hai (andar se
