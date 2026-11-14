@@ -39,28 +39,122 @@ class VideoFlipCard extends StatefulWidget {
   State<VideoFlipCard> createState() => _VideoFlipCardState();
 }
 
-class _VideoFlipCardState extends State<VideoFlipCard> with SingleTickerProviderStateMixin {
+/// Video side khula card kisi bhi "aage badhne" wale kaam par wapas photo
+/// side par aa jaata hai (aur video band, kyunki back face hatte hi
+/// controller dispose hota hai):
+/// - koi bhi parent list scroll ho (vertical feed ya horizontal carousel)
+/// - tab / route badle — dono me card offstage jaata hai, TickerMode false
+/// - app background me jaaye
+/// - doosre card ka video khule (ek waqt me ek hi)
+/// Full-screen player khula ho tab nahi — wo isi card ka controller chalata hai.
+class _VideoFlipCardState extends State<VideoFlipCard>
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   late final AnimationController _flip = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 600),
   );
 
+  /// Jitne cards abhi video side par hain
+  static final Set<_VideoFlipCardState> _open = {};
+
+  /// Itna scroll hone par card band — chhota jhatka ignore
+  static const double _scrollSlop = 24;
+
+  /// Flip ke waqt parent scrollables aur unka offset
+  final Map<ScrollPosition, double> _watched = {};
+
   String get _videoUrl => widget.videoUrl.isNotEmpty
       ? widget.videoUrl
       : (kDemoPropertyVideos ? _demoVideoUrl : '');
 
+  bool get _isOpen =>
+      _flip.status == AnimationStatus.forward ||
+      _flip.status == AnimationStatus.completed;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Tab switch (IndexedStack + TickerMode) ya upar nayi screen → offstage
+    if (!TickerMode.valuesOf(context).enabled) _close(animate: false);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.hidden) {
+      _close(animate: false);
+    }
+  }
+
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _unwatchScroll();
+    _open.remove(this);
     _flip.dispose();
     super.dispose();
   }
 
   void _toggle() {
     AppHaptics.tap();
-    if (_flip.status == AnimationStatus.forward || _flip.status == AnimationStatus.completed) {
+    if (_isOpen) {
+      _close();
+    } else {
+      // Ek waqt me ek hi video
+      for (final other in _open.toList()) {
+        other._close();
+      }
+      _open.add(this);
+      _watchScroll();
+      _flip.forward();
+    }
+  }
+
+  void _close({bool animate = true}) {
+    if (!_isOpen) return;
+    if (PropertyVideoFullscreen._openCount > 0) return;
+    _open.remove(this);
+    _unwatchScroll();
+    // Offstage par ticker ruka hota hai — animation chalegi nahi, seedha jump
+    if (animate && TickerMode.valuesOf(context).enabled) {
       _flip.reverse();
     } else {
-      _flip.forward();
+      _flip.value = 0;
+    }
+  }
+
+  // Card ke upar ke saare scrollables (carousel + page feed) sunte hain
+  void _watchScroll() {
+    _unwatchScroll();
+    var scrollable = Scrollable.maybeOf(context);
+    while (scrollable != null) {
+      final position = scrollable.position;
+      _watched[position] = position.hasPixels ? position.pixels : 0;
+      position.addListener(_onScroll);
+      scrollable = Scrollable.maybeOf(scrollable.context);
+    }
+  }
+
+  void _unwatchScroll() {
+    for (final position in _watched.keys) {
+      position.removeListener(_onScroll);
+    }
+    _watched.clear();
+  }
+
+  void _onScroll() {
+    for (final entry in _watched.entries) {
+      final p = entry.key;
+      if (p.hasPixels && (p.pixels - entry.value).abs() > _scrollSlop) {
+        _close();
+        return;
+      }
     }
   }
 
@@ -421,6 +515,9 @@ class PropertyVideoFullscreen extends StatefulWidget {
   final VideoPlayerController controller;
   final String title;
 
+  /// Khula ho to cards band nahi hote — card ka controller yahi chala raha hai
+  static int _openCount = 0;
+
   @override
   State<PropertyVideoFullscreen> createState() => _PropertyVideoFullscreenState();
 }
@@ -431,12 +528,14 @@ class _PropertyVideoFullscreenState extends State<PropertyVideoFullscreen> {
   @override
   void initState() {
     super.initState();
+    PropertyVideoFullscreen._openCount++;
     SystemChrome.setPreferredOrientations(DeviceOrientation.values);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   }
 
   @override
   void dispose() {
+    PropertyVideoFullscreen._openCount--;
     // Back to the app-wide defaults set in main.dart
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
