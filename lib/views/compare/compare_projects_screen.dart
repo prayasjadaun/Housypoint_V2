@@ -15,7 +15,7 @@ import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_text_styles.dart';
 import '../../widgets/common/app_network_image.dart';
-import '../../widgets/common/app_refresh_indicator.dart';
+import '../../widgets/common/hp_loader.dart';
 import '../../widgets/common/page_scaffold.dart';
 import '../../widgets/common/selection_sheet.dart';
 import '../../widgets/pickers/location_pickers.dart';
@@ -30,16 +30,39 @@ class CompareProjectsScreen extends StatefulWidget {
 
 class _CompareProjectsScreenState extends State<CompareProjectsScreen> {
   final List<ProjectDetail?> _picked = [null, null];
-  final List<bool> _loading = [false, false];
+
+  /// Slot par kya load ho raha hai (null = kuch nahi) — card me spinner +
+  /// yahi text dikhta hai, taaki user ko pata rahe API chal rahi hai.
+  final List<String?> _loading = [null, null];
+
+  void _setLoading(int slot, String? text) {
+    if (mounted) setState(() => _loading[slot] = text);
+  }
+
+  /// Pick flow chal raha hai (API + sheets) — builders aane tak sheet nahi
+  /// khulti, us beech ke taps ko yahi rokta hai, warna har tap nayi sheet.
+  bool _picking = false;
 
   Future<void> _pick(int slot) async {
+    if (_picking) return;
+    _picking = true;
+    try {
+      await _runPick(slot);
+    } finally {
+      _picking = false;
+    }
+  }
+
+  Future<void> _runPick(int slot) async {
     final master = context.read<MasterDataRepository>();
     final projects = context.read<ProjectRepository>();
     final city = context.read<HomeController>().selectedCity;
 
     try {
+      _setLoading(slot, 'Loading builders…');
       final builders = await master.getBuilders(city: city);
       if (!mounted) return;
+      _setLoading(slot, null);
       final builderResult = await showBuilderPicker(
         context,
         builders: builders,
@@ -49,8 +72,10 @@ class _CompareProjectsScreenState extends State<CompareProjectsScreen> {
       final builder = builderResult.value;
       if (builder == null || !mounted) return;
 
+      _setLoading(slot, 'Loading projects…');
       final list = await projects.getBuilderProjects(builder.id);
       if (!mounted) return;
+      _setLoading(slot, null);
       final picked = await showSelectionSheet<ProjectSummary>(
         context,
         title: 'Select project',
@@ -59,25 +84,30 @@ class _CompareProjectsScreenState extends State<CompareProjectsScreen> {
         items: list,
         emptyTitle: 'No project found',
         labelOf: (p) => p.name,
-        subtitleOf: (p) => [p.projectType, p.city].where((s) => s.isNotEmpty).join(' · '),
+        subtitleOf: (p) =>
+            [p.projectType, p.city].where((s) => s.isNotEmpty).join(' · '),
         isSelected: (p) => p.id == _picked[slot]?.summary.id,
         leadingOf: (p, selected) => SelectionLeading(
           selected: selected,
           child: Padding(
             padding: const EdgeInsets.all(4),
-            child: AppNetworkImage(url: p.logo, fit: BoxFit.contain, fallbackIcon: Iconsax.buildings_2_copy),
+            child: AppNetworkImage(
+              url: p.logo,
+              fit: BoxFit.contain,
+              fallbackIcon: Iconsax.buildings_2_copy,
+            ),
           ),
         ),
       );
       if (picked == null || !mounted) return;
 
-      setState(() => _loading[slot] = true);
+      _setLoading(slot, 'Loading details…');
       final detail = await projects.getProject(picked.id);
       if (mounted) setState(() => _picked[slot] = detail);
     } on ApiException catch (e) {
       if (mounted) context.showSnackBar(e.message, isError: true);
     } finally {
-      if (mounted) setState(() => _loading[slot] = false);
+      _setLoading(slot, null);
     }
   }
 
@@ -90,7 +120,12 @@ class _CompareProjectsScreenState extends State<CompareProjectsScreen> {
     return PageScaffold(
       title: 'Compare projects',
       body: ListView(
-        padding: EdgeInsets.fromLTRB(AppSpacing.md, top + AppSpacing.md, AppSpacing.md, AppSpacing.xl),
+        padding: EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          top + AppSpacing.md,
+          AppSpacing.md,
+          AppSpacing.xl,
+        ),
         children: [
           Text(
             'Pick two projects to see price, size, amenities and location side by side.',
@@ -101,9 +136,23 @@ class _CompareProjectsScreenState extends State<CompareProjectsScreen> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Expanded(child: _Slot(label: 'Project A', project: a, loading: _loading[0], onTap: () => _pick(0))),
+                Expanded(
+                  child: _Slot(
+                    label: 'Project A',
+                    project: a,
+                    loading: _loading[0],
+                    onTap: () => _pick(0),
+                  ),
+                ),
                 const SizedBox(width: 10),
-                Expanded(child: _Slot(label: 'Project B', project: b, loading: _loading[1], onTap: () => _pick(1))),
+                Expanded(
+                  child: _Slot(
+                    label: 'Project B',
+                    project: b,
+                    loading: _loading[1],
+                    onTap: () => _pick(1),
+                  ),
+                ),
               ],
             ),
           ),
@@ -120,11 +169,18 @@ class _CompareProjectsScreenState extends State<CompareProjectsScreen> {
 }
 
 class _Slot extends StatelessWidget {
-  const _Slot({required this.label, required this.project, required this.loading, required this.onTap});
+  const _Slot({
+    required this.label,
+    required this.project,
+    required this.loading,
+    required this.onTap,
+  });
 
   final String label;
   final ProjectDetail? project;
-  final bool loading;
+
+  /// Loading message; null = loaded / idle.
+  final String? loading;
   final VoidCallback onTap;
 
   @override
@@ -135,16 +191,34 @@ class _Slot extends StatelessWidget {
       borderRadius: BorderRadius.circular(AppRadius.xl),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: loading ? null : onTap,
+        onTap: loading != null ? null : onTap,
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppRadius.xl),
-            border: Border.all(color: p == null ? AppColors.border : AppColors.primary.withValues(alpha: 0.4)),
+            border: Border.all(
+              color: p == null
+                  ? AppColors.border
+                  : AppColors.primary.withValues(alpha: 0.4),
+            ),
           ),
-          child: loading
-              ? const SizedBox(
+          child: loading != null
+              ? SizedBox(
                   height: 170,
-                  child: Center(child: AppSpinner()),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const HpLoader(size: 52),
+                      const SizedBox(height: 12),
+                      Text(
+                        loading!,
+                        textAlign: TextAlign.center,
+                        style: AppTextStyles.caption.copyWith(
+                          color: AppColors.textSecondary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
                 )
               : p == null
               ? SizedBox(
@@ -155,11 +229,22 @@ class _Slot extends StatelessWidget {
                       Container(
                         width: 48,
                         height: 48,
-                        decoration: BoxDecoration(color: AppColors.primarySoft, shape: BoxShape.circle),
-                        child: const Icon(Iconsax.add_copy, color: AppColors.primary),
+                        decoration: BoxDecoration(
+                          color: AppColors.primarySoft,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Iconsax.add_copy,
+                          color: AppColors.primary,
+                        ),
                       ),
                       const SizedBox(height: 10),
-                      Text(label, style: AppTextStyles.label.copyWith(fontWeight: FontWeight.w600)),
+                      Text(
+                        label,
+                        style: AppTextStyles.label.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                       Text('Tap to choose', style: AppTextStyles.caption),
                     ],
                   ),
@@ -168,7 +253,9 @@ class _Slot extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AppNetworkImage(
-                      url: project!.images.isNotEmpty ? project!.images.first : p.image,
+                      url: project!.images.isNotEmpty
+                          ? project!.images.first
+                          : p.image,
                       height: 100,
                       width: double.infinity,
                     ),
@@ -177,12 +264,26 @@ class _Slot extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(p.name, maxLines: 2, style: AppTextStyles.label.copyWith(fontWeight: FontWeight.w700)),
-                          Text(p.builderName, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.caption),
+                          Text(
+                            p.name,
+                            maxLines: 2,
+                            style: AppTextStyles.label.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          Text(
+                            p.builderName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTextStyles.caption,
+                          ),
                           const SizedBox(height: 4),
                           Text(
                             'Change',
-                            style: AppTextStyles.caption.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600),
+                            style: AppTextStyles.caption.copyWith(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ],
                       ),
@@ -203,25 +304,51 @@ class _Table extends StatelessWidget {
 
   String _configs(ProjectDetail p) => p.configurations.isEmpty
       ? '—'
-      : p.configurations.map((c) => c.size.isEmpty ? c.detail : '${c.detail} · ${c.size} sqft').join('\n');
+      : p.configurations
+            .map(
+              (c) => c.size.isEmpty ? c.detail : '${c.detail} · ${c.size} sqft',
+            )
+            .join('\n');
 
-  String _nearby(ProjectDetail p) =>
-      p.landmarks.isEmpty ? '—' : p.landmarks.take(3).map((l) => '${l.name} (${l.distance})').join('\n');
+  String _nearby(ProjectDetail p) => p.landmarks.isEmpty
+      ? '—'
+      : p.landmarks.take(3).map((l) => '${l.name} (${l.distance})').join('\n');
 
   @override
   Widget build(BuildContext context) {
     final rows = <(IconData, String, String, String)>[
-      (Iconsax.wallet_money_copy, 'Price range',
+      (
+        Iconsax.wallet_money_copy,
+        'Price range',
         a.summary.priceRange.isEmpty ? '—' : '₹${a.summary.priceRange}',
-        b.summary.priceRange.isEmpty ? '—' : '₹${b.summary.priceRange}'),
-      (Iconsax.buildings_2_copy, 'Builder', a.summary.builderName, b.summary.builderName),
-      (Iconsax.location_copy, 'Location',
+        b.summary.priceRange.isEmpty ? '—' : '₹${b.summary.priceRange}',
+      ),
+      (
+        Iconsax.buildings_2_copy,
+        'Builder',
+        a.summary.builderName,
+        b.summary.builderName,
+      ),
+      (
+        Iconsax.location_copy,
+        'Location',
         [a.location, a.summary.city].where((s) => s.isNotEmpty).join(', '),
-        [b.location, b.summary.city].where((s) => s.isNotEmpty).join(', ')),
+        [b.location, b.summary.city].where((s) => s.isNotEmpty).join(', '),
+      ),
       (Iconsax.timer_1_copy, 'Status', a.summary.status, b.summary.status),
-      (Iconsax.building_copy, 'Type', a.summary.projectType, b.summary.projectType),
+      (
+        Iconsax.building_copy,
+        'Type',
+        a.summary.projectType,
+        b.summary.projectType,
+      ),
       (Iconsax.home_2_copy, 'Configurations', _configs(a), _configs(b)),
-      (Iconsax.tick_square_copy, 'Amenities', '${a.amenities.length} amenities', '${b.amenities.length} amenities'),
+      (
+        Iconsax.tick_square_copy,
+        'Amenities',
+        '${a.amenities.length} amenities',
+        '${b.amenities.length} amenities',
+      ),
       (Iconsax.routing_2_copy, 'Nearby', _nearby(a), _nearby(b)),
       (Iconsax.shield_tick_copy, 'RERA', a.rera, b.rera),
     ];
@@ -245,16 +372,31 @@ class _Table extends StatelessWidget {
                     children: [
                       Icon(rows[i].$1, size: 15, color: AppColors.primary),
                       const SizedBox(width: 6),
-                      Text(rows[i].$2, style: AppTextStyles.caption.copyWith(fontWeight: FontWeight.w600)),
+                      Text(
+                        rows[i].$2,
+                        style: AppTextStyles.caption.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 6),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(child: Text(rows[i].$3.isEmpty ? '—' : rows[i].$3, style: AppTextStyles.label)),
+                      Expanded(
+                        child: Text(
+                          rows[i].$3.isEmpty ? '—' : rows[i].$3,
+                          style: AppTextStyles.label,
+                        ),
+                      ),
                       const SizedBox(width: 12),
-                      Expanded(child: Text(rows[i].$4.isEmpty ? '—' : rows[i].$4, style: AppTextStyles.label)),
+                      Expanded(
+                        child: Text(
+                          rows[i].$4.isEmpty ? '—' : rows[i].$4,
+                          style: AppTextStyles.label,
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -269,7 +411,8 @@ class _Table extends StatelessWidget {
                 for (final p in [a, b])
                   Expanded(
                     child: TextButton(
-                      onPressed: () => context.push(AppRoutes.projectPath(p.summary.id)),
+                      onPressed: () =>
+                          context.push(AppRoutes.projectPath(p.summary.id)),
                       child: const Text('View project'),
                     ),
                   ),
